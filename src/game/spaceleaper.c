@@ -24,6 +24,7 @@
 #include "src/pphys/index.h"
 #include "src/input/index.h"
 #include "src/game/flowline.h"
+#include "src/game/asteroid.h"
 
 // #include "../app/all.h"
 
@@ -73,43 +74,60 @@ static GLuint compileShader(GLuint shader, const char *source) {
 
 static const int particle_count = kParticleCount;
 static AQWorld *world;
-static AQFlowLine *flowLine;
+// static AQFlowLine *flowLine;
 static aqvec2 gravity;
+
+static AQList *asteroids;
 
 void initWaterTest() {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
   world = aqinit( aqalloc( &AQWorldType ));
-  AQWorld_setAabb( world, (aqaabb) { 640, 640, 0, 0 });
-  gravity = (aqvec2) { 0, -4 };
-  AQInput_setWorldFrame( 640, 640, 0, 0 );
+  AQWorld_setAabb( world, (aqaabb) { 6400, 6400, 0, 0 });
+  // gravity = (aqvec2) { 0, -4 };
+  AQInput_setWorldFrame( 6400, 6400, 0, 0 );
   // aq_input_setscreentoworld((aqbox){ 640, 640, 0, 0 });
 
-  for ( int i = 0; i < particle_count; ++i ) {
-    AQParticle *particle = aqcreate( &AQParticleType );
-    particle->position = (aqvec2) {
-      rand() % (int) world->aabb.right,
-      rand() % (int) world->aabb.top / 3 * 2
-    };
-    particle->lastPosition = particle->position;
-    particle->radius = kParticleBaseSize + (float) rand() / RAND_MAX * kParticleSizeRange;
-    particle->mass = M_PI * particle->radius * particle->radius;
-    if ( rand() > RAND_MAX * 0.99 ) {
-      // particle->radius += 10;
-      particle->mass *= 1000;
+  asteroids = aqinit( aqalloc( &AQListType ));
+
+  int n = 64;
+  for ( int i = 0; i < n; ++i ) {
+    for ( int j = 0; j < n; ++j ) {
+    // AQParticle *particle = aqcreate( &AQParticleType );
+    // particle->position = (aqvec2) {
+    //   rand() % (int) world->aabb.right,
+    //   rand() % (int) world->aabb.top / 3 * 2
+    // };
+    // particle->lastPosition = particle->position;
+    // particle->radius = kParticleBaseSize + (float) rand() / RAND_MAX * kParticleSizeRange;
+    // particle->mass = M_PI * particle->radius * particle->radius;
+    // if ( rand() > RAND_MAX * 0.99 ) {
+    //   // particle->radius += 10;
+    //   particle->mass *= 1000;
+    // }
+    // AQWorld_addParticle( world, particle );
+
+      SLAsteroid *asteroid = SLAsteroid_create(
+        world,
+        aqvec2_make(
+          rand() % (int) world->aabb.right / n / 2 + world->aabb.right / n * i + world->aabb.right / n / 4,
+          rand() % (int) world->aabb.top / n / 2 + world->aabb.top / n * j + world->aabb.top / n / 4
+        ),
+        ((double) rand() ) / RAND_MAX * world->aabb.right / n / 8 + world->aabb.right / n / 8
+      );
+      AQList_push( asteroids, (AQObj *) asteroid );
     }
-    AQWorld_addParticle( world, particle );
   }
 
-  flowLine = aqinit( aqalloc( &AQFlowLineType ));
-  flowLine->radius = 20;
-  flowLine->minPointDistance = 10;
-  flowLine->force = 1000;
-  AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 80 });
-  AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 100 });
-  AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 120 });
-  AQFlowLine_createParticles( flowLine, world );
-  AQFlowLine_clearPoints( flowLine );
-  printf( "%p %p\n", flowLine->particles, AQList_at( flowLine->particles, 0 ));
+  // flowLine = aqinit( aqalloc( &AQFlowLineType ));
+  // flowLine->radius = 20;
+  // flowLine->minPointDistance = 10;
+  // flowLine->force = 1000;
+  // AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 80 });
+  // AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 100 });
+  // AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 120 });
+  // AQFlowLine_createParticles( flowLine, world );
+  // AQFlowLine_clearPoints( flowLine );
+  // printf( "%p %p\n", flowLine->particles, AQList_at( flowLine->particles, 0 ));
 
   glClearColor(0, 0, 0, 0);
   glEnable(GL_BLEND);
@@ -304,19 +322,19 @@ void stepWaterTest(float dt) {
       //   touch->wy );
       switch ( touch->state ) {
         case AQTouchBegan:
-          AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+          // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
           break;
         case AQTouchMoved:
         case AQTouchStationary:
-          AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+          // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
           break;
         case AQTouchEnded:
-          AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-          AQFlowLine_createParticles( flowLine, world );
-          AQFlowLine_clearPoints( flowLine );
-          printf( "particles: %d %d\n",
-            AQList_length( flowLine->particles ),
-            AQList_length( world->particles ));
+          // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+          // AQFlowLine_createParticles( flowLine, world );
+          // AQFlowLine_clearPoints( flowLine );
+          // printf( "particles: %d %d\n",
+          //   AQList_length( flowLine->particles ),
+          //   AQList_length( world->particles ));
           break;
         default:
           break;

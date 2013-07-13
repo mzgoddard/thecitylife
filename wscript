@@ -45,11 +45,12 @@ def configure(ctx):
 
     ctx.setenv('emcc', env)
     ctx.load('compiler_c')
-    ctx.env.PATH = 'vendor/emscripten'
-    ctx.find_program( 'emcc' )
-    ctx.env.CC = 'emcc'
+    ctx.env.CC = ctx.find_program(
+        'emcc',
+        path_list=os.path.abspath('vendor/emscripten')
+    )
     ctx.env.IS_EMSCRIPTEN = True
-    ctx.env.LINK_CC = 'emcc'
+    ctx.env.LINK_CC = ctx.env.CC
     ctx.env.CFLAGS = [ '-O2' ]
     ctx.env.LINKFLAGS = [ '-O2' ]
     ctx.env.DEFINES = [ 'ANSI_COLOR=1' ]
@@ -142,16 +143,26 @@ def build(bld):
             target='spaceleaper.html'
         )
 
+    watertestSource = bld.path.ant_glob(
+        'src/game/flowline.c src/game/watertest.c ' +
+        'src/platform/sdl/*.c'
+    )
+
+    spaceLeaperSource = bld.path.ant_glob(
+        'src/game/flowline.c src/game/asteroid.c src/game/spaceleaper.c ' +
+        'src/platform/sdl/*.c'
+    )
+
     if bld.cmd in [ 'emcc', 'emcc_html' ]:
         bld.program(
-            source=bld.path.ant_glob('src/game/flowline.c src/game/watertest.c src/platform/sdl/*.c'),
+            source=watertestSource,
             includes=['./src', '.'],
             target='watertest',
             use='libobj libpphys libinput'
         )
 
         bld.program(
-            source=bld.path.ant_glob('src/game/flowline.c src/game/spaceleaper.c src/platform/sdl/*.c'),
+            source=spaceLeaperSource,
             includes=['./src', '.'],
             target='spaceleaper',
             use='libobj libpphys libinput'
@@ -159,7 +170,7 @@ def build(bld):
 
     if bld.cmd in [ 'debug', 'release' ]:
         bld.program(
-            source=bld.path.ant_glob('src/game/flowline.c src/game/watertest.c src/platform/sdl/*.c'),
+            source=watertestSource,
             includes=['./src', '.'],
             target='watertest',
             framework=[ 'Cocoa', 'OpenGL' ],
@@ -167,7 +178,7 @@ def build(bld):
         )
 
         bld.program(
-            source=bld.path.ant_glob('src/game/flowline.c src/game/spaceleaper.c src/platform/sdl/*.c'),
+            source=spaceLeaperSource,
             includes=['./src', '.'],
             target='spaceleaper',
             framework=[ 'Cocoa', 'OpenGL' ],
