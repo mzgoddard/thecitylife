@@ -76,7 +76,7 @@ void * aqrelease(void *);
 void * aqautorelease(void *);
 
 void * aqcreate(AQType *);
-AQInterface * aqcast(void *, char *interface);
+void * aqcast(void *, char *interface);
 
 #define AQCALL(obj,interface,func,...) ( \
   AQInterface *interface ## _interface = aqcast(obj,interface), \

@@ -11,41 +11,8 @@
 #include "src/game/flowline.h"
 #include "src/game/asteroid.h"
 #include "src/game/camera.h"
-
-// #include "../app/all.h"
-
-#if !EMSCRIPTEN
-static const char * shader_fragment_text = "varying vec4 v_color;\nvoid main() {gl_FragColor = v_color;}";
-#else
-static const char * shader_fragment_text = "varying lowp vec4 v_color;\nvoid main() {gl_FragColor = v_color;}";
-#endif
-
-static const char * shader_vertex_text = "uniform mat4 modelview_projection;\nattribute vec2 a_position;\nattribute vec4 a_color;\nvarying vec4 v_color;\nvoid main() {\n  v_color = a_color;\n  gl_Position = modelview_projection * vec4(a_position, 0, 1);\n}\n";
-
-static GLuint shader_program;
-static GLuint buffer;
-static GLint positionAttribute;
-static GLint colorAttribute;
-static GLint matrixtAttribute;
-static GLuint compileShader(GLuint shader, const char *source) {
-  GLint length = (GLint) strlen(source);
-  const GLchar *text[] = {source};
-  glShaderSource(shader, 1, text, &length);
-  glCompileShader(shader);
-
-  GLint compileStatus;
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
-
-  if (compileStatus == GL_FALSE) {
-    GLint infologlength;
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infologlength);
-    char info_log[infologlength+1];
-    glGetShaderInfoLog(shader, infologlength, NULL, info_log);
-    printf("shader: failed compilation\n");
-    printf("shader(info): %s\n", info_log);
-  }
-  return shader;
-}
+#include "src/game/renderer.h"
+#include "src/game/shaders.h"
 
 #define kFrameFraction 1.0 / 20
 #ifndef kParticleCount
@@ -64,7 +31,8 @@ static AQWorld *world;
 static aqvec2 gravity;
 
 static AQList *asteroids;
-static AQCamera *camera;
+
+GLuint buffer;
 
 void initWaterTest() {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
@@ -73,9 +41,6 @@ void initWaterTest() {
   // gravity = (aqvec2) { 0, -4 };
   AQInput_setWorldFrame( 6400, 6400, 0, 0 );
   // aq_input_setscreentoworld((aqbox){ 640, 640, 0, 0 });
-
-  camera = aqinit( aqalloc( &AQCameraType ));
-  camera->viewport = aqaabb_make( 6400, 6400, 0, 0 );
 
   asteroids = aqinit( aqalloc( &AQListType ));
 
@@ -119,43 +84,7 @@ void initWaterTest() {
   // AQFlowLine_clearPoints( flowLine );
   // printf( "%p %p\n", flowLine->particles, AQList_at( flowLine->particles, 0 ));
 
-  glClearColor(0, 0, 0, 0);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
-
-  shader_program = glCreateProgram();
-  GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-  compileShader(fragment, shader_fragment_text);
-  glAttachShader(shader_program, fragment);
-
-  GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-  compileShader(vertex, shader_vertex_text);
-  glAttachShader(shader_program, vertex);
-
-  glLinkProgram(shader_program);
-  GLint programStatus;
-  glGetProgramiv(shader_program, GL_LINK_STATUS, &programStatus);
-  if (programStatus == GL_FALSE) {
-    printf("program failed compilation\n");
-  }
-
-  glUseProgram(shader_program);
-  positionAttribute = glGetAttribLocation(shader_program, "a_position");
-  glEnableVertexAttribArray(positionAttribute);
-  colorAttribute = glGetAttribLocation(shader_program, "a_color");
-  glEnableVertexAttribArray(colorAttribute);
-
-  GLint modelview_projection = glGetUniformLocation(shader_program, "modelview_projection");
-  matrixtAttribute = modelview_projection;
-  GLfloat identity[] = {
-    1, 0, 0, 0,
-    0, 1, 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1
-  };
-  glUniformMatrix4fv(modelview_projection, 1, GL_TRUE, identity);
-    
-  printf("%d %d %d %d\n", (int) sizeof(AQParticle), shader_program, positionAttribute, modelview_projection);
+  AQRenderer_boot();
 
   glGenBuffers(1, &buffer);
 
@@ -376,23 +305,23 @@ void stepWaterTest(float dt) {
 void drawWaterTest() {
   float screenWidth, screenHeight;
   AQInput_getScreenSize( &screenWidth, &screenHeight );
+  AQCamera *camera = AQRenderer_camera();
   camera->screen = aqaabb_make( screenHeight, screenWidth, 0, 0 );
-  // camera->radians += 0.01;
-  // camera->viewport = aqaabb_make( 3520, 3440, 2880, 3960 );
+
   static int once = 1;
   if ( once ) {
     camera->viewport = aqaabb_make( 6400, 5600, 0, 800 );
     once = 0;
   } else {
     aqaabb v = camera->viewport;
+    camera->radians += 0.001;
     camera->viewport = aqaabb_make( v.top - 1, v.right - 1, v.bottom + 1, v.left + 1 );
   }
-  // printf("%s\n", aqaabb_cstr(camera->viewport));
 
-  glClearColor(0,0,0,0);
-  glClear(GL_COLOR_BUFFER_BIT);
-
-  glUseProgram(shader_program);
+  // glClearColor(0,0,0,0);
+  // glClear(GL_COLOR_BUFFER_BIT);
+  // 
+  // glUseProgram(shader_program);
 
   // GLfloat vertices[2 * 4] = {
   //   160, 120,
@@ -424,32 +353,43 @@ void drawWaterTest() {
   // matrix[13]=ty;
   // matrix[14]=tz;
 
-  static GLfloat matrix[16] = {
-    1, 0, 0, 0,
-    0, 1, 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1
-  };
-  // camera->viewport = world->aabb;
-  AQCamera_setGlMatrix( camera, matrix );
+  AQRenderer_draw();
 
-  glUniformMatrix4fv(matrixtAttribute, 1, GL_FALSE, matrix);
+  AQShaders_useProgram( ColorShaderProgram );
+
+  // static GLfloat matrix[16] = {
+  //   1, 0, 0, 0,
+  //   0, 1, 0, 0,
+  //   0, 0, 1, 0,
+  //   0, 0, 0, 1
+  // };
+  // // camera->viewport = world->aabb;
+  // AQCamera_setGlMatrix( camera, matrix );
+  // 
+  // glUniformMatrix4fv(matrixtAttribute, 1, GL_FALSE, matrix);
 
   struct gldata data;
   data.index = 0;
   AQList_iterate(
     world->particles,
-  (AQList_iterator) set_particle_vertices,
-  &data );
+    (AQList_iterator) set_particle_vertices,
+    &data
+  );
 
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  glBufferData(
-    GL_ARRAY_BUFFER,
-  sizeof(struct glparticle) * (particle_count + 1024), data.particles,
-  GL_DYNAMIC_DRAW);
+  // glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  // glBufferData(
+  //   GL_ARRAY_BUFFER,
+  // sizeof(struct glparticle) * (particle_count + 1024), data.particles,
+  // GL_DYNAMIC_DRAW);
+  // 
+  // glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(struct glvertex), (GLvoid *) 0);
+  // glVertexAttribPointer(colorAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(struct glvertex), (GLvoid *) 8);
+  // 
+  // glDrawArrays(GL_TRIANGLES, 0, 6 * data.index );
 
-  glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(struct glvertex), (GLvoid *) 0);
-  glVertexAttribPointer(colorAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(struct glvertex), (GLvoid *) 8);
-
-  glDrawArrays(GL_TRIANGLES, 0, 6 * data.index );
+  AQShaders_draw(
+    buffer,
+    data.particles,
+    sizeof(struct glparticle) * (data.index)
+  );
 }

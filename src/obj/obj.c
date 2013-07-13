@@ -63,7 +63,7 @@ void * aqcreate( AQType *type ) {
   return aqautorelease( aqinit( aqalloc( type )));
 }
 
-AQInterface * aqcast( void *self, char *interface ) {
+void * aqcast( void *self, char *interface ) {
   return ((AQObj *) self )->type->getInterface( self, interface );
 }
 

@@ -149,7 +149,8 @@ def build(bld):
     )
 
     spaceLeaperSource = bld.path.ant_glob(
-        'src/game/camera.c ' +
+        'src/game/camera.c src/game/shaders.c src/game/renderer.c ' +
+        'src/game/view.c ' +
         'src/game/flowline.c src/game/asteroid.c src/game/spaceleaper.c ' +
         'src/platform/sdl/*.c'
     )
