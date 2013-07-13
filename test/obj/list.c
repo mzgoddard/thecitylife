@@ -1,30 +1,32 @@
+#include <stdlib.h>
+
 #include "src/obj/index.h"
 
 #include "test/runner/runner.h"
 
-void test_list_new() {
+void test_list_new( Result **result ) {
   AQList *list = aqinit( aqalloc( &AQListType ));
   ok( ((AQObj *) list)->type == &AQListType, "is AQList" );
   aqrelease( list );
   ok( ((AQObj *) list)->refCount == 0, "freed" );
 }
 
-void test_list_retains() {
+void test_list_retains( Result **result ) {
   AQList *list = aqinit( aqalloc( &AQListType ));
 
-  AQObj *a = aqinit( aqalloc( &AQObjType ));
+  AQObj *a = aqretain( aqinit( aqalloc( &AQObjType )));
   AQList_push( list, a );
-  ok( a->refCount == 2, "ref'd by list" );
+  ok( a->refCount == 3, "ref'd by list" );
 
   aqrelease( a );
-  ok( a->refCount == 1, "still ref'd by list" );
+  ok( a->refCount == 2, "still ref'd by list" );
 
-  aqrelease( list );
-  ok( a->refCount == 0, "freed by list" );
-  ok( ((AQObj *) list)->refCount == 0, "list freed" );
+  ok( aqrelease( list ) == NULL, "list freed" );
+  ok( a->refCount == 1, "released from list" );
+  aqrelease( a );
 }
 
-void test_list_remove_order() {
+void test_list_remove_order( Result **result ) {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
   AQList *list = aqinit( aqalloc( &AQListType ));
 

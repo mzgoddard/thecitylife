@@ -4,6 +4,12 @@
 #include "../obj/index.h"
 #include "./math.h"
 
+#include "defines.h"
+
+#ifndef kParticleCorrection
+#define kParticleCorrection 1.0
+#endif
+
 typedef void (*AQParticleCallback)(void *);
 typedef void (*AQParticleCollisionCallback)(void *, void *, void *);
 
@@ -16,10 +22,13 @@ typedef struct AQParticle {
 
   aqvec2 position;
   AQDOUBLE radius;
+  AQDOUBLE _radius;
   AQDOUBLE mass;
   AQDOUBLE friction;
 
+  aqvec2 oldPosition;
   aqvec2 lastPosition;
+  // aqvec2 lastVelocity;
   aqvec2 acceleration;
 
   aqaabb _aabb;
@@ -27,6 +36,11 @@ typedef struct AQParticle {
 
   aqbool isStatic;
   aqbool isTrigger;
+  // aqbool isSleeping;
+  // int sleepCounter;
+  AQDOUBLE currentAverageCollisionDepth;
+  int collisionCount;
+  // AQDOUBLE lastAverageCollisionDepth;
 
   AQParticleMask collisionType;
   AQParticleMask collideAgainst;

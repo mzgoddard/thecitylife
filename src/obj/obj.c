@@ -36,6 +36,10 @@ void * aqinit( void *self ) {
   return ((AQObj *) self )->type->init( self );
 }
 
+void * aqdone( void *self ) {
+  return ((AQObj *) self )->type->done( self );
+}
+
 void * aqretain( void *self ) {
   ((AQObj *) self )->refCount++;
   return self;

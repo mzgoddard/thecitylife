@@ -19,7 +19,7 @@ void test_transforms( Result **result ) {
   ok( aqvec2_eq( v4, aqvec2_make( 2, 2 )), "vec2 scaled by transform." );
 }
 
-void test_aabb() {
+void test_aabb( Result **result ) {
   aqaabb ab1 = aqaabb_make( 1, 1, 0, 0 );
   ok(
     aqaabb_containsPt( ab1, aqvec2_zero()),

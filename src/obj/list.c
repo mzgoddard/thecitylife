@@ -256,6 +256,13 @@ AQObj * AQList_removeAt(AQList *_self, int index) {
   AQObj *obj = NULL;
 
   if ( node ) {
+    if ( self->tail == node ) {
+      self->tail = node->prev;
+    }
+    if ( self->head == node ) {
+      self->head = node->next;
+    }
+
     if ( node->prev ) {
       node->prev->next = node->next;
       node->prev = NULL;

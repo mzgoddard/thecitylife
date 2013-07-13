@@ -4,8 +4,8 @@
 #include "math.h"
 #include "particle.h"
 
-#define MAX_DDVT_PARTICLES 16
-#define MIN_DDVT_PARTICLES 12
+#define MAX_DDVT_PARTICLES 48
+#define MIN_DDVT_PARTICLES 24
 
 extern AQType AQDdvtType;
 

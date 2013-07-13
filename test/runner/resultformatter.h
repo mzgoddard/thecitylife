@@ -13,7 +13,8 @@ typedef struct ResultFormatter {
   PrintReport printReport;
 } ResultFormatter;
 
-ResultFormatter *DotFormatter_new();
+ResultFormatter *DotFormatter_new( int ansiColor );
+ResultFormatter *HtmlDotFormatter_new();
 ResultFormatter *MessageFormatter_new();
 
 #endif /* end of include guard: RESULTFORMATTER_H_KQMJ8B8S */

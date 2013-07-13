@@ -63,6 +63,46 @@ void AQParticle_testPrep( AQParticle *self ) {
   }
 }
 
+int _AQParticle_test( AQParticle *self, AQParticle *other, aqcollision *col ) {
+  AQDOUBLE
+    ax = self->position.x,
+    ay = self->position.y,
+    ar = self->radius,
+    bx = other->position.x,
+    by = other->position.y,
+    br = other->radius,
+    abx = ax - bx,
+    aby = ay - by,
+    abr = ar + br,
+    ingress;
+
+  ingress = abx*abx+aby*aby;
+  if (((ingress < abr*abr))) {
+    ingress = sqrt(ingress);
+    col->distance = abr - ingress;
+
+    if ( ingress == 0.0 ) {
+      ingress = 1e-5;
+    }
+
+    AQDOUBLE
+      lx = abx,
+      ly = aby,
+      al = ingress,
+      pt = (al - ar) / al,
+      qt = br / al;
+    col->lambx = lx * (qt - pt);
+    col->lamby = ly * (qt - pt);
+
+    col->a = self;
+    col->b = other;
+
+    return 1;
+  }
+
+  return 0;
+}
+
 int AQParticle_test( AQParticle *self, AQParticle *other, aqcollision *col ) {
   if ( self->isStatic && other->isStatic ) return 0;
 
@@ -90,18 +130,14 @@ int AQParticle_test( AQParticle *self, AQParticle *other, aqcollision *col ) {
     }
 
     if ( !self->collideWithNext ) {
-      self->collideWith = self->collideWithNext =
-        aqcollidewith_add( self->collideWithNext, other );
-    } else {
-      self->collideWithNext = aqcollidewith_add( self->collideWithNext, other );
+      self->collideWith = self->collideWithNext = aqcollidewith_init();
     }
+    self->collideWithNext = aqcollidewith_add( self->collideWithNext, other );
 
     if ( !other->collideWithNext ) {
-      other->collideWith = other->collideWithNext =
-        aqcollidewith_add( other->collideWithNext, self );
-    } else {
-      other->collideWithNext = aqcollidewith_add( other->collideWithNext, self );
+      other->collideWith = other->collideWithNext = aqcollidewith_init();
     }
+    other->collideWithNext = aqcollidewith_add( other->collideWithNext, self );
 
     ingress = sqrt(ingress);
     col->distance = abr - ingress;
@@ -128,15 +164,24 @@ int AQParticle_test( AQParticle *self, AQParticle *other, aqcollision *col ) {
   return 0;
 }
 
+aqcollision _staticCollision;
+
 void AQParticle_solve( AQParticle *self, AQParticle *other, aqcollision *col ) {
   aqvec2
     *selfpos = &(self->position),
     *otherpos = &(other->position),
     *selflast = &(self->lastPosition),
     *otherlast = &(other->lastPosition);
+
+  // int collided = _AQParticle_test( self, other, &_staticCollision );
+  // col->lambx = _staticCollision.lambx;
+  // col->lamby = _staticCollision.lamby;
+
   AQDOUBLE
-    lambx = (col->lambx) * 0.5,
-    lamby = (col->lamby) * 0.5,
+    // lambx = (col->lambx) * ( 0.25 * ( fmin( col->distance / 2, 1 ) ) + 0.25 ),
+    // lamby = (col->lamby) * ( 0.25 * ( fmin( col->distance / 2, 1 ) ) + 0.25 ),
+    lambx = (col->lambx) * kParticleCorrection,
+    lamby = (col->lamby) * kParticleCorrection,
     amsq = self->mass,
     bmsq = other->mass,
     mass = amsq + bmsq,

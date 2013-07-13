@@ -7,7 +7,7 @@
 
 void _AQDdvt_addParticle( AQDdvt *self, AQParticle *particle, aqaabb *aabb );
 void _AQDdvt_removeParticle( AQDdvt *self, AQParticle *particle, aqaabb *aabb );
-static void _AQDdvt_updateParticle( AQDdvt *self, AQParticle *particle, aqaabb *old, aqaabb *new );
+void _AQDdvt_updateParticle( AQDdvt *self, AQParticle *particle, aqaabb *old, aqaabb *new );
 
 void * AQDdvt_init( AQDdvt *self ) {
   memset( &( self->aabb ), 0, sizeof( AQDdvt ) - sizeof( AQObj ));
@@ -244,7 +244,7 @@ void _AQDdvt_removeParticle( AQDdvt *self, AQParticle *particle, aqaabb *aabb ) 
   }
 }
 
-static inline void _AQDdvt_updateParticle( AQDdvt *self, AQParticle *particle, aqaabb *old, aqaabb *new ) {
+void _AQDdvt_updateParticle( AQDdvt *self, AQParticle *particle, aqaabb *old, aqaabb *new ) {
   if ( !self->tl ) {
     _AQDdvt_updateParticleLeaf( self, particle, old, new );
   } else {
@@ -296,6 +296,15 @@ void AQDdvt_iteratePairs(
   if ( !self->tl ) {
     int i, j;
     int length = self->length;
+    // AQParticle **itr = self->particles;
+    // AQParticle **itail = self->particles + length - 1;
+    // AQParticle **jtr;
+    // AQParticle **jtail = self->particles + length;
+    // for ( ; itr <= itail; ++itr ) {
+    //   for ( jtr = itr + 1; jtr <= jtail; ++jtr ) {
+    //     pairIterator( *itr, *jtr, ctx );
+    //   }
+    // }
     for ( i = 0; i < length - 1; ++i ) {
       for ( j = i + 1; j < length; ++j ) {
         pairIterator( self->particles[ i ], self->particles[ j ], ctx );

@@ -2,14 +2,15 @@
 #include <math.h>
 
 #include "src/pphys/index.h"
+#include "test/runner/runner.h"
 
-void test_vec2_exists() {
+void test_vec2_exists( Result **result ) {
   AQParticle *p = aqinit( aqalloc( &AQParticleType ));
   ok( p->object.type == &AQParticleType, "is AQParticle" );
   aqfree( p );
 }
 
-void test_particle_integrate() {
+void test_particle_integrate( Result **result ) {
   AQParticle *p = aqinit( aqalloc( &AQParticleType ));
   p->position = (aqvec2) { 2, 2 };
   p->lastPosition = (aqvec2) { 1, 1 };
@@ -27,7 +28,7 @@ void test_particle_integrate() {
   aqfree( p );
 }
 
-void test_collision() {
+void test_collision( Result **result ) {
   AQParticle *p = aqinit( aqalloc( &AQParticleType ));
   p->radius = 2;
   p->mass = 1;
@@ -87,9 +88,25 @@ void test_collision() {
   aqfree( q );
 }
 
+void test_doubleTest( Result **result ) {
+  AQParticle p, q;
+  p.object.type = q.object.type = &AQParticleType;
+  p.object.refCount = q.object.refCount = 1;
+  aqinit( &p ); aqinit( &q );
+  p.position = (aqvec2) { 1, 0 };
+  q.position = (aqvec2) { 2, 0 };
+
+  aqcollision col;
+  ok( AQParticle_test( &p, &q, &col ), "collides" );
+  ok( !AQParticle_test( &p, &q, &col ), "doesn't collide twice" );
+
+  aqdone( &p ); aqdone( &q );
+}
+
 void suite_pphys_particle() {
   suite( "pphys/particle" );
   test( "exists", test_vec2_exists );
   test( "integrate", test_particle_integrate );
   test( "collision", test_collision );
+  // test( "no double test", test_doubleTest );
 }

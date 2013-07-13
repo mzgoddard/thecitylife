@@ -1,15 +1,15 @@
 #include <stdio.h>
 
 #include "src/pphys/index.h"
+#include "test/runner/runner.h"
 
-void test_world_new() {
+void test_world_new( Result **result ) {
   AQWorld *world = aqinit( aqalloc( &AQWorldType ));
   ok( world->object.type == &AQWorldType, "is AQWorld" );
   aqfree( world );
-  ok( ((AQObj *) world)->refCount == 0, "freed" );
 }
 
-void test_world_solve2() {
+void test_world_solve2( Result **result ) {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
   AQWorld *world = aqinit( aqalloc( &AQWorldType ));
   AQWorld_setAabb( world, (aqaabb) { 16, 16, -16, -16 });
@@ -49,7 +49,7 @@ void test_world_solve2() {
   aqfree( b );
 }
 
-void test_world_solveMany() {
+void test_world_solveMany( Result **result ) {
   AQReleasePool *pool = AQReleasePool_create();
   AQWorld *world = aqcreate( &AQWorldType );
   AQWorld_setAabb( world, (aqaabb) { 16, 16, -16, -16 });
@@ -71,7 +71,7 @@ void test_world_solveMany() {
     }
   }
 
-  ok( world->ddvt->tl, "world ddvt in child mode" );
+  ok( !!world->ddvt->tl, "world ddvt in child mode" );
 
   p = aqcreate( &AQParticleType );
   p->position = p->lastPosition = (aqvec2) { -0.5, -8 };
@@ -87,7 +87,6 @@ void test_world_solveMany() {
 
   AQWorld_step( world, 0 );
 
-  printf( "%f %f", q->position.x, q->position.y );
   ok( aqvec2_eq( p->position, (aqvec2) { -1, -8 }), "p solved correctly" );
   ok( aqvec2_eq( q->position, (aqvec2) { 1, -8 }), "q solved correctly" );
 

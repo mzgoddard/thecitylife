@@ -2,4 +2,4 @@
  * Test runner's self
  */
 
-void 
+// void 

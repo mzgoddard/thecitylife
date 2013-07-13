@@ -1,8 +1,9 @@
 #include <stdio.h>
 
 #include "src/pphys/index.h"
+#include "test/runner/runner.h"
 
-void test_ddvt_exists() {
+void test_ddvt_exists( Result **result ) {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
   AQDdvt *ddvt = AQDdvt_create( aqaabb_make( 16, 16, 0, 0 ));
   ok( ddvt->object.type == &AQDdvtType, "is AQDdvtType" );
@@ -13,7 +14,7 @@ void ddvt_pairtIterator( AQParticle *a, AQParticle *b, int *ctx ) {
   (*ctx)++;
 }
 
-void test_tree() {
+void test_tree( Result **result ) {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
 
   AQDdvt *ddvt = AQDdvt_create( aqaabb_make( 16, 16, -16, -16 ));
@@ -30,7 +31,7 @@ void test_tree() {
     ok( p->object.refCount > 1, "ddvt is referenced" );
 
     if ( i >= MAX_DDVT_PARTICLES ) {
-      ok (  ddvt->tl, "switched to children mode" );
+      ok ( !!ddvt->tl, "switched to children mode" );
     }
 
     aqaabb aabb = AQParticle_aabb( p );
@@ -57,7 +58,6 @@ void test_tree() {
 
   ok( p->object.refCount == 1, "particle released" );
   aqrelease( p );
-  ok( p->object.refCount == 0, "particle freed" );
 }
 
 void suite_pphys_ddvt() {

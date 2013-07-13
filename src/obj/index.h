@@ -3,6 +3,7 @@
 
 #include "obj.h"
 #include "string.h"
+#include "array.h"
 #include "list.h"
 
 void aqobjindex_init();

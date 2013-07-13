@@ -99,6 +99,11 @@ static AQDOUBLE aqvec2_angle(aqvec2 a, aqvec2 b) {
   return acos(aqvec2_dot(a, b) / sqrt(aqvec2_mag2(a) * aqvec2_mag2(b)));
 }
 
+static aqvec2 aqvec2_normalized(aqvec2 a) {
+  AQDOUBLE mag = aqvec2_mag( a );
+  return aqvec2_scale( a, 1 / mag );
+}
+
 static int aqvec2_eq( aqvec2 a, aqvec2 b ) {
   return fdim( a.x, b.x ) < AQEPS && fdim( a.y, b.y ) < AQEPS;
 }

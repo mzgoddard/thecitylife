@@ -4,9 +4,9 @@
 
 extern ResultFormatter *formatter;
 
-Result **lastResult = NULL;
-Suite *headSuite = NULL;
-Suite *currentSuite = NULL;
+static Result **lastResult = NULL;
+static Suite *headSuite = NULL;
+static Suite *currentSuite = NULL;
 
 Result * Result_new(int success, char * message) {
   Result *result = malloc( sizeof( Result ));

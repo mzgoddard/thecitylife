@@ -70,6 +70,7 @@ void * aqalloc(AQType *);
 void aqfree(void *);
 
 void * aqinit(void *);
+void * aqdone(void *);
 void * aqretain(void *);
 void * aqrelease(void *);
 void * aqautorelease(void *);

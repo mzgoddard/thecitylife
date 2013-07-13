@@ -1,0 +1,605 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AD11FF2217641E2F004686B3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD11FF2117641E2F004686B3 /* Cocoa.framework */; };
+		AD11FF2C17641E2F004686B3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AD11FF2A17641E2F004686B3 /* InfoPlist.strings */; };
+		AD11FF2E17641E2F004686B3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF2D17641E2F004686B3 /* main.m */; };
+		AD11FF3217641E2F004686B3 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = AD11FF3017641E2F004686B3 /* Credits.rtf */; };
+		AD11FF3517641E2F004686B3 /* AQAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF3417641E2F004686B3 /* AQAppDelegate.m */; };
+		AD11FF3817641E2F004686B3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = AD11FF3617641E2F004686B3 /* MainMenu.xib */; };
+		AD11FF4017641E2F004686B3 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD11FF3F17641E2F004686B3 /* SenTestingKit.framework */; };
+		AD11FF4117641E2F004686B3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD11FF2117641E2F004686B3 /* Cocoa.framework */; };
+		AD11FF4917641E2F004686B3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AD11FF4717641E2F004686B3 /* InfoPlist.strings */; };
+		AD11FF4C17641E2F004686B3 /* AquamancyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF4B17641E2F004686B3 /* AquamancyTests.m */; };
+		AD11FF8217641E5A004686B3 /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF5917641E5A004686B3 /* list.c */; };
+		AD11FF8317641E5A004686B3 /* obj.c in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF5B17641E5A004686B3 /* obj.c */; };
+		AD11FF8D17641E5A004686B3 /* collision.c in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF7817641E5A004686B3 /* collision.c */; };
+		AD11FF8E17641E5A004686B3 /* ddvt.c in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF7A17641E5A004686B3 /* ddvt.c */; };
+		AD11FF8F17641E5A004686B3 /* particle.c in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF7E17641E5A004686B3 /* particle.c */; };
+		AD11FF9017641E5A004686B3 /* world.c in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF8017641E5A004686B3 /* world.c */; };
+		AD11FF94176429A6004686B3 /* watertest.c in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF92176429A6004686B3 /* watertest.c */; };
+		AD11FF97176432E5004686B3 /* AQOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF96176432E5004686B3 /* AQOpenGLView.m */; };
+		AD11FF99176437FA004686B3 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD11FF98176437FA004686B3 /* OpenGL.framework */; };
+		ADC3968C176D94A2003EE938 /* flowline.c in Sources */ = {isa = PBXBuildFile; fileRef = AD4E941D176D924D001DBB4A /* flowline.c */; };
+		ADC39691176DCCA0003EE938 /* input.c in Sources */ = {isa = PBXBuildFile; fileRef = ADC3968F176DCCA0003EE938 /* input.c */; };
+		ADC39694176DCCF8003EE938 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = ADC39692176DCCF8003EE938 /* array.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AD11FF4217641E2F004686B3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AD11FF1617641E2F004686B3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AD11FF1D17641E2F004686B3;
+			remoteInfo = Aquamancy;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		AD11FF1E17641E2F004686B3 /* Aquamancy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Aquamancy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD11FF2117641E2F004686B3 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		AD11FF2417641E2F004686B3 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		AD11FF2517641E2F004686B3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		AD11FF2617641E2F004686B3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AD11FF2917641E2F004686B3 /* Aquamancy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Aquamancy-Info.plist"; sourceTree = "<group>"; };
+		AD11FF2B17641E2F004686B3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AD11FF2D17641E2F004686B3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		AD11FF2F17641E2F004686B3 /* Aquamancy-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Aquamancy-Prefix.pch"; sourceTree = "<group>"; };
+		AD11FF3117641E2F004686B3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		AD11FF3317641E2F004686B3 /* AQAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AQAppDelegate.h; sourceTree = "<group>"; };
+		AD11FF3417641E2F004686B3 /* AQAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AQAppDelegate.m; sourceTree = "<group>"; };
+		AD11FF3717641E2F004686B3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		AD11FF3E17641E2F004686B3 /* AquamancyTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AquamancyTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD11FF3F17641E2F004686B3 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		AD11FF4617641E2F004686B3 /* AquamancyTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "AquamancyTests-Info.plist"; sourceTree = "<group>"; };
+		AD11FF4817641E2F004686B3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AD11FF4A17641E2F004686B3 /* AquamancyTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AquamancyTests.h; sourceTree = "<group>"; };
+		AD11FF4B17641E2F004686B3 /* AquamancyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AquamancyTests.m; sourceTree = "<group>"; };
+		AD11FF5617641E5A004686B3 /* index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = index.h; sourceTree = "<group>"; };
+		AD11FF5817641E5A004686B3 /* index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = index.h; sourceTree = "<group>"; };
+		AD11FF5917641E5A004686B3 /* list.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = list.c; sourceTree = "<group>"; };
+		AD11FF5A17641E5A004686B3 /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
+		AD11FF5B17641E5A004686B3 /* obj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = obj.c; sourceTree = "<group>"; };
+		AD11FF5C17641E5A004686B3 /* obj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = obj.h; sourceTree = "<group>"; };
+		AD11FF5D17641E5A004686B3 /* string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = string.h; sourceTree = "<group>"; };
+		AD11FF7717641E5A004686B3 /* aabb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aabb.h; sourceTree = "<group>"; };
+		AD11FF7817641E5A004686B3 /* collision.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = collision.c; sourceTree = "<group>"; };
+		AD11FF7917641E5A004686B3 /* contact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = contact.h; sourceTree = "<group>"; };
+		AD11FF7A17641E5A004686B3 /* ddvt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ddvt.c; sourceTree = "<group>"; };
+		AD11FF7B17641E5A004686B3 /* ddvt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ddvt.h; sourceTree = "<group>"; };
+		AD11FF7C17641E5A004686B3 /* index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = index.h; sourceTree = "<group>"; };
+		AD11FF7D17641E5A004686B3 /* math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = math.h; sourceTree = "<group>"; };
+		AD11FF7E17641E5A004686B3 /* particle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = particle.c; sourceTree = "<group>"; };
+		AD11FF7F17641E5A004686B3 /* particle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = particle.h; sourceTree = "<group>"; };
+		AD11FF8017641E5A004686B3 /* world.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = world.c; sourceTree = "<group>"; };
+		AD11FF8117641E5A004686B3 /* world.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = world.h; sourceTree = "<group>"; };
+		AD11FF92176429A6004686B3 /* watertest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = watertest.c; sourceTree = "<group>"; wrapsLines = 1; };
+		AD11FF93176429A6004686B3 /* watertest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = watertest.h; sourceTree = "<group>"; };
+		AD11FF95176432E5004686B3 /* AQOpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AQOpenGLView.h; sourceTree = "<group>"; };
+		AD11FF96176432E5004686B3 /* AQOpenGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AQOpenGLView.m; sourceTree = "<group>"; };
+		AD11FF98176437FA004686B3 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		AD4E941D176D924D001DBB4A /* flowline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = flowline.c; sourceTree = "<group>"; };
+		AD4E941E176D924D001DBB4A /* flowline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = flowline.h; sourceTree = "<group>"; };
+		ADC3968E176DCCA0003EE938 /* index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = index.h; sourceTree = "<group>"; };
+		ADC3968F176DCCA0003EE938 /* input.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = input.c; sourceTree = "<group>"; };
+		ADC39690176DCCA0003EE938 /* input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = input.h; sourceTree = "<group>"; };
+		ADC39692176DCCF8003EE938 /* array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = array.c; sourceTree = "<group>"; };
+		ADC39693176DCCF8003EE938 /* array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = array.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AD11FF1B17641E2F004686B3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD11FF99176437FA004686B3 /* OpenGL.framework in Frameworks */,
+				AD11FF2217641E2F004686B3 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD11FF3A17641E2F004686B3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD11FF4017641E2F004686B3 /* SenTestingKit.framework in Frameworks */,
+				AD11FF4117641E2F004686B3 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AD11FF1517641E2F004686B3 = {
+			isa = PBXGroup;
+			children = (
+				AD11FF98176437FA004686B3 /* OpenGL.framework */,
+				AD11FF2717641E2F004686B3 /* Aquamancy */,
+				AD11FF4417641E2F004686B3 /* AquamancyTests */,
+				AD11FF2017641E2F004686B3 /* Frameworks */,
+				AD11FF1F17641E2F004686B3 /* Products */,
+				AD11FF5517641E5A004686B3 /* src */,
+			);
+			sourceTree = "<group>";
+		};
+		AD11FF1F17641E2F004686B3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AD11FF1E17641E2F004686B3 /* Aquamancy.app */,
+				AD11FF3E17641E2F004686B3 /* AquamancyTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AD11FF2017641E2F004686B3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AD11FF2117641E2F004686B3 /* Cocoa.framework */,
+				AD11FF3F17641E2F004686B3 /* SenTestingKit.framework */,
+				AD11FF2317641E2F004686B3 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AD11FF2317641E2F004686B3 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AD11FF2417641E2F004686B3 /* AppKit.framework */,
+				AD11FF2517641E2F004686B3 /* CoreData.framework */,
+				AD11FF2617641E2F004686B3 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		AD11FF2717641E2F004686B3 /* Aquamancy */ = {
+			isa = PBXGroup;
+			children = (
+				AD11FF3317641E2F004686B3 /* AQAppDelegate.h */,
+				AD11FF95176432E5004686B3 /* AQOpenGLView.h */,
+				AD11FF96176432E5004686B3 /* AQOpenGLView.m */,
+				AD11FF3417641E2F004686B3 /* AQAppDelegate.m */,
+				AD11FF3617641E2F004686B3 /* MainMenu.xib */,
+				AD11FF2817641E2F004686B3 /* Supporting Files */,
+			);
+			path = Aquamancy;
+			sourceTree = "<group>";
+		};
+		AD11FF2817641E2F004686B3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				AD11FF2917641E2F004686B3 /* Aquamancy-Info.plist */,
+				AD11FF2A17641E2F004686B3 /* InfoPlist.strings */,
+				AD11FF2D17641E2F004686B3 /* main.m */,
+				AD11FF2F17641E2F004686B3 /* Aquamancy-Prefix.pch */,
+				AD11FF3017641E2F004686B3 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AD11FF4417641E2F004686B3 /* AquamancyTests */ = {
+			isa = PBXGroup;
+			children = (
+				AD11FF4A17641E2F004686B3 /* AquamancyTests.h */,
+				AD11FF4B17641E2F004686B3 /* AquamancyTests.m */,
+				AD11FF4517641E2F004686B3 /* Supporting Files */,
+			);
+			path = AquamancyTests;
+			sourceTree = "<group>";
+		};
+		AD11FF4517641E2F004686B3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				AD11FF4617641E2F004686B3 /* AquamancyTests-Info.plist */,
+				AD11FF4717641E2F004686B3 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AD11FF5517641E5A004686B3 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				ADC3968D176DCCA0003EE938 /* input */,
+				AD11FF91176429A6004686B3 /* game */,
+				AD11FF5617641E5A004686B3 /* index.h */,
+				AD11FF5717641E5A004686B3 /* obj */,
+				AD11FF7617641E5A004686B3 /* pphys */,
+			);
+			name = src;
+			path = ../../..;
+			sourceTree = "<group>";
+		};
+		AD11FF5717641E5A004686B3 /* obj */ = {
+			isa = PBXGroup;
+			children = (
+				AD11FF5817641E5A004686B3 /* index.h */,
+				AD11FF5917641E5A004686B3 /* list.c */,
+				AD11FF5A17641E5A004686B3 /* list.h */,
+				AD11FF5B17641E5A004686B3 /* obj.c */,
+				ADC39692176DCCF8003EE938 /* array.c */,
+				ADC39693176DCCF8003EE938 /* array.h */,
+				AD11FF5C17641E5A004686B3 /* obj.h */,
+				AD11FF5D17641E5A004686B3 /* string.h */,
+			);
+			path = obj;
+			sourceTree = "<group>";
+		};
+		AD11FF7617641E5A004686B3 /* pphys */ = {
+			isa = PBXGroup;
+			children = (
+				AD11FF7717641E5A004686B3 /* aabb.h */,
+				AD11FF7817641E5A004686B3 /* collision.c */,
+				AD11FF7917641E5A004686B3 /* contact.h */,
+				AD11FF7A17641E5A004686B3 /* ddvt.c */,
+				AD11FF7B17641E5A004686B3 /* ddvt.h */,
+				AD11FF7C17641E5A004686B3 /* index.h */,
+				AD11FF7D17641E5A004686B3 /* math.h */,
+				AD11FF7E17641E5A004686B3 /* particle.c */,
+				AD11FF7F17641E5A004686B3 /* particle.h */,
+				AD11FF8017641E5A004686B3 /* world.c */,
+				AD11FF8117641E5A004686B3 /* world.h */,
+			);
+			path = pphys;
+			sourceTree = "<group>";
+		};
+		AD11FF91176429A6004686B3 /* game */ = {
+			isa = PBXGroup;
+			children = (
+				AD11FF92176429A6004686B3 /* watertest.c */,
+				AD4E941D176D924D001DBB4A /* flowline.c */,
+				AD4E941E176D924D001DBB4A /* flowline.h */,
+				AD11FF93176429A6004686B3 /* watertest.h */,
+			);
+			path = game;
+			sourceTree = "<group>";
+		};
+		ADC3968D176DCCA0003EE938 /* input */ = {
+			isa = PBXGroup;
+			children = (
+				ADC3968E176DCCA0003EE938 /* index.h */,
+				ADC3968F176DCCA0003EE938 /* input.c */,
+				ADC39690176DCCA0003EE938 /* input.h */,
+			);
+			path = input;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AD11FF1D17641E2F004686B3 /* Aquamancy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AD11FF4F17641E2F004686B3 /* Build configuration list for PBXNativeTarget "Aquamancy" */;
+			buildPhases = (
+				AD11FF1A17641E2F004686B3 /* Sources */,
+				AD11FF1B17641E2F004686B3 /* Frameworks */,
+				AD11FF1C17641E2F004686B3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Aquamancy;
+			productName = Aquamancy;
+			productReference = AD11FF1E17641E2F004686B3 /* Aquamancy.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AD11FF3D17641E2F004686B3 /* AquamancyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AD11FF5217641E2F004686B3 /* Build configuration list for PBXNativeTarget "AquamancyTests" */;
+			buildPhases = (
+				AD11FF3917641E2F004686B3 /* Sources */,
+				AD11FF3A17641E2F004686B3 /* Frameworks */,
+				AD11FF3B17641E2F004686B3 /* Resources */,
+				AD11FF3C17641E2F004686B3 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AD11FF4317641E2F004686B3 /* PBXTargetDependency */,
+			);
+			name = AquamancyTests;
+			productName = AquamancyTests;
+			productReference = AD11FF3E17641E2F004686B3 /* AquamancyTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AD11FF1617641E2F004686B3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = AQ;
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "Z Goddard";
+			};
+			buildConfigurationList = AD11FF1917641E2F004686B3 /* Build configuration list for PBXProject "Aquamancy" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = AD11FF1517641E2F004686B3;
+			productRefGroup = AD11FF1F17641E2F004686B3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AD11FF1D17641E2F004686B3 /* Aquamancy */,
+				AD11FF3D17641E2F004686B3 /* AquamancyTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AD11FF1C17641E2F004686B3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD11FF2C17641E2F004686B3 /* InfoPlist.strings in Resources */,
+				AD11FF3217641E2F004686B3 /* Credits.rtf in Resources */,
+				AD11FF3817641E2F004686B3 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD11FF3B17641E2F004686B3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD11FF4917641E2F004686B3 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		AD11FF3C17641E2F004686B3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AD11FF1A17641E2F004686B3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD11FF2E17641E2F004686B3 /* main.m in Sources */,
+				AD11FF3517641E2F004686B3 /* AQAppDelegate.m in Sources */,
+				AD11FF8217641E5A004686B3 /* list.c in Sources */,
+				AD11FF8317641E5A004686B3 /* obj.c in Sources */,
+				AD11FF8D17641E5A004686B3 /* collision.c in Sources */,
+				AD11FF8E17641E5A004686B3 /* ddvt.c in Sources */,
+				AD11FF8F17641E5A004686B3 /* particle.c in Sources */,
+				AD11FF9017641E5A004686B3 /* world.c in Sources */,
+				AD11FF94176429A6004686B3 /* watertest.c in Sources */,
+				AD11FF97176432E5004686B3 /* AQOpenGLView.m in Sources */,
+				ADC3968C176D94A2003EE938 /* flowline.c in Sources */,
+				ADC39691176DCCA0003EE938 /* input.c in Sources */,
+				ADC39694176DCCF8003EE938 /* array.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD11FF3917641E2F004686B3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD11FF4C17641E2F004686B3 /* AquamancyTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AD11FF4317641E2F004686B3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AD11FF1D17641E2F004686B3 /* Aquamancy */;
+			targetProxy = AD11FF4217641E2F004686B3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		AD11FF2A17641E2F004686B3 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AD11FF2B17641E2F004686B3 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		AD11FF3017641E2F004686B3 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AD11FF3117641E2F004686B3 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		AD11FF3617641E2F004686B3 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AD11FF3717641E2F004686B3 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		AD11FF4717641E2F004686B3 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AD11FF4817641E2F004686B3 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		AD11FF4D17641E2F004686B3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../../../;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		AD11FF4E17641E2F004686B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../../../;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		AD11FF5017641E2F004686B3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Aquamancy/Aquamancy-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					../../../../,
+					../../../,
+				);
+				INFOPLIST_FILE = "Aquamancy/Aquamancy-Info.plist";
+				LLVM_LTO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		AD11FF5117641E2F004686B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Aquamancy/Aquamancy-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					../../../../,
+					../../../,
+				);
+				INFOPLIST_FILE = "Aquamancy/Aquamancy-Info.plist";
+				LLVM_LTO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		AD11FF5317641E2F004686B3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Aquamancy.app/Contents/MacOS/Aquamancy";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Aquamancy/Aquamancy-Prefix.pch";
+				INFOPLIST_FILE = "AquamancyTests/AquamancyTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		AD11FF5417641E2F004686B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Aquamancy.app/Contents/MacOS/Aquamancy";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Aquamancy/Aquamancy-Prefix.pch";
+				INFOPLIST_FILE = "AquamancyTests/AquamancyTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AD11FF1917641E2F004686B3 /* Build configuration list for PBXProject "Aquamancy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD11FF4D17641E2F004686B3 /* Debug */,
+				AD11FF4E17641E2F004686B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AD11FF4F17641E2F004686B3 /* Build configuration list for PBXNativeTarget "Aquamancy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD11FF5017641E2F004686B3 /* Debug */,
+				AD11FF5117641E2F004686B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AD11FF5217641E2F004686B3 /* Build configuration list for PBXNativeTarget "AquamancyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD11FF5317641E2F004686B3 /* Debug */,
+				AD11FF5417641E2F004686B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AD11FF1617641E2F004686B3 /* Project object */;
+}
