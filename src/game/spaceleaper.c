@@ -318,55 +318,17 @@ void drawWaterTest() {
     camera->viewport = aqaabb_make( v.top - 1, v.right - 1, v.bottom + 1, v.left + 1 );
   }
 
-  // glClearColor(0,0,0,0);
-  // glClear(GL_COLOR_BUFFER_BIT);
-  // 
-  // glUseProgram(shader_program);
-
-  // GLfloat vertices[2 * 4] = {
-  //   160, 120,
-  //   -160, 120,
-  //   160, -120,
-  //   -160, -120
-  // };
-
-  // float right = world->aabb.right,
-  // left = 0,
-  // top = world->aabb.top,
-  // bottom = 0,
-  // zFar = 1000,
-  // zNear = 0;
-  // float tx=-(right+left)/(right-left);
-  // float ty=-(top+bottom)/(top-bottom);
-  // float tz=-(zFar+zNear)/(zFar-zNear);
-  // 
-  // GLfloat matrix[] = {
-  //   1, 0, 0, 0,
-  //   0, 1, 0, 0,
-  //   0, 0, 1, 0,
-  //   0, 0, 0, 1
-  // };
-  // matrix[0]=2/(right-left);
-  // matrix[5]=2/(top-bottom);
-  // matrix[10]=-2/(zFar-zNear);  
-  // matrix[12]=tx;
-  // matrix[13]=ty;
-  // matrix[14]=tz;
+  //
+  // Run renderer
+  //
 
   AQRenderer_draw();
 
-  AQShaders_useProgram( ColorShaderProgram );
+  //
+  // Debug draw particles
+  //
 
-  // static GLfloat matrix[16] = {
-  //   1, 0, 0, 0,
-  //   0, 1, 0, 0,
-  //   0, 0, 1, 0,
-  //   0, 0, 0, 1
-  // };
-  // // camera->viewport = world->aabb;
-  // AQCamera_setGlMatrix( camera, matrix );
-  // 
-  // glUniformMatrix4fv(matrixtAttribute, 1, GL_FALSE, matrix);
+  AQShaders_useProgram( ColorShaderProgram );
 
   struct gldata data;
   data.index = 0;
@@ -375,17 +337,6 @@ void drawWaterTest() {
     (AQList_iterator) set_particle_vertices,
     &data
   );
-
-  // glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  // glBufferData(
-  //   GL_ARRAY_BUFFER,
-  // sizeof(struct glparticle) * (particle_count + 1024), data.particles,
-  // GL_DYNAMIC_DRAW);
-  // 
-  // glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(struct glvertex), (GLvoid *) 0);
-  // glVertexAttribPointer(colorAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(struct glvertex), (GLvoid *) 8);
-  // 
-  // glDrawArrays(GL_TRIANGLES, 0, 6 * data.index );
 
   AQShaders_draw(
     buffer,
