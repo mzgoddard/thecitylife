@@ -136,6 +136,12 @@ def build(bld):
             target='watertest.html'
         )
 
+        bld(
+            rule='cp ${SRC} ${TGT}',
+            source='src/platform/web/spaceleaper.html',
+            target='spaceleaper.html'
+        )
+
     if bld.cmd in [ 'emcc', 'emcc_html' ]:
         bld.program(
             source=bld.path.ant_glob('src/game/flowline.c src/game/watertest.c src/platform/sdl/*.c'),
