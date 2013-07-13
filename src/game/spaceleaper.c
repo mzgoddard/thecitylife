@@ -13,6 +13,7 @@
 #include "src/game/camera.h"
 #include "src/game/renderer.h"
 #include "src/game/shaders.h"
+#include "src/game/loop.h"
 
 #define kFrameFraction 1.0 / 20
 #ifndef kParticleCount
@@ -36,31 +37,20 @@ GLuint buffer;
 
 void initWaterTest() {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
-  world = aqinit( aqalloc( &AQWorldType ));
+
+  AQLoop_boot();
+  AQRenderer_boot();
+
+  world = AQLoop_world();
   AQWorld_setAabb( world, (aqaabb) { 6400, 6400, 0, 0 });
   // gravity = (aqvec2) { 0, -4 };
   AQInput_setWorldFrame( 6400, 6400, 0, 0 );
-  // aq_input_setscreentoworld((aqbox){ 640, 640, 0, 0 });
 
   asteroids = aqinit( aqalloc( &AQListType ));
 
   int n = 64;
   for ( int i = 0; i < n; ++i ) {
     for ( int j = 0; j < n; ++j ) {
-    // AQParticle *particle = aqcreate( &AQParticleType );
-    // particle->position = (aqvec2) {
-    //   rand() % (int) world->aabb.right,
-    //   rand() % (int) world->aabb.top / 3 * 2
-    // };
-    // particle->lastPosition = particle->position;
-    // particle->radius = kParticleBaseSize + (float) rand() / RAND_MAX * kParticleSizeRange;
-    // particle->mass = M_PI * particle->radius * particle->radius;
-    // if ( rand() > RAND_MAX * 0.99 ) {
-    //   // particle->radius += 10;
-    //   particle->mass *= 1000;
-    // }
-    // AQWorld_addParticle( world, particle );
-
       SLAsteroid *asteroid = SLAsteroid_create(
         world,
         aqvec2_make(
@@ -72,19 +62,6 @@ void initWaterTest() {
       AQList_push( asteroids, (AQObj *) asteroid );
     }
   }
-
-  // flowLine = aqinit( aqalloc( &AQFlowLineType ));
-  // flowLine->radius = 20;
-  // flowLine->minPointDistance = 10;
-  // flowLine->force = 1000;
-  // AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 80 });
-  // AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 100 });
-  // AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 120 });
-  // AQFlowLine_createParticles( flowLine, world );
-  // AQFlowLine_clearPoints( flowLine );
-  // printf( "%p %p\n", flowLine->particles, AQList_at( flowLine->particles, 0 ));
-
-  AQRenderer_boot();
 
   glGenBuffers(1, &buffer);
 
@@ -265,11 +242,9 @@ void stepWaterTest(float dt) {
           startTime = getTicks();
         }
         frames++;
-        AQList_iterate(
-          world->particles,
-          (AQList_iterator) gravityIterator,
-          NULL );
-        AQWorld_step( world, kFrameFraction );
+
+        AQLoop_step( kFrameFraction );
+
         while (hertztime > kFrameFraction) {
           hertztime -= kFrameFraction;
         }
