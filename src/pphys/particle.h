@@ -38,8 +38,8 @@ typedef struct AQParticle {
   aqbool isTrigger;
   // aqbool isSleeping;
   // int sleepCounter;
-  AQDOUBLE currentAverageCollisionDepth;
-  int collisionCount;
+  // AQDOUBLE currentAverageCollisionDepth;
+  // int collisionCount;
   // AQDOUBLE lastAverageCollisionDepth;
 
   AQParticleMask collisionType;
@@ -50,6 +50,11 @@ typedef struct AQParticle {
 
   void *collideWith;
   void *collideWithNext;
+
+  struct AQParticle *groupParticle;
+
+  void *ignoreParticle;
+  void *ignoreGroup;
 } AQParticle;
 
 typedef struct aqcollision {
@@ -67,6 +72,9 @@ void AQParticle_integrate( AQParticle *, AQDOUBLE dt );
 void AQParticle_testPrep( AQParticle * );
 int AQParticle_test( AQParticle *, AQParticle *, aqcollision * );
 void AQParticle_solve( AQParticle *, AQParticle *, aqcollision * );
+int AQParticle_doesIgnore( AQParticle *, AQParticle * );
+void AQParticle_ignoreParticle( AQParticle *, AQParticle * );
+void AQParticle_ignoreGroup( AQParticle *, AQParticle * );
 
 typedef void (*aqcollision_iterator)( aqcollision *, void * );
 

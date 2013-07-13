@@ -39,8 +39,8 @@ void _AQWorld_integrateIterator( AQObj *item, void *ctx ) {
   // }
   AQParticle_integrate( particle, self->dt );
   AQParticle_testPrep( particle );
-  particle->currentAverageCollisionDepth = 0;
-  particle->collisionCount = 0;
+  // particle->currentAverageCollisionDepth = 0;
+  // particle->collisionCount = 0;
 
   aqaabb newAabb = particle->_aabb = AQParticle_aabb( particle );
   if ( aqvec2_mag2( aqvec2_sub( particle->position, particle->oldPosition )) > particle->radius / 2 ) {
@@ -64,14 +64,14 @@ void _AQWorld_boxTestIterator( AQParticle *a, AQParticle *b, void *ctx ) {
 }
 
 void _AQWorld_solveIterator( aqcollision *col, void *ctx ) {
-  const AQDOUBLE sleepDistance = 0.1;
-  const int counterReset = 5;
-  if ( col->distance / 2 > col->a->currentAverageCollisionDepth ) {
-    col->a->currentAverageCollisionDepth = col->distance / 2;
-  }
-  if ( col->distance / 2 > col->b->currentAverageCollisionDepth ) {
-    col->b->currentAverageCollisionDepth = col->distance / 2;
-  }
+  // const AQDOUBLE sleepDistance = 0.1;
+  // const int counterReset = 5;
+  // if ( col->distance / 2 > col->a->currentAverageCollisionDepth ) {
+  //   col->a->currentAverageCollisionDepth = col->distance / 2;
+  // }
+  // if ( col->distance / 2 > col->b->currentAverageCollisionDepth ) {
+  //   col->b->currentAverageCollisionDepth = col->distance / 2;
+  // }
   // col->a->currentAverageCollisionDepth += col->distance / 2;
   // col->b->currentAverageCollisionDepth += col->distance / 2;
   // col->a->collisionCount++;
@@ -128,16 +128,16 @@ void _AQWorld_maintainBoxIterator( AQParticle *particle, void *ctx ) {
   //   particle->currentAverageCollisionDepth /= (float) particle->collisionCount;
   // }
 
-  if ( particle->currentAverageCollisionDepth / 2 > particle->radius - particle->_radius ) {
-    // particle->radius = fmin( particle->_radius + fmin( particle->currentAverageCollisionDepth, particle->radius * 3 ), particle->radius + 0.001 );
-    // if ( particle->radius < particle->_radius * 10 )
-    // particle->radius += 0.001;
-    // particle->radius = particle->radius * 1.05;
-    particle->mass = M_PI * particle->radius * particle->radius;
-  } else if ( particle->radius > particle->_radius ) {
-    // particle->radius -= 0.0005;
-    particle->mass = M_PI * particle->radius * particle->radius;
-  }
+  // if ( particle->currentAverageCollisionDepth / 2 > particle->radius - particle->_radius ) {
+  //   // particle->radius = fmin( particle->_radius + fmin( particle->currentAverageCollisionDepth, particle->radius * 3 ), particle->radius + 0.001 );
+  //   // if ( particle->radius < particle->_radius * 10 )
+  //   // particle->radius += 0.001;
+  //   // particle->radius = particle->radius * 1.05;
+  //   particle->mass = M_PI * particle->radius * particle->radius;
+  // } else if ( particle->radius > particle->_radius ) {
+  //   // particle->radius -= 0.0005;
+  //   particle->mass = M_PI * particle->radius * particle->radius;
+  // }
 
   // if (
   //   // wallContact &&

@@ -29,6 +29,8 @@ void * AQParticle_init( AQParticle *self ) {
 
 void * AQParticle_done( AQParticle *self ) {
   aqcollidewith_done( self->collideWith );
+  aqcollidewith_done( self->ignoreParticle );
+  aqcollidewith_done( self->ignoreGroup );
   return self;
 }
 
@@ -126,6 +128,10 @@ int AQParticle_test( AQParticle *self, AQParticle *other, aqcollision *col ) {
   ingress = abx*abx+aby*aby;
   if (((ingress < abr*abr))) {
     if ( aqcollidewith_contains( self->collideWith, other )) {
+      return 0;
+    }
+
+    if ( AQParticle_doesIgnore( self, other )) {
       return 0;
     }
 
@@ -234,6 +240,56 @@ void AQParticle_solve( AQParticle *self, AQParticle *other, aqcollision *col ) {
     otherpos->x -= lambx * bm;
     otherpos->y -= lamby * bm;
   }
+}
+
+int _AQParticle_doesIgnore( aqcollidewith **list, AQParticle *ignore ) {
+  if ( !*list || !ignore ) { return 0; }
+
+  aqcollidewith *itr = *list;
+  for ( ; itr; itr = itr->next ) {
+    if ( itr->particle == ignore ) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+int AQParticle_doesIgnore( AQParticle *self, AQParticle *other ) {
+  return (
+    _AQParticle_doesIgnore( (aqcollidewith **) &self->ignoreParticle, other ) ||
+      _AQParticle_doesIgnore(
+        (aqcollidewith **) &self->ignoreGroup,
+        other->groupParticle
+      ) ||
+      _AQParticle_doesIgnore(
+        (aqcollidewith **) &other->ignoreParticle,
+        self
+      ) ||
+      _AQParticle_doesIgnore(
+        (aqcollidewith **) &other->ignoreGroup,
+        self->groupParticle
+      )
+  );
+}
+
+void _AQParticle_ignore( aqcollidewith **list, AQParticle *ignore ) {
+  aqcollidewith *last = *list;
+  while ( last && last->next ) {
+    last = last->next;
+  }
+  aqcollidewith *result = aqcollidewith_add( last, ignore );
+  if ( !last ) {
+    *list = result;
+  }
+}
+
+void AQParticle_ignoreParticle( AQParticle *self, AQParticle *ignore ) {
+  _AQParticle_ignore( (aqcollidewith **) &self->ignoreParticle, ignore );
+}
+
+void AQParticle_ignoreGroup( AQParticle *self, AQParticle *ignore ) {
+  _AQParticle_ignore( (aqcollidewith **) &self->ignoreGroup, ignore );
 }
 
 aqcollidewith * aqcollidewith_init() {
