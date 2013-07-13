@@ -2,29 +2,15 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef __APPLE__
-    #include "TargetConditionals.h"
-    #if TARGET_OS_IPHONE
-        #include <OpenGLES/ES2/gl.h>
-    #else // Mac
-        #include <OpenGL/gl.h>
-    #endif
-#else
-    #if EMSCRIPTEN
-        #include <GLES2/gl2.h>
-        #include <EGL/egl.h>
-    #else
-        #include <GL/gl.h>
-    #endif
-#endif
-
 #include "./spaceleaper.h"
 
+#include "src/game/opengl.h"
 #include "src/obj/index.h"
 #include "src/pphys/index.h"
 #include "src/input/index.h"
 #include "src/game/flowline.h"
 #include "src/game/asteroid.h"
+#include "src/game/camera.h"
 
 // #include "../app/all.h"
 
@@ -78,6 +64,7 @@ static AQWorld *world;
 static aqvec2 gravity;
 
 static AQList *asteroids;
+static AQCamera *camera;
 
 void initWaterTest() {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
@@ -86,6 +73,9 @@ void initWaterTest() {
   // gravity = (aqvec2) { 0, -4 };
   AQInput_setWorldFrame( 6400, 6400, 0, 0 );
   // aq_input_setscreentoworld((aqbox){ 640, 640, 0, 0 });
+
+  camera = aqinit( aqalloc( &AQCameraType ));
+  camera->viewport = aqaabb_make( 6400, 6400, 0, 0 );
 
   asteroids = aqinit( aqalloc( &AQListType ));
 
@@ -384,58 +374,82 @@ void stepWaterTest(float dt) {
 }
 
 void drawWaterTest() {
-    glClearColor(0,0,0,0);
-    glClear(GL_COLOR_BUFFER_BIT);
+  float screenWidth, screenHeight;
+  AQInput_getScreenSize( &screenWidth, &screenHeight );
+  camera->screen = aqaabb_make( screenHeight, screenWidth, 0, 0 );
+  // camera->radians += 0.01;
+  // camera->viewport = aqaabb_make( 3520, 3440, 2880, 3960 );
+  static int once = 1;
+  if ( once ) {
+    camera->viewport = aqaabb_make( 6400, 5600, 0, 800 );
+    once = 0;
+  } else {
+    aqaabb v = camera->viewport;
+    camera->viewport = aqaabb_make( v.top - 1, v.right - 1, v.bottom + 1, v.left + 1 );
+  }
+  // printf("%s\n", aqaabb_cstr(camera->viewport));
 
-    glUseProgram(shader_program);
+  glClearColor(0,0,0,0);
+  glClear(GL_COLOR_BUFFER_BIT);
 
-    // GLfloat vertices[2 * 4] = {
-    //   160, 120,
-    //   -160, 120,
-    //   160, -120,
-    //   -160, -120
-    // };
+  glUseProgram(shader_program);
 
-    float right = world->aabb.right,
-    left = 0,
-    top = world->aabb.top,
-    bottom = 0,
-    zFar = 1000,
-    zNear = 0;
-    float tx=-(right+left)/(right-left);
-    float ty=-(top+bottom)/(top-bottom);
-    float tz=-(zFar+zNear)/(zFar-zNear);
+  // GLfloat vertices[2 * 4] = {
+  //   160, 120,
+  //   -160, 120,
+  //   160, -120,
+  //   -160, -120
+  // };
 
-    GLfloat matrix[] = {
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1
-    };
-    matrix[0]=2/(right-left);
-    matrix[5]=2/(top-bottom);
-    matrix[10]=-2/(zFar-zNear);	
-    matrix[12]=tx;
-    matrix[13]=ty;
-    matrix[14]=tz;
+  // float right = world->aabb.right,
+  // left = 0,
+  // top = world->aabb.top,
+  // bottom = 0,
+  // zFar = 1000,
+  // zNear = 0;
+  // float tx=-(right+left)/(right-left);
+  // float ty=-(top+bottom)/(top-bottom);
+  // float tz=-(zFar+zNear)/(zFar-zNear);
+  // 
+  // GLfloat matrix[] = {
+  //   1, 0, 0, 0,
+  //   0, 1, 0, 0,
+  //   0, 0, 1, 0,
+  //   0, 0, 0, 1
+  // };
+  // matrix[0]=2/(right-left);
+  // matrix[5]=2/(top-bottom);
+  // matrix[10]=-2/(zFar-zNear);  
+  // matrix[12]=tx;
+  // matrix[13]=ty;
+  // matrix[14]=tz;
 
-    glUniformMatrix4fv(matrixtAttribute, 1, GL_FALSE, matrix);
+  static GLfloat matrix[16] = {
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1
+  };
+  // camera->viewport = world->aabb;
+  AQCamera_setGlMatrix( camera, matrix );
 
-    struct gldata data;
-    data.index = 0;
-    AQList_iterate(
-      world->particles,
-      (AQList_iterator) set_particle_vertices,
-      &data );
+  glUniformMatrix4fv(matrixtAttribute, 1, GL_FALSE, matrix);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(
-      GL_ARRAY_BUFFER,
-      sizeof(struct glparticle) * (particle_count + 1024), data.particles,
-      GL_DYNAMIC_DRAW);
+  struct gldata data;
+  data.index = 0;
+  AQList_iterate(
+    world->particles,
+  (AQList_iterator) set_particle_vertices,
+  &data );
 
-    glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(struct glvertex), (GLvoid *) 0);
-    glVertexAttribPointer(colorAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(struct glvertex), (GLvoid *) 8);
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  glBufferData(
+    GL_ARRAY_BUFFER,
+  sizeof(struct glparticle) * (particle_count + 1024), data.particles,
+  GL_DYNAMIC_DRAW);
 
-    glDrawArrays(GL_TRIANGLES, 0, 6 * data.index );
+  glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(struct glvertex), (GLvoid *) 0);
+  glVertexAttribPointer(colorAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(struct glvertex), (GLvoid *) 8);
+
+  glDrawArrays(GL_TRIANGLES, 0, 6 * data.index );
 }

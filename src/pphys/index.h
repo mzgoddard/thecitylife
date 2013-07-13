@@ -2,6 +2,7 @@
 #define INDEX_H_UEC6BMLI
 
 #include "./math.h"
+#include "./mathstr.h"
 #include "./aabb.h"
 #include "./particle.h"
 #include "./ddvt.h"

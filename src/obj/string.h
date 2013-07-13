@@ -12,7 +12,7 @@ typedef struct AQString {
 } AQString;
 
 // Create a string at compile time.
-#define AQSTR(str) (AQString) { \
+#define AQSTR(str) (AQString *) &{ \
   &AQStringType, \
   1, \
   NULL, \
@@ -20,10 +20,18 @@ typedef struct AQString {
   str \
 };
 
+static char * AQStringifyInterfaceId = "AQStringifyInterface";
+
+typedef struct AQStringifyInterface {
+  char *name;
+
+  AQString * (*toString)( AQObj * );
+} AQStringifyInterface;
+
 AQString * aqstr(char *);
+AQString * aqrep(AQObj *);
 AQString * AQString_concat(AQString *, AQString *);
 AQString * AQString_format(AQString *, ...);
-
-void aqstring_init();
+const char * AQString_cstr(AQString *);
 
 #endif /* end of include guard: STRING_H_ONH9DEJ1 */

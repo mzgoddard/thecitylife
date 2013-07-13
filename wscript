@@ -73,7 +73,7 @@ from waflib.Node import Node
 @feature('c','cxx','d','asm','fc','includes')
 @after_method('propagate_uselib_vars','process_source','apply_incpaths')
 def apply_incpaths_emcc(self):
-    if self.env.CC == 'emcc':
+    if self.env.CC.endswith('emcc'):
         lst=self.to_incnodes(
             self.to_list(getattr(self,'includes',[])) +
                 self.env['INCLUDES']
@@ -149,6 +149,7 @@ def build(bld):
     )
 
     spaceLeaperSource = bld.path.ant_glob(
+        'src/game/camera.c ' +
         'src/game/flowline.c src/game/asteroid.c src/game/spaceleaper.c ' +
         'src/platform/sdl/*.c'
     )
