@@ -138,17 +138,32 @@ def build(bld):
 
     if bld.cmd in [ 'emcc', 'emcc_html' ]:
         bld.program(
-            source=bld.path.ant_glob('src/game/*.c src/platform/sdl/*.c'),
+            source=bld.path.ant_glob('src/game/flowline.c src/game/watertest.c src/platform/sdl/*.c'),
             includes=['./src', '.'],
             target='watertest',
             use='libobj libpphys libinput'
         )
 
+        bld.program(
+            source=bld.path.ant_glob('src/game/flowline.c src/game/spaceleaper.c src/platform/sdl/*.c'),
+            includes=['./src', '.'],
+            target='spaceleaper',
+            use='libobj libpphys libinput'
+        )
+
     if bld.cmd in [ 'debug', 'release' ]:
         bld.program(
-            source=bld.path.ant_glob('src/game/*.c src/platform/sdl/*.c'),
+            source=bld.path.ant_glob('src/game/flowline.c src/game/watertest.c src/platform/sdl/*.c'),
             includes=['./src', '.'],
             target='watertest',
+            framework=[ 'Cocoa', 'OpenGL' ],
+            use='libobj libpphys libinput SDL SDL_gfx SDL_image'
+        )
+
+        bld.program(
+            source=bld.path.ant_glob('src/game/flowline.c src/game/spaceleaper.c src/platform/sdl/*.c'),
+            includes=['./src', '.'],
+            target='spaceleaper',
             framework=[ 'Cocoa', 'OpenGL' ],
             use='libobj libpphys libinput SDL SDL_gfx SDL_image'
         )
