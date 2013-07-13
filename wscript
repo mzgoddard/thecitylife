@@ -45,7 +45,7 @@ def configure(ctx):
 
     ctx.setenv('emcc', env)
     ctx.load('compiler_c')
-    ctx.env.PATH = '$PATH:../emscripten'
+    ctx.env.PATH = 'vendor/emscripten'
     ctx.find_program( 'emcc' )
     ctx.env.CC = 'emcc'
     ctx.env.IS_EMSCRIPTEN = True
