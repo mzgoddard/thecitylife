@@ -30,11 +30,6 @@ struct ColorShader {
   int dirtyMatrix;
 } colorShader;
 
-struct colorvertex {
-  GLfloat x, y;
-  GLubyte r, g, b, a;
-};
-
 void ColorShader_draw( GLuint buffer, void *data, int bytes );
 
 static AQShaderProgram activeShaderEnum;

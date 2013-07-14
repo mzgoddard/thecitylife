@@ -36,14 +36,38 @@ AQCamera * AQCamera_setGlMatrix( AQCamera *self, GLfloat *matrix ) {
     0, 0, 0, 1
   };
 
+  // [  c,  s, 0, 0
+  //   -s,  c, 0, 0
+  //    0,  0, 1, 0
+  //    0,  0, 0, 1 ]
+  //
+  // [ w, 0, 0, x,
+  //   0, h, 0, y,
+  //   0, 0, f, z,
+  //   0, 0, 0, 1 ]
+  //
+  // [ w*c, w*-s, 0, x,
+  //   h*s,  h*c, 0, y,
+  //     0,    0, 1, z,
+  //     0,    0, 0, 1 ]
+
+  // [ c*w, h*-s, 0, x*c+y*s
+  //   
+
+  // [ 0 4  8 12
+  //   1 5  9 13
+  //   2 6 10 14
+  //   3 7 11 15 ]
+
+  // [ c*w, h*-s, 0, x*c+y*-s
+  //   s*w,  c*h, 0, s*x+c*y
+
   matrix[0]=2/(right-left)*c;
-  matrix[1]=2/(right-left)*-s;
-  // matrix[3]=-tx;
   matrix[4]=2/(top-bottom)*s;
+  matrix[1]=2/(right-left)*-s;
   matrix[5]=2/(top-bottom)*c;
-  // matrix[7]=-ty;
-  matrix[10]=-2/(zFar-zNear);  
-  // matrix[11]=-tz;
+  matrix[10]=-2/(zFar-zNear);
+
   matrix[12]=tx*c+ty*s;
   matrix[13]=tx*-s+ty*c;
   matrix[14]=tz;

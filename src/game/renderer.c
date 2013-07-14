@@ -42,11 +42,11 @@ AQCamera * AQRenderer_camera() {
   return _renderer->camera;
 }
 
-void AQRenderer_addView( AQObj *object ) {
+void AQRenderer_addView( void *object ) {
   AQView_addToList( _renderer->views, object );
 }
 
-void AQRenderer_removeView( AQObj *object ) {
+void AQRenderer_removeView( void *object ) {
   AQView_removeFromList( _renderer->views, object );
 }
 

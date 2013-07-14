@@ -17,8 +17,15 @@ typedef struct SLAsteroid {
   AQWorld *world;
   AQList *particles;
   // AQList *sticks;
+
+  int isHome;
 } SLAsteroid;
 
-SLAsteroid * SLAsteroid_create( AQWorld *world, aqvec2 center, AQDOUBLE radius );
+SLAsteroid * SLAsteroid_create(
+  AQWorld *world, aqvec2 center, AQDOUBLE radius
+);
+
+void SLAsteroid_setIsHome( SLAsteroid *, int home );
+int AQParticle_isHomeAsteroid( AQParticle *p );
 
 #endif /* end of include guard: ASTEROID_H_HFUI9Q91 */

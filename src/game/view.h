@@ -3,18 +3,17 @@
 
 #include "src/obj/index.h"
 
-static char * AQViewId = "AQView";
+extern char AQViewId[];
+extern char AQViewableId[];
 
 typedef struct AQViewInterface {
-  char *name;
+  const char * name;
 
   void (*draw)( void * );
 } AQViewInterface;
 
-static char * AQViewableId = "AQViewable";
-
 typedef struct AQViewableInterface {
-  char *name;
+  const char *name;
 
   void * (*view)( void * );
 } AQViewableInterface;

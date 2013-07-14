@@ -4,10 +4,10 @@
 #include "src/obj/index.h"
 #include "src/pphys/index.h"
 
-static char * SLUpdaterId = "SLUpdater";
+extern char SLUpdaterId[];
 
 typedef struct SLUpdaterInterface {
-  char *name;
+  const char * name;
 
   void (*update)( void *, AQDOUBLE dt );
 } SLUpdaterInterface;

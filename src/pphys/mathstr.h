@@ -2,9 +2,22 @@
 #define MATHSTR_H_W179BSNX
 
 #include <stdio.h>
+#include <string.h>
 
 #include "src/obj/string.h"
 #include "src/pphys/math.h"
+
+static AQString * aqvec2_rep(aqvec2 v) {
+  char buffer[256];
+  memset( buffer, 0, 256 );
+  int length = sprintf( buffer, "(aqvec2){%f %f}", v.x, v.y );
+  buffer[ length ] = 0;
+  return aqstr( buffer );
+}
+
+static const char * aqvec2_cstr(aqvec2 v) {
+  return AQString_cstr( aqvec2_rep( v ));
+}
 
 static AQString * aqaabb_rep(aqaabb ab) {
   char buffer[256];

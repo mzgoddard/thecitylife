@@ -2,6 +2,9 @@
 
 #include "src/game/view.h"
 
+char AQViewId[] = "AQView";
+char AQViewableId[] = "AQViewable";
+
 void _AQView_iterator( AQObj *object, void *ctx ) {
   AQViewInterface *interface = aqcast( object, AQViewId );
   interface->draw( object );

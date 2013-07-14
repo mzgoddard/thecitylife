@@ -48,6 +48,7 @@ SLAsteroid * SLAsteroid_create(
   particle->position = center;
   particle->lastPosition = center;
   particle->mass = self->mass;
+  particle->userdata = self;
 
   AQList_push( self->particles, (AQObj *) particle );
 
@@ -57,6 +58,21 @@ SLAsteroid * SLAsteroid_create(
   );
 
   return self;
+}
+
+void SLAsteroid_setIsHome( SLAsteroid *self, int home ) {
+  self->isHome = home;
+}
+
+int SLAsteroid_isHome( SLAsteroid *self ) {
+  return self->isHome;
+}
+
+int AQParticle_isHomeAsteroid( AQParticle *p ) {
+  if ( p && p->userdata && aqistype( p->userdata, &SLAsteroidType )) {
+    return SLAsteroid_isHome( (SLAsteroid *) p->userdata );
+  }
+  return 0;
 }
 
 AQTYPE_INIT_DONE( SLAsteroid );

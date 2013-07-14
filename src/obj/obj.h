@@ -15,7 +15,7 @@ typedef struct AQType {
 
   void *(*init)(void *);
   void *(*done)(void *);
-  AQInterface *(*getInterface)(void *, char *);
+  AQInterface *(*getInterface)(void *, const char *);
 } AQType;
 
 #define AQTYPE_ALL(obj, size, pool, init, done, getInterface) AQType obj ## Type = (AQType) { \
@@ -24,7 +24,7 @@ typedef struct AQType {
   pool, \
   (void *(*)(void *)) init, \
   (void *(*)(void *)) done, \
-  (AQInterface *(*)(void *, char*)) getInterface \
+  (AQInterface *(*)(void *, const char*)) getInterface \
 }
 
 #define AQTYPE_INIT_DONE_GETINTERFACE(obj) AQTYPE_ALL( \
@@ -64,7 +64,7 @@ typedef struct AQObj {
 
 void * AQObj_init( AQObj *self );
 void * AQObj_done( AQObj *self );
-struct AQInterface * AQObj_getInterface( AQObj * self, char *interface );
+struct AQInterface * AQObj_getInterface( AQObj * self, const char *interface );
 
 void * aqalloc(AQType *);
 void aqfree(void *);
@@ -76,7 +76,9 @@ void * aqrelease(void *);
 void * aqautorelease(void *);
 
 void * aqcreate(AQType *);
-void * aqcast(void *, char *interface);
+void * aqcast(void *, const char *interface);
+
+int aqistype(void *, AQType *);
 
 #define AQCALL(obj,interface,func,...) ( \
   AQInterface *interface ## _interface = aqcast(obj,interface), \

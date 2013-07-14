@@ -1,12 +1,14 @@
 #include "src/game/updater.h"
 
+char SLUpdaterId[] = "SLUpdater";
+
 void _SLUpdate_iterator( AQObj *object, void *ctx ) {
   SLUpdaterInterface *interface = aqcast( object, SLUpdaterId );
   interface->update( object, *(AQDOUBLE *) ctx );
 }
 
 void SLUpdater_addToList( AQList *list, void *object ) {
-  SLUpdaterInterface *interface = aqcast( object, SLUpdaterId );
+  SLUpdaterInterface *interface = aqcast( object, (const char *)&SLUpdaterId );
   if ( interface ) {
     AQList_push( list, object );
   }

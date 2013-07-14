@@ -278,10 +278,10 @@ void _AQParticle_ignore( aqcollidewith **list, AQParticle *ignore ) {
   while ( last && last->next ) {
     last = last->next;
   }
-  aqcollidewith *result = aqcollidewith_add( last, ignore );
   if ( !last ) {
-    *list = result;
+    *list = last = aqcollidewith_init();
   }
+  aqcollidewith_add( last, ignore );
 }
 
 void AQParticle_ignoreParticle( AQParticle *self, AQParticle *ignore ) {

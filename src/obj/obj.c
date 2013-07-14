@@ -12,7 +12,7 @@ void * AQObj_done( AQObj *self ) {
   return self;
 }
 
-struct AQInterface * AQObj_getInterface( AQObj * self, char *interface ) {
+struct AQInterface * AQObj_getInterface( AQObj * self, const char *interface ) {
   return NULL;
 }
 
@@ -63,8 +63,12 @@ void * aqcreate( AQType *type ) {
   return aqautorelease( aqinit( aqalloc( type )));
 }
 
-void * aqcast( void *self, char *interface ) {
+void * aqcast( void *self, const char *interface ) {
   return ((AQObj *) self )->type->getInterface( self, interface );
+}
+
+int aqistype( void *self, AQType *type ) {
+  return ((AQObj *) self)->type == type;
 }
 
 typedef struct poolnode {

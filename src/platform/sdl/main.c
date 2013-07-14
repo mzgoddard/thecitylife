@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
   glEnable( GL_TEXTURE_2D ); // Need this to display a texture XXX unnecessary in OpenGL ES 2.0/WebGL
 #endif
 
-  glViewport( 0, 0, 640, 480 );
+  glViewport( 0, -80, 640, 640 );
   AQInput_setScreenSize( 640, 480 );
 #if EMSCRIPTEN
   emscripten_set_main_loop(main_loop, 0, 0);

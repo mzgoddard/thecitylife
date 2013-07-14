@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -14,6 +15,7 @@
 #include "src/game/renderer.h"
 #include "src/game/shaders.h"
 #include "src/game/loop.h"
+#include "src/game/leaper.h"
 
 #define kFrameFraction 1.0 / 20
 #ifndef kParticleCount
@@ -32,6 +34,7 @@ static AQWorld *world;
 static aqvec2 gravity;
 
 static AQList *asteroids;
+static SLLeaper *leaper;
 
 GLuint buffer;
 
@@ -48,6 +51,8 @@ void initWaterTest() {
 
   asteroids = aqinit( aqalloc( &AQListType ));
 
+  SLAsteroid *homeAsteroid = NULL;
+
   int n = 64;
   for ( int i = 0; i < n; ++i ) {
     for ( int j = 0; j < n; ++j ) {
@@ -60,8 +65,29 @@ void initWaterTest() {
         ((double) rand() ) / RAND_MAX * world->aabb.right / n / 8 + world->aabb.right / n / 8
       );
       AQList_push( asteroids, (AQObj *) asteroid );
+
+      if (
+        i < n / 8 * 5 && i > n / 8 * 3 &&
+          j < n / 8 * 5 && j > n / 8 * 3
+      ) {
+        if ( !homeAsteroid ) {
+          homeAsteroid = asteroid;
+        } else if ( rand() < RAND_MAX / 100 ) {
+          homeAsteroid = asteroid;
+        }
+      }
     }
   }
+
+  assert( homeAsteroid );
+  SLAsteroid_setIsHome( homeAsteroid, 1 );
+
+  AQRenderer_addView( leaper = SLLeaper_create(
+    aqvec2_add(
+      homeAsteroid->center,
+      aqvec2_make( 5, 5 )
+    )
+  ));
 
   glGenBuffers(1, &buffer);
 
@@ -102,6 +128,9 @@ static void set_particle_vertices( AQParticle *particle, void *ctx ) {
     // }
     if ( particle->isStatic ) {
       color = (struct glcolor) { 0, 0, 255, 128 };
+    }
+    if ( AQParticle_isHomeAsteroid( particle )) {
+      color = (struct glcolor) { 0, 255, 0, 128 };
     }
 
     aqaabb particlebox = AQParticle_aabb( particle );
@@ -219,6 +248,15 @@ void stepWaterTest(float dt) {
       switch ( touch->state ) {
         case AQTouchBegan:
           // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+          // if ( leaper ) {
+          //   float screenWidth, screenHeight;
+          //   AQInput_getScreenSize( &screenWidth, &screenHeight );
+          //   aqvec2 dir = { touch->wx - screenWidth, touch->wy - screenHeight };
+          //   AQDOUBLE radians =
+          //     atan2( dir.y, dir.x ) + AQRenderer_camera().radians;
+          // 
+          //   SLLeaper_applyDirection( leaper, radians );
+          // }
           break;
         case AQTouchMoved:
         case AQTouchStationary:
@@ -278,19 +316,37 @@ void stepWaterTest(float dt) {
 }
 
 void drawWaterTest() {
+  AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
+
   float screenWidth, screenHeight;
   AQInput_getScreenSize( &screenWidth, &screenHeight );
   AQCamera *camera = AQRenderer_camera();
   camera->screen = aqaabb_make( screenHeight, screenWidth, 0, 0 );
 
+  float c = fabs( cos( camera->radians ));
+  float s = fabs( sin( camera->radians ));
+
   static int once = 1;
   if ( once ) {
-    camera->viewport = aqaabb_make( 6400, 5600, 0, 800 );
+    // camera->viewport = aqaabb_make( 6400, 5600, 0, 800 );
+    camera->viewport = aqaabb_make( 640, 640, 0, 0 );
     once = 0;
   } else {
     aqaabb v = camera->viewport;
-    camera->radians += 0.001;
-    camera->viewport = aqaabb_make( v.top - 1, v.right - 1, v.bottom + 1, v.left + 1 );
+    // camera->radians += 0.01;
+    // camera->viewport = aqaabb_make( v.top - 1, v.right - 1, v.bottom + 1, v.left + 1 );
+  }
+
+  if ( leaper ) {
+    float scale = 80;
+    camera->viewport = aqaabb_make(
+      leaper->position.y + 80, leaper->position.x + 80,
+      leaper->position.y - 80, leaper->position.x - 80
+    );
+    if ( leaper->state == StuckLeaperState ) {
+      aqvec2 dir = aqvec2_normalized( aqvec2_sub( leaper->body->position, leaper->lastTouched->position ));
+      camera->radians = atan2( dir.y, dir.x ) - M_PI / 2;
+    }
   }
 
   //
@@ -318,4 +374,6 @@ void drawWaterTest() {
     data.particles,
     sizeof(struct glparticle) * (data.index)
   );
+
+  aqfree( pool );
 }
