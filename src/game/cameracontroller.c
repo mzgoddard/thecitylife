@@ -65,7 +65,11 @@ void _SLCameraController_update( SLCameraController *self, AQDOUBLE dt ) {
     once = 0;
   }
 
-  if ( self->inputPressed ) {
+  if (
+    self->inputPressed ||
+      self->leaper->state == WonLeaperState ||
+      self->leaper->state == LostLeaperState
+  ) {
     self->currentScale += 0.1;
   } else {
     self->currentScale -= 0.05;
@@ -90,10 +94,25 @@ void _SLCameraController_update( SLCameraController *self, AQDOUBLE dt ) {
         self->leaper->lastTouched->position
       ));
 
+      float targetRotation = atan2( dir.y, dir.x ) - M_PI / 2;
+      while ( targetRotation < camera->radians - M_PI ) {
+        targetRotation += M_PI * 2;
+      }
+      while ( targetRotation > camera->radians + M_PI ) {
+        targetRotation -= M_PI * 2;
+      }
+
       // Lerp to new angle.
       camera->radians = camera->radians +
-        ( atan2( dir.y, dir.x ) - M_PI / 2 - camera->radians ) * 0.1;
+        ( targetRotation - camera->radians ) * 0.1;
     }
+  }
+
+  if (
+    self->leaper->state == WonLeaperState ||
+      self->leaper->state == LostLeaperState
+  ) {
+    camera->radians += 0.01;
   }
 
   self->inputPressed = 0;

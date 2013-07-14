@@ -61,13 +61,14 @@ void initWaterTest() {
   int n = 64;
   for ( int i = 0; i < n; ++i ) {
     for ( int j = 0; j < n; ++j ) {
+      float asteroidRadius = ((double) rand() ) / RAND_MAX * world->aabb.right / n / 8 + world->aabb.right / n / 8;
       SLAsteroid *asteroid = SLAsteroid_create(
         world,
         aqvec2_make(
-          rand() % (int) world->aabb.right / n / 2 + world->aabb.right / n * i + world->aabb.right / n / 4,
-          rand() % (int) world->aabb.top / n / 2 + world->aabb.top / n * j + world->aabb.top / n / 4
+          rand() % (int) ( world->aabb.right / n - asteroidRadius * 2 ) + world->aabb.right / n * i + asteroidRadius,
+          rand() % (int) ( world->aabb.top / n - asteroidRadius * 2 ) + world->aabb.top / n * j + asteroidRadius
         ),
-        ((double) rand() ) / RAND_MAX * world->aabb.right / n / 8 + world->aabb.right / n / 8
+        asteroidRadius
       );
       AQList_push( asteroids, (AQObj *) asteroid );
       SLAsteroidGroupView_addAsteroid( asteroidView, asteroid );
