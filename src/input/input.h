@@ -20,6 +20,8 @@ typedef struct AQTouch {
 
   AQTouchState state;
 
+  int finger;
+
   // screen coordinates
   float x;
   float y;

@@ -143,6 +143,7 @@ static void process_events( void )
 
         mouseTouch = aqretain( aqcreate( &AQTouchType ));
         mouseTouch->state = AQTouchBegan;
+        mouseTouch->finger = event.button.button;
         mouseTouch->x = event.button.x;
         mouseTouch->y = screenHeight - event.button.y;
         mouseTouch->dx = 0;

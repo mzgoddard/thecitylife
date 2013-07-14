@@ -16,6 +16,7 @@
 #include "src/game/shaders.h"
 #include "src/game/loop.h"
 #include "src/game/leaper.h"
+#include "src/game/cameracontroller.h"
 
 #define kFrameFraction 1.0 / 20
 #ifndef kParticleCount
@@ -35,6 +36,7 @@ static aqvec2 gravity;
 
 static AQList *asteroids;
 static SLLeaper *leaper;
+static SLCameraController *cameraController;
 
 GLuint buffer;
 
@@ -88,6 +90,11 @@ void initWaterTest() {
       aqvec2_make( 5, 5 )
     )
   ));
+
+  AQLoop_addUpdater(
+    cameraController =
+      SLCameraController_setLeaper( SLCameraController_create(), leaper )
+  );
 
   glGenBuffers(1, &buffer);
 
@@ -248,7 +255,7 @@ void stepWaterTest(float dt) {
       switch ( touch->state ) {
         case AQTouchBegan:
           // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-          if ( leaper ) {
+          if ( leaper && touch->finger == 1 ) {
             float screenWidth, screenHeight;
             AQInput_getScreenSize( &screenWidth, &screenHeight );
             aqvec2 dir = aqvec2_normalized( (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 });
@@ -258,9 +265,13 @@ void stepWaterTest(float dt) {
 
             SLLeaper_applyDirection( leaper, radians );
           }
-          break;
         case AQTouchMoved:
         case AQTouchStationary:
+          if ( cameraController ) {
+            if ( touch->finger == 3 ) {
+              SLCameraController_inputPress( cameraController );
+            }
+          }
           // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
           break;
         case AQTouchEnded:
@@ -318,37 +329,6 @@ void stepWaterTest(float dt) {
 
 void drawWaterTest() {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
-
-  float screenWidth, screenHeight;
-  AQInput_getScreenSize( &screenWidth, &screenHeight );
-  AQCamera *camera = AQRenderer_camera();
-  camera->screen = aqaabb_make( screenHeight, screenWidth, 0, 0 );
-
-  float c = fabs( cos( camera->radians ));
-  float s = fabs( sin( camera->radians ));
-
-  static int once = 1;
-  if ( once ) {
-    // camera->viewport = aqaabb_make( 6400, 5600, 0, 800 );
-    camera->viewport = aqaabb_make( 640, 640, 0, 0 );
-    once = 0;
-  } else {
-    aqaabb v = camera->viewport;
-    // camera->radians += 0.01;
-    // camera->viewport = aqaabb_make( v.top - 1, v.right - 1, v.bottom + 1, v.left + 1 );
-  }
-
-  if ( leaper ) {
-    float scale = 80;
-    camera->viewport = aqaabb_make(
-      leaper->position.y + 80, leaper->position.x + 80,
-      leaper->position.y - 80, leaper->position.x - 80
-    );
-    if ( leaper->state == StuckLeaperState ) {
-      aqvec2 dir = aqvec2_normalized( aqvec2_sub( leaper->body->position, leaper->lastTouched->position ));
-      camera->radians = camera->radians + ( atan2( dir.y, dir.x ) - M_PI / 2 - camera->radians ) * 0.1;
-    }
-  }
 
   //
   // Run renderer

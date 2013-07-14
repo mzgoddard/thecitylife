@@ -1,9 +1,12 @@
+#include <assert.h>
+
 #include "src/game/updater.h"
 
 char SLUpdaterId[] = "SLUpdater";
 
 void _SLUpdate_iterator( AQObj *object, void *ctx ) {
   SLUpdaterInterface *interface = aqcast( object, SLUpdaterId );
+  assert( interface && interface->update );
   interface->update( object, *(AQDOUBLE *) ctx );
 }
 
