@@ -52,9 +52,15 @@ def configure(ctx):
     ctx.env.IS_EMSCRIPTEN = True
     ctx.env.LINK_CC = ctx.env.CC
     ctx.env.CFLAGS = [ '-O2' ]
-    ctx.env.LINKFLAGS = [ '-O2' ]
+    ctx.env.LINKFLAGS = [
+        '-s', 'EXPORTED_FUNCTIONS=[\'_main\',\'_malloc\',\'_pauseSpaceLeaper\',\'_resumeSpaceLeaper\',\'_setSpaceLeaperEndCallback\']',
+        '-s',
+        'RESERVED_FUNCTION_POINTERS=16',
+        '-O2',
+    ]
     ctx.env.DEFINES = [ 'ANSI_COLOR=1' ]
     ctx.env.cprogram_PATTERN = '%s.js'
+    print ctx.env
 
     emcc_env = ctx.env
 
@@ -63,7 +69,6 @@ def configure(ctx):
     ctx.env.LINKFLAGS = [ '-O2', '-s', 'ASM_JS=1' ]
     ctx.env.DEFINES = [ 'kParticleCount=8192' ]
     ctx.env.cprogram_PATTERN = '%s.html'
-    print ctx.env
 
 from waflib.TaskGen import after_method,before_method,feature,taskgen_method,extension
 

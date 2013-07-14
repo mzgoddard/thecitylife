@@ -119,7 +119,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
     ),
     colorvertex_next,
     colorvertex_getcolor,
-    (struct glcolor) { 255, 255, 255, 64 }
+    (struct glcolor) { 145, 255, 85, 64 }
   );
 
   aqvec2 oxygenAxisAxis = aqvec2_make( cos( radians + M_PI / 2 + M_PI / 3 ), sin( radians + M_PI / 2 + M_PI / 3 ));
@@ -137,7 +137,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
     ),
     colorvertex_next,
     colorvertex_getcolor,
-    (struct glcolor) { 255, 255, 255, 255 }
+    (struct glcolor) { 145, 255, 85, 255 }
   );
 
   // Resource.
@@ -156,7 +156,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
     ),
     colorvertex_next,
     colorvertex_getcolor,
-    (struct glcolor) { 128, 64, 32, 64 }
+    (struct glcolor) { 27, 43, 204, 64 }
   );
 
   aqvec2 resourceAxisAxis = aqvec2_make( cos( radians - M_PI / 2 - M_PI / 3 ), sin( radians - M_PI / 2 - M_PI / 3 ));
@@ -174,7 +174,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
     ),
     colorvertex_next,
     colorvertex_getcolor,
-    (struct glcolor) { 128, 64, 32, 255 }
+    (struct glcolor) { 27, 43, 204, 255 }
   );
 
   AQShaders_useProgram( ColorShaderProgram );

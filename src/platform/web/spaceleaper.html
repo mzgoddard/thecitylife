@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Aquamancy Watertest Benchmark</title>
+    <title>Space Leap</title>
     <style>
       body { margin: 0; background: black; width: 100%; height: 100%; overflow: hidden; }
       textarea { position: absolute; z-index: 10; }
@@ -14,6 +14,52 @@
       div.vertical-center > * { transform: translateY(-50%); -webkit-transform: translateY(-50%); }
       /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
       canvas.emscripten { border: 0px none; width: 100%; }
+      .title {
+        position: fixed;
+        top: 0px;
+        width: 100%;
+        color: white;
+        text-align: center;
+        font-size: 3em;
+        height: 80px;
+      }
+      .story-start {
+        position: fixed;
+        top: 100px;
+        width: 100%;
+        text-align: center;
+        pointer-events: none;
+      }
+      .story-start > div {
+        display: inline-block;
+        width: 450px;
+        color: white;
+        text-align: left;
+        background: rgba(16,8,4,0.9);
+        padding: 10px;
+      }
+      .story-end {
+        display: none;
+        position: fixed;
+        top: 100px;
+        width: 100%;
+        text-align: center;
+        pointer-events: none;
+      }
+      .story-end > div {
+        display: inline-block;
+        width: 450px;
+        color: white;
+        text-align: left;
+        background: rgba(16,8,4,0.9);
+        padding: 10px;
+      }
+      .live-score {
+        display: none;
+      }
+      .click-to-dismiss {
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -75,5 +121,69 @@
       Module.setStatus('Downloading...');
     </script>
     <script src="spaceleaper.js"></script>
+    <div class="story-start"><div>
+      <p>Space Anomaly 3122D - Report 5</p>
+
+      <p>The hole in space we found was not what we expected. We had sent probes through to here and thoroughly analyzed the data that came back. It was confusing though. The strange thing was, the only observable matter visibly was that that the probe was at that time touching.</p>
+
+      <p>Eventually each probe returned to us, but I have not been able to discover any exit. My oxygen supply is running short and it is growing tough to find resources to power the oxygen scrubber that I have left at the location I entered this exotic space at. I fear I will die here.</p>
+
+      <p>However I am not letting this get me down. This is an amazing place I never would have imagined that I would get to explore. I will continue to collect data and strive to return so that I may give my report in person instead of these datams I leave for whoever may ... well, best not jinx myself.</p>
+
+      <p>- Theresa<br>
+      -- END OF ENTRY --</p>
+
+      <div class="click-to-dismiss">Click To Dismiss</div>
+    </div></div>
+    <div class="title">
+      Space Leap
+    </div>
+    <div class="story-end"><div>
+      <p>Space Anomaly 3122D - Report 6</p>
+
+      <p>Time is short ...</p>
+
+      <p>I hope you find this capsule.</p>
+
+      <p>It feels like I can taste the vacuum outside, but I know my brain is just playing tricks on me.</p>
+
+      <p>- Theresa<br>
+      -- END OF ENTRY --</p>
+
+      <!-- <div class="final-score">
+        <div class="visited">Visited <div>0</div></div>
+        <div class="survived-for">Survived For <div>0:00.00</div></div>
+      </div> -->
+    </div></div>
+    <div class="live-score">
+      <div class="visited">Visited <div>0</div></div>
+      <div class="survived-for">Since last report <div>0:00.00</div></div>
+    </div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script>
+      $('body').click(function hideStart() {
+        $('.story-start, .title').animate({'opacity':0},1000);
+        $('body').off('click', hideStart);
+        Module.ccall('resumeSpaceLeaper','undefined',[],[]);
+      });
+      Module.ccall('pauseSpaceLeaper','undefined',[],[]);
+
+      var once = true;
+      Module.endCallback = function() {
+        if ( once ) {
+          $('.story-end, .title')
+            .show()
+            .css('opacity', '0')
+            .animate({'opacity':1}, 1000);
+        }
+        once = false;
+      };
+      Module.ccall(
+        'setSpaceLeaperEndCallback',
+        'undefined',
+        ['number'],
+        [Runtime.addFunction(Module.endCallback)]
+      );
+    </script>
   </body>
 </html>

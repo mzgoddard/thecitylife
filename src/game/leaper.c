@@ -134,13 +134,15 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
     if ( maybeAsteroid && aqistype( maybeAsteroid, &SLAsteroidType )) {
       SLAsteroid *asteroid = maybeAsteroid;
 
-      if ( !asteroid->isVisible ) {
+      if ( !asteroid->isVisible && !asteroid->isHome ) {
+        self->visited++;
+
         // Resource asteroid.
-        if ( rand() < RAND_MAX / 8 ) {
+        if ( self->visited == 3 || ( self->visited > 3 && rand() < RAND_MAX / 2 ) ) {
           asteroid->resource = rand() % 128;
           asteroid->color = (struct glcolor) {
             27, 43, 204, 255
-          }; 
+          };
         // Normal asteroid.
         } else {
           float percent = rand() / (float) RAND_MAX;
@@ -221,6 +223,10 @@ void _SLLeaper_oncollision( AQParticle *a, AQParticle *b, void *collision ) {
 }
 
 void _SLLeaper_gotoState( SLLeaper *self, SLLeaperState newState ) {
+  if ( self->state == LostLeaperState ) {
+    return;
+  }
+
   if ( newState == StuckLeaperState ) {
     SLAsteroid *asteroid = (SLAsteroid *) self->lastTouched->userdata;
     if ( asteroid && aqistype( asteroid, &SLAsteroidType ) && asteroid->isHome ) {

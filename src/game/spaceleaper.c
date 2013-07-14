@@ -41,6 +41,10 @@ static SLCameraController *cameraController;
 
 GLuint buffer;
 
+aqbool paused;
+
+void (*endCallback)() = NULL;
+
 void initWaterTest() {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
 
@@ -247,6 +251,8 @@ static const unsigned int kMaxFrameTimes = 100;
 static unsigned int frameTimes[ kMaxFrameTimes ];
 static int frameTimeIndex = 0;
 void stepWaterTest(float dt) {
+    if ( paused ) { return; }
+
     AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
     hertztime += dt;
 
@@ -256,9 +262,13 @@ void stepWaterTest(float dt) {
     float screenWidth, screenHeight;
     AQInput_getScreenSize( &screenWidth, &screenHeight );
 
+    float fingerRadius = 30;
+
     AQArray *touches = AQInput_getTouches();
     AQTouch *touch = (AQTouch *) AQArray_atIndex( touches, 0 );
     if ( touch ) {
+      aqvec2 centerDiff = (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 };
+
       // printf( "touch: %s %f %f\n",
       //   touch->state == AQTouchBegan ?
       //     "began" :
@@ -270,7 +280,8 @@ void stepWaterTest(float dt) {
       switch ( touch->state ) {
         case AQTouchBegan:
           // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-          if ( leaper && touch->finger == 1 ) {
+
+          if ( leaper && touch->finger == 1 && aqvec2_mag( centerDiff ) > fingerRadius ) {
             aqvec2 dir = aqvec2_normalized( (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 });
             AQDOUBLE radians =
               atan2( -dir.y, -dir.x ) + AQRenderer_camera()->radians;
@@ -281,7 +292,7 @@ void stepWaterTest(float dt) {
         case AQTouchMoved:
         case AQTouchStationary:
           if ( cameraController ) {
-            if ( touch->finger == 3 ) {
+            if ( touch->finger == 3 || aqvec2_mag( centerDiff ) < fingerRadius ) {
               SLCameraController_inputPress( cameraController );
             }
           }
@@ -307,6 +318,10 @@ void stepWaterTest(float dt) {
         frames++;
 
         AQLoop_step( kFrameFraction );
+
+        if ( leaper && leaper->state == LostLeaperState && endCallback ) {
+          endCallback();
+        }
 
         while (hertztime > kFrameFraction) {
           hertztime -= kFrameFraction;
@@ -370,4 +385,16 @@ void drawWaterTest() {
   );
 
   aqfree( pool );
+}
+
+void pauseSpaceLeaper() {
+  paused = 1;
+}
+
+void resumeSpaceLeaper() {
+  paused = 0;
+}
+
+void setSpaceLeaperEndCallback( void (*callback)() ) {
+  endCallback = callback;
 }

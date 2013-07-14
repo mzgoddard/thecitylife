@@ -33,6 +33,7 @@ typedef struct SLLeaper {
   AQParticle *lastTouched;
   int isHome;
 
+  int visited;
   int oxygen;
   int resource;
 

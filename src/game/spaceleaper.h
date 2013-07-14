@@ -12,4 +12,9 @@ void drawWaterTest();
 
 void setGetTicksFunction( unsigned int (*)() );
 
+void pauseSpaceLeaper();
+void resumeSpaceLeaper();
+void setSpaceLeaperEndCallback( void (*)() );
+void setSpaceLeaperVisitedCallback( void (*)( unsigned int ) );
+
 #endif /* end of include guard: WATERTEST_H_7CD7W2LH */
