@@ -88,13 +88,14 @@ void initWaterTest() {
   assert( homeAsteroid );
   SLAsteroid_setIsHome( homeAsteroid, 1 );
 
+  AQRenderer_addView( asteroidView );
   AQRenderer_addView( leaper = SLLeaper_create(
     aqvec2_add(
       homeAsteroid->center,
       aqvec2_make( 5, 5 )
     )
   ));
-  AQRenderer_addView( asteroidView );
+  leaper->radians = M_PI / 4;
 
   AQLoop_addUpdater(
     cameraController =

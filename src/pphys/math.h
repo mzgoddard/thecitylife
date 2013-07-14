@@ -190,6 +190,11 @@ static aqaabb aqaabb_br(aqaabb a) {
   );
 }
 
+static aqvec2 aqaabb_center(aqaabb a) {
+  aqvec2 extents = aqaabb_extents( a );
+  return aqvec2_add( aqvec2_make( a.left, a.bottom ), extents );
+}
+
 static aqaabb aqaabb_combine(aqaabb a, aqaabb b) {
   return aqaabb_make(
     fmax(a.top, b.top), fmax(a.right, b.right), 

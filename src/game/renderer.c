@@ -33,7 +33,7 @@ void AQRenderer_boot() {
 
   glClearColor(0, 0, 0, 0);
   glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   AQShaders_boot();
 }
@@ -51,7 +51,7 @@ void AQRenderer_removeView( void *object ) {
 }
 
 void AQRenderer_draw() {
-  glClearColor(0,0,0,0);
+  glClearColor( 10 / 255.0, 22 / 255.0, 31 / 255.0, 1 );
   glClear(GL_COLOR_BUFFER_BIT);
 
   static GLfloat matrix[16] = {

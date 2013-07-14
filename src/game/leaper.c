@@ -29,6 +29,8 @@ SLUpdaterInterface _SLLeaperUpdater = (SLUpdaterInterface) {
 SLLeaper * SLLeaper_init( SLLeaper *self ) {
   memset( &self->position, 0, sizeof( SLLeaper ) - sizeof( AQObj ));
 
+  self->radius = 5;
+
   self->body = aqinit( aqalloc( &AQParticleType ));
   self->body->radius = 5;
   self->body->userdata = self;
@@ -40,6 +42,8 @@ SLLeaper * SLLeaper_init( SLLeaper *self ) {
   self->trigger->userdata = self;
   self->trigger->oncollision =
     (AQParticleCollisionCallback) _SLLeaper_oncollision;
+
+  self->oxygen = SLLeaper_maxOxygen;
 
   return self;
 }
@@ -101,6 +105,12 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
   self->trigger->position = self->body->position;
   self->trigger->lastPosition = self->body->lastPosition;
 
+  if ( self->state == FloatingLeaperState ) {
+    aqvec2 velocity = aqvec2_sub( self->body->lastPosition, self->body->position );
+    float angle = atan2( velocity.y, velocity.x );
+    self->radians = ( angle - self->radians ) * 0.2 + self->radians;
+  }
+
   if ( self->state == StuckLeaperState ) {
     // Maintain distance to last hit particle.
     aqvec2 diff = aqvec2_sub(
@@ -146,7 +156,7 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
       asteroid->isVisible = 1;
       asteroid->center = self->lastTouched->position;
 
-      if ( asteroid->resource ) {
+      if ( asteroid->resource && self->resource < SLLeaper_maxResource ) {
         int resource = asteroid->resource < 1 ? asteroid->resource : 1;
         asteroid->resource -= resource;
         self->resource += resource;
@@ -160,6 +170,22 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
           ( 63 - 204 ) * resourcePercent + 204;
       }
     }
+  }
+
+  //
+  // Update oxygen.
+  if ( self->isHome ) {
+    int oxygen = self->resource < 5 ? self->resource : 5;
+    if ( oxygen > ( SLLeaper_maxOxygen - self->oxygen ) / SLLeaper_resourceToOxygen ) {
+      oxygen = ( SLLeaper_maxOxygen - self->oxygen ) / SLLeaper_resourceToOxygen;
+    }
+    self->resource -= oxygen;
+    self->oxygen += oxygen * SLLeaper_resourceToOxygen;
+  }
+
+  self->oxygen -= 1;
+  if ( self->oxygen < 0 ) {
+    _SLLeaper_gotoState( self, LostLeaperState );
   }
 }
 
@@ -195,6 +221,15 @@ void _SLLeaper_oncollision( AQParticle *a, AQParticle *b, void *collision ) {
 }
 
 void _SLLeaper_gotoState( SLLeaper *self, SLLeaperState newState ) {
+  if ( newState == StuckLeaperState ) {
+    SLAsteroid *asteroid = (SLAsteroid *) self->lastTouched->userdata;
+    if ( asteroid && aqistype( asteroid, &SLAsteroidType ) && asteroid->isHome ) {
+      self->isHome = 1;
+    }
+  } else {
+    self->isHome = 0;
+  }
+
   self->state = newState;
 }
 

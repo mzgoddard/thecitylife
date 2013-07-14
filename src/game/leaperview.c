@@ -61,18 +61,125 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
   //   (struct colorvertex) { box.left, box.bottom, 255, 255, 255, 255 };
   // self->vertices[5] =
   //   (struct colorvertex) { box.right, box.bottom, 255, 255, 255, 255 };
+  float radius = self->leaper->radius * 1.5;
+  float radians = self->leaper->radians;
+  aqvec2 axis = aqvec2_make( cos( radians ), sin( radians ));
+  aqaabb box1 = aqaabb_makeCenterRadius(
+    aqvec2_sub(
+      aqaabb_center( box ),
+      aqvec2_scale( axis, -radius / 2 )
+    ),
+    radius / 4
+  );
+  aqaabb box2 = aqaabb_makeCenterRadius(
+    aqvec2_sub(
+      aqaabb_center( box ),
+      aqvec2_scale( axis, radius / 2 )
+    ),
+    radius
+  );
+  box1.top += radius / 4;
+  box1.bottom -= radius / 4;
+  box2.right -= radius / 4;
+  box2.left += radius / 4;
+
   memset( self->vertices, 0, sizeof(self->vertices) );
   void * vertices = AQDraw_color(
     self->vertices,
-    AQDraw_rect( self->vertices, colorvertex_next, box ),
+    AQDraw_rotatedRect(
+      self->vertices, colorvertex_next, box2, self->leaper->radians
+    ),
     colorvertex_next,
     colorvertex_getcolor,
-    (struct glcolor) { 255, 0, 0, 255 }
+    (struct glcolor) { 255, 116, 59, 255 }
+  );
+  vertices = AQDraw_color(
+    vertices,
+    AQDraw_rotatedRect(
+      vertices, colorvertex_next, box1, self->leaper->radians
+    ),
+    colorvertex_next,
+    colorvertex_getcolor,
+    (struct glcolor) { 255, 116, 59, 255 }
+  );
+
+  // Oxygen.
+  aqvec2 oxygenAxis = aqvec2_make( cos( radians + M_PI / 2 ), sin( radians + M_PI / 2 ));
+  aqaabb fullBar = aqaabb_makeCenterExtents(
+    aqvec2_add(
+      aqaabb_center( box ),
+      aqvec2_scale( oxygenAxis, radius * 2 )
+    ),
+    aqvec2_make( radius, 1 )
+  );
+  vertices = AQDraw_color(
+    vertices,
+    AQDraw_rotatedRect(
+      vertices, colorvertex_next, fullBar, self->leaper->radians - M_PI / 6 
+    ),
+    colorvertex_next,
+    colorvertex_getcolor,
+    (struct glcolor) { 255, 255, 255, 64 }
+  );
+
+  aqvec2 oxygenAxisAxis = aqvec2_make( cos( radians + M_PI / 2 + M_PI / 3 ), sin( radians + M_PI / 2 + M_PI / 3 ));
+  aqaabb filledBar = aqaabb_makeCenterExtents(
+    aqvec2_add( aqvec2_add(
+      aqaabb_center( box ),
+      aqvec2_scale( oxygenAxis, radius * 2 )
+    ), aqvec2_scale( oxygenAxisAxis, radius - radius * self->leaper->oxygen / SLLeaper_maxOxygen )),
+    aqvec2_make( radius * self->leaper->oxygen / SLLeaper_maxOxygen, 1 )
+  );
+  vertices = AQDraw_color(
+    vertices,
+    AQDraw_rotatedRect(
+      vertices, colorvertex_next, filledBar, self->leaper->radians - M_PI / 6 
+    ),
+    colorvertex_next,
+    colorvertex_getcolor,
+    (struct glcolor) { 255, 255, 255, 255 }
+  );
+
+  // Resource.
+  aqvec2 resourceAxis = aqvec2_make( cos( radians - M_PI / 2 ), sin( radians - M_PI / 2 ));
+  aqaabb fullResourceBar = aqaabb_makeCenterExtents(
+    aqvec2_add(
+      aqaabb_center( box ),
+      aqvec2_scale( resourceAxis, radius * 2 )
+    ),
+    aqvec2_make( radius, 1 )
+  );
+  vertices = AQDraw_color(
+    vertices,
+    AQDraw_rotatedRect(
+      vertices, colorvertex_next, fullResourceBar, self->leaper->radians + M_PI / 6 
+    ),
+    colorvertex_next,
+    colorvertex_getcolor,
+    (struct glcolor) { 128, 64, 32, 64 }
+  );
+
+  aqvec2 resourceAxisAxis = aqvec2_make( cos( radians - M_PI / 2 - M_PI / 3 ), sin( radians - M_PI / 2 - M_PI / 3 ));
+  aqaabb filledResourceBar = aqaabb_makeCenterExtents(
+    aqvec2_add( aqvec2_add(
+      aqaabb_center( box ),
+      aqvec2_scale( resourceAxis, radius * 2 )
+    ), aqvec2_scale( resourceAxisAxis, radius - radius * self->leaper->resource / SLLeaper_maxResource )),
+    aqvec2_make( radius * self->leaper->resource / SLLeaper_maxResource, 1 )
+  );
+  vertices = AQDraw_color(
+    vertices,
+    AQDraw_rotatedRect(
+      vertices, colorvertex_next, filledResourceBar, self->leaper->radians + M_PI / 6 
+    ),
+    colorvertex_next,
+    colorvertex_getcolor,
+    (struct glcolor) { 128, 64, 32, 255 }
   );
 
   AQShaders_useProgram( ColorShaderProgram );
   AQShaders_draw(
-    self->buffer, self->vertices, sizeof(struct colorvertex) * 6
+    self->buffer, self->vertices, sizeof(struct colorvertex) * 6 * 6
   );
 }
 

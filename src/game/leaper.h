@@ -12,6 +12,10 @@ typedef enum SLLeaperState {
   WonLeaperState
 } SLLeaperState;
 
+static const int SLLeaper_maxOxygen = 512;
+static const int SLLeaper_maxResource = 128;
+static const int SLLeaper_resourceToOxygen = 16;
+
 extern AQType SLLeaperType;
 
 typedef struct SLLeaper {
