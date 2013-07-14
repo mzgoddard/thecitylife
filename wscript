@@ -53,7 +53,7 @@ def configure(ctx):
     ctx.env.LINK_CC = ctx.env.CC
     ctx.env.CFLAGS = [ '-O2' ]
     ctx.env.LINKFLAGS = [
-        '-s', 'EXPORTED_FUNCTIONS=[\'_main\',\'_malloc\',\'_pauseSpaceLeaper\',\'_resumeSpaceLeaper\',\'_setSpaceLeaperEndCallback\']',
+        '-s', 'EXPORTED_FUNCTIONS=[\'_main\',\'_malloc\',\'_pauseSpaceLeaper\',\'_resumeSpaceLeaper\',\'_setSpaceLeaperEndCallback\',\'_setSpaceLeaperVisitedCallback\',\'_setSpaceLeaperResourceCallback\']',
         '-s',
         'RESERVED_FUNCTION_POINTERS=16',
         '-O2',

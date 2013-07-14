@@ -136,6 +136,9 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
 
       if ( !asteroid->isVisible && !asteroid->isHome ) {
         self->visited++;
+        if ( self->onvisit ) {
+          self->onvisit( self->visited );
+        }
 
         // Resource asteroid.
         if ( self->visited == 3 || ( self->visited > 3 && rand() < RAND_MAX / 2 ) ) {
@@ -162,8 +165,13 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
         int resource = asteroid->resource < 1 ? asteroid->resource : 1;
         asteroid->resource -= resource;
         self->resource += resource;
+        self->totalResource += resource;
 
-        float resourcePercent = 1 - asteroid->resource / 128.0;
+        if ( self->onresource ) {
+          self->onresource( self->totalResource );
+        }
+
+        float resourcePercent = 1 - asteroid->resource / (float) SLLeaper_maxResource;
         asteroid->color.r =
           ( 138 - 27 ) * resourcePercent + 27;
         asteroid->color.g =

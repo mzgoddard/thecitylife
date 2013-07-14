@@ -44,6 +44,8 @@ GLuint buffer;
 aqbool paused;
 
 void (*endCallback)() = NULL;
+void (*visitedCallback)( unsigned int ) = NULL;
+void (*resourceCallback)( unsigned int ) = NULL;
 
 void initWaterTest() {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
@@ -101,6 +103,8 @@ void initWaterTest() {
     )
   ));
   leaper->radians = M_PI / 4;
+  leaper->onvisit = visitedCallback;
+  leaper->onresource = resourceCallback;
 
   AQLoop_addUpdater(
     cameraController =
@@ -317,6 +321,15 @@ void stepWaterTest(float dt) {
         }
         frames++;
 
+        if ( leaper && leaper->onvisit != visitedCallback ) {
+          leaper->onvisit = visitedCallback;
+          visitedCallback( leaper->visited );
+        }
+        if ( leaper && leaper->onresource != resourceCallback ) {
+          leaper->onresource = resourceCallback;
+          resourceCallback( leaper->totalResource );
+        }
+
         AQLoop_step( kFrameFraction );
 
         if ( leaper && leaper->state == LostLeaperState && endCallback ) {
@@ -397,4 +410,12 @@ void resumeSpaceLeaper() {
 
 void setSpaceLeaperEndCallback( void (*callback)() ) {
   endCallback = callback;
+}
+
+void setSpaceLeaperVisitedCallback( void (*callback)( unsigned int ) ) {
+  visitedCallback = callback;
+}
+
+void setSpaceLeaperResourceCallback( void (*callback)( unsigned int ) ) {
+  resourceCallback = callback;
 }
