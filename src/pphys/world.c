@@ -43,7 +43,7 @@ void _AQWorld_integrateIterator( AQObj *item, void *ctx ) {
   // particle->collisionCount = 0;
 
   aqaabb newAabb = particle->_aabb = AQParticle_aabb( particle );
-  if ( aqvec2_mag2( aqvec2_sub( particle->position, particle->oldPosition )) > particle->radius / 2 ) {
+  if ( aqvec2_mag2( aqvec2_sub( particle->position, particle->oldPosition )) > particle->radius / 10 ) {
     AQDdvt_updateParticle( self->world->ddvt, particle, particle->oldAabb, newAabb );
     particle->oldPosition = particle->position;
     particle->oldAabb = newAabb;

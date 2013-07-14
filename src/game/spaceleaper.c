@@ -248,15 +248,16 @@ void stepWaterTest(float dt) {
       switch ( touch->state ) {
         case AQTouchBegan:
           // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-          // if ( leaper ) {
-          //   float screenWidth, screenHeight;
-          //   AQInput_getScreenSize( &screenWidth, &screenHeight );
-          //   aqvec2 dir = { touch->wx - screenWidth, touch->wy - screenHeight };
-          //   AQDOUBLE radians =
-          //     atan2( dir.y, dir.x ) + AQRenderer_camera().radians;
-          // 
-          //   SLLeaper_applyDirection( leaper, radians );
-          // }
+          if ( leaper ) {
+            float screenWidth, screenHeight;
+            AQInput_getScreenSize( &screenWidth, &screenHeight );
+            aqvec2 dir = aqvec2_normalized( (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 });
+            AQDOUBLE radians =
+              atan2( -dir.y, -dir.x ) + AQRenderer_camera()->radians;
+            printf( "%f %s\n", radians, aqvec2_cstr( dir ) );
+
+            SLLeaper_applyDirection( leaper, radians );
+          }
           break;
         case AQTouchMoved:
         case AQTouchStationary:
@@ -345,7 +346,7 @@ void drawWaterTest() {
     );
     if ( leaper->state == StuckLeaperState ) {
       aqvec2 dir = aqvec2_normalized( aqvec2_sub( leaper->body->position, leaper->lastTouched->position ));
-      camera->radians = atan2( dir.y, dir.x ) - M_PI / 2;
+      camera->radians = camera->radians + ( atan2( dir.y, dir.x ) - M_PI / 2 - camera->radians ) * 0.1;
     }
   }
 

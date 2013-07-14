@@ -33,7 +33,7 @@ SLLeaper * SLLeaper_init( SLLeaper *self ) {
 
   self->trigger = aqinit( aqalloc( &AQParticleType ));
   AQParticle_ignoreParticle( self->trigger, self->body );
-  self->body->radius = 5;
+  self->trigger->radius = 5;
   self->trigger->isTrigger = 1;
   self->trigger->userdata = self;
   self->trigger->oncollision =
@@ -81,9 +81,18 @@ SLLeaper * SLLeaper_create( aqvec2 position ) {
   return self;
 }
 
-// void SLLeaper_applyDirection( SLLeaper *self, AQDOUBLE radians ) {
-//   if ( self->state )
-// }
+void SLLeaper_applyDirection( SLLeaper *self, AQDOUBLE radians ) {
+  if ( self->state == StuckLeaperState ) {
+    float c = cos( radians );
+    float s = sin( radians );
+    float f = 10;
+    self->body->position =
+      aqvec2_add( self->body->position, aqvec2_make( c * 0.2, s * 0.2 ));
+    self->body->lastPosition =
+      aqvec2_add( self->body->position, aqvec2_make( c * f, s * f ));
+    _SLLeaper_gotoState( self, FloatingLeaperState );
+  }
+}
 
 void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
   self->position = self->body->position;
@@ -137,8 +146,10 @@ void _SLLeaper_oncollision( AQParticle *a, AQParticle *b, void *collision ) {
   assert( self );
   assert( b != self->body );
 
-  _SLLeaper_gotoState( self, StuckLeaperState );
+  aqrelease( self->lastTouched );
   self->lastTouched = aqretain( b );
+
+  _SLLeaper_gotoState( self, StuckLeaperState );
 }
 
 void _SLLeaper_gotoState( SLLeaper *self, SLLeaperState newState ) {
