@@ -52,13 +52,9 @@ void _SLAsteroidGroupView_iterator(
       colorvertex_next,
       colorvertex_getcolor,
       asteroid->isHome ?
-        (struct glcolor) {0, 255, 0, 255 * asteroid->visibility} :
-        (struct glcolor) {255, 255, 255, 255 * asteroid->visibility}
+        (struct glcolor) {145, 255, 85, 255} :
+        (struct glcolor) asteroid->color
     );
-    asteroid->visibility -= asteroid->isHome ? 0.0001 : 0.0003;
-    if ( asteroid->visibility < 0 ) {
-      asteroid->isVisible = 0;
-    }
   }
 }
 

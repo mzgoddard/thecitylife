@@ -29,8 +29,8 @@ typedef struct SLLeaper {
   AQParticle *lastTouched;
   int isHome;
 
-  AQDOUBLE oxygen;
-  AQDOUBLE minerals;
+  int oxygen;
+  int resource;
 
   void *view;
 } SLLeaper;

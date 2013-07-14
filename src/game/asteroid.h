@@ -3,6 +3,7 @@
 
 #include "src/obj/index.h"
 #include "src/pphys/index.h"
+#include "src/game/shaders.h"
 
 // Line of trigger particles that apply acceleration in their direction.
 extern AQType SLAsteroidType;
@@ -19,7 +20,8 @@ typedef struct SLAsteroid {
   // AQList *sticks;
 
   int isVisible;
-  float visibility;
+  int resource;
+  struct glcolor color;
   int isHome;
 } SLAsteroid;
 

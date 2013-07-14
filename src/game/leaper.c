@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "src/game/leaper.h"
@@ -123,9 +124,41 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
     if ( maybeAsteroid && aqistype( maybeAsteroid, &SLAsteroidType )) {
       SLAsteroid *asteroid = maybeAsteroid;
 
+      if ( !asteroid->isVisible ) {
+        // Resource asteroid.
+        if ( rand() < RAND_MAX / 8 ) {
+          asteroid->resource = rand() % 128;
+          asteroid->color = (struct glcolor) {
+            27, 43, 204, 255
+          }; 
+        // Normal asteroid.
+        } else {
+          float percent = rand() / (float) RAND_MAX;
+          asteroid->color = (struct glcolor) {
+            138 / 2 + percent * 138 / 2,
+            85 / 2 + percent * 85 / 2,
+            63 / 2 + percent * 63 / 2,
+            255
+          };
+        }
+      }
+
       asteroid->isVisible = 1;
-      asteroid->visibility = 1.0;
       asteroid->center = self->lastTouched->position;
+
+      if ( asteroid->resource ) {
+        int resource = asteroid->resource < 1 ? asteroid->resource : 1;
+        asteroid->resource -= resource;
+        self->resource += resource;
+
+        float resourcePercent = 1 - asteroid->resource / 128.0;
+        asteroid->color.r =
+          ( 138 - 27 ) * resourcePercent + 27;
+        asteroid->color.g =
+          ( 85 - 43 ) * resourcePercent + 43;
+        asteroid->color.b =
+          ( 63 - 204 ) * resourcePercent + 204;
+      }
     }
   }
 }
