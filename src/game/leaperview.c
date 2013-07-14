@@ -1,6 +1,7 @@
 #include "src/game/leaperview.h"
 #include "src/game/view.h"
 #include "src/game/loop.h"
+#include "src/game/draw.h"
 
 void _SLLeaperView_draw( SLLeaperView * );
 
@@ -48,18 +49,26 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
 
   aqaabb box = AQParticle_aabb( self->leaper->body );
 
-  self->vertices[0] =
-    (struct colorvertex) { box.left, box.top, 255, 255, 255, 255 };
-  self->vertices[1] =
-    (struct colorvertex) { box.right, box.top, 255, 255, 255, 255 };
-  self->vertices[2] =
-    (struct colorvertex) { box.right, box.bottom, 255, 255, 255, 255 };
-  self->vertices[3] =
-    (struct colorvertex) { box.left, box.top, 255, 255, 255, 255 };
-  self->vertices[4] =
-    (struct colorvertex) { box.left, box.bottom, 255, 255, 255, 255 };
-  self->vertices[5] =
-    (struct colorvertex) { box.right, box.bottom, 255, 255, 255, 255 };
+  // self->vertices[0] =
+  //   (struct colorvertex) { box.left, box.top, 255, 255, 255, 255 };
+  // self->vertices[1] =
+  //   (struct colorvertex) { box.right, box.top, 255, 255, 255, 255 };
+  // self->vertices[2] =
+  //   (struct colorvertex) { box.right, box.bottom, 255, 255, 255, 255 };
+  // self->vertices[3] =
+  //   (struct colorvertex) { box.left, box.top, 255, 255, 255, 255 };
+  // self->vertices[4] =
+  //   (struct colorvertex) { box.left, box.bottom, 255, 255, 255, 255 };
+  // self->vertices[5] =
+  //   (struct colorvertex) { box.right, box.bottom, 255, 255, 255, 255 };
+  memset( self->vertices, 0, sizeof(self->vertices) );
+  void * vertices = AQDraw_color(
+    self->vertices,
+    AQDraw_rect( self->vertices, colorvertex_next, box ),
+    colorvertex_next,
+    colorvertex_getcolor,
+    (struct glcolor) { 255, 0, 0, 255 }
+  );
 
   AQShaders_useProgram( ColorShaderProgram );
   AQShaders_draw(

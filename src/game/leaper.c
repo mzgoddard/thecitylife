@@ -6,6 +6,7 @@
 #include "src/game/updater.h"
 #include "src/game/leaperview.h"
 #include "src/game/loop.h"
+#include "src/game/asteroid.h"
 
 void _SLLeaper_update( SLLeaper *, AQDOUBLE );
 void * _SLLeaper_view( SLLeaper * );
@@ -116,9 +117,17 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
 
     // Don't move due to velocity when stuck. Other particles can move us.
     self->body->lastPosition = self->body->position;
-  }
 
-  // printf( "update %s\n", aqvec2_cstr( self->trigger->position ));
+    // Update asteroid.
+    void *maybeAsteroid = self->lastTouched->userdata;
+    if ( maybeAsteroid && aqistype( maybeAsteroid, &SLAsteroidType )) {
+      SLAsteroid *asteroid = maybeAsteroid;
+
+      asteroid->isVisible = 1;
+      asteroid->visibility = 1.0;
+      asteroid->center = self->lastTouched->position;
+    }
+  }
 }
 
 void * _SLLeaper_view( SLLeaper *self ) {

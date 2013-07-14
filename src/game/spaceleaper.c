@@ -17,6 +17,7 @@
 #include "src/game/loop.h"
 #include "src/game/leaper.h"
 #include "src/game/cameracontroller.h"
+#include "src/game/asteroidview.h"
 
 #define kFrameFraction 1.0 / 20
 #ifndef kParticleCount
@@ -55,6 +56,8 @@ void initWaterTest() {
 
   SLAsteroid *homeAsteroid = NULL;
 
+  SLAsteroidGroupView *asteroidView = SLAsteroidGroupView_create();
+
   int n = 64;
   for ( int i = 0; i < n; ++i ) {
     for ( int j = 0; j < n; ++j ) {
@@ -67,6 +70,7 @@ void initWaterTest() {
         ((double) rand() ) / RAND_MAX * world->aabb.right / n / 8 + world->aabb.right / n / 8
       );
       AQList_push( asteroids, (AQObj *) asteroid );
+      SLAsteroidGroupView_addAsteroid( asteroidView, asteroid );
 
       if (
         i < n / 8 * 5 && i > n / 8 * 3 &&
@@ -90,20 +94,23 @@ void initWaterTest() {
       aqvec2_make( 5, 5 )
     )
   ));
+  AQRenderer_addView( asteroidView );
 
   AQLoop_addUpdater(
     cameraController =
       SLCameraController_setLeaper( SLCameraController_create(), leaper )
   );
 
+  cameraController->minScale = 2;
+
   glGenBuffers(1, &buffer);
 
   aqfree( pool );
 }
 
-struct glcolor {
-  GLubyte r,g,b,a;
-};
+// struct glcolor {
+//   GLubyte r,g,b,a;
+// };
 
 struct glvertex {
   GLfloat vertex[2];
@@ -138,6 +145,9 @@ static void set_particle_vertices( AQParticle *particle, void *ctx ) {
     }
     if ( AQParticle_isHomeAsteroid( particle )) {
       color = (struct glcolor) { 0, 255, 0, 128 };
+    }
+    if ( particle->userdata ) {
+      return;
     }
 
     aqaabb particlebox = AQParticle_aabb( particle );
@@ -241,6 +251,9 @@ void stepWaterTest(float dt) {
     int startTime = 0;
     int endTime = 0;
 
+    float screenWidth, screenHeight;
+    AQInput_getScreenSize( &screenWidth, &screenHeight );
+
     AQArray *touches = AQInput_getTouches();
     AQTouch *touch = (AQTouch *) AQArray_atIndex( touches, 0 );
     if ( touch ) {
@@ -256,8 +269,6 @@ void stepWaterTest(float dt) {
         case AQTouchBegan:
           // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
           if ( leaper && touch->finger == 1 ) {
-            float screenWidth, screenHeight;
-            AQInput_getScreenSize( &screenWidth, &screenHeight );
             aqvec2 dir = aqvec2_normalized( (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 });
             AQDOUBLE radians =
               atan2( -dir.y, -dir.x ) + AQRenderer_camera()->radians;

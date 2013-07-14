@@ -41,7 +41,7 @@ SLAsteroid * SLAsteroid_create(
   SLAsteroid *self = aqcreate( &SLAsteroidType );
   self->center = center;
   self->radius = radius;
-  self->mass = M_PI * radius * radius; 
+  self->mass = M_PI * radius * radius;
 
   AQParticle *particle = aqcreate( &AQParticleType );
   particle->radius = radius;

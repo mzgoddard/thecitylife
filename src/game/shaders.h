@@ -7,9 +7,13 @@ typedef enum AQShaderProgram {
   ColorShaderProgram = 1
 } AQShaderProgram;
 
+struct glcolor {
+  GLubyte r, g, b, a;
+};
+
 struct colorvertex {
   GLfloat x, y;
-  GLubyte r, g, b, a;
+  struct glcolor color;
 };
 
 void AQShaders_boot();

@@ -4,8 +4,8 @@
 
 #include "./particle.h"
 
-static const AQDOUBLE posmul = 1.99;
-static const AQDOUBLE lastposmul = 0.99;
+static const AQDOUBLE posmul = 1.9999;
+static const AQDOUBLE lastposmul = 0.9999;
 static const AQDOUBLE friction = 0.001;
 
 typedef struct aqcollidewith {

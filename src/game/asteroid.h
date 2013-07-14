@@ -18,6 +18,8 @@ typedef struct SLAsteroid {
   AQList *particles;
   // AQList *sticks;
 
+  int isVisible;
+  float visibility;
   int isHome;
 } SLAsteroid;
 
