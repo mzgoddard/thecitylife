@@ -2,6 +2,7 @@
 #define CAMERACONTROLLER_H_D3K8B99Y
 
 #include "src/game/leaper.h"
+#include "src/game/asteroid.h"
 
 typedef enum SLControllerState {
   PanControllerState,
@@ -36,8 +37,10 @@ typedef struct SLCameraController {
 
   SLControllerState state;
   SLLeaper *leaper;
+  SLAsteroid *home;
   int inputPressed;
 
+  aqvec2 center;
   float minScale;
   float maxScale;
   float currentScale;
@@ -49,7 +52,12 @@ typedef struct SLCameraController {
 
 SLCameraController * SLCameraController_create();
 
-SLCameraController * SLCameraController_setLeaper( SLCameraController *, SLLeaper * );
+SLCameraController * SLCameraController_setLeaper(
+  SLCameraController *, SLLeaper *
+);
+SLCameraController * SLCameraController_setHome(
+  SLCameraController *, SLAsteroid *
+);
 void SLCameraController_inputPress( SLCameraController * );
 
 #endif /* end of include guard: CAMERACONTROLLER_H_D3K8B99Y */

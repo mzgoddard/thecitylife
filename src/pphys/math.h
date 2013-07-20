@@ -108,6 +108,10 @@ static int aqvec2_eq( aqvec2 a, aqvec2 b ) {
   return fdim( a.x, b.x ) < AQEPS && fdim( a.y, b.y ) < AQEPS;
 }
 
+static aqvec2 aqvec2_lerp( aqvec2 a, aqvec2 b, float t ) {
+  return (aqvec2) { ( b.x - a.x ) * t + a.x, ( b.y - a.y ) * t + a.y };
+}
+
 static aqvec2 aqmat22_transform(aqmat22 m, aqvec2 v) {
   return aqvec2_make(m.aa * v.x + m.ab * v.y, m.ba * v.x + m.bb * v.y);
 }

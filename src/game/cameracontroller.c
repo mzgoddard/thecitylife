@@ -47,6 +47,14 @@ SLCameraController * SLCameraController_setLeaper(
   return self;
 }
 
+SLCameraController * SLCameraController_setHome(
+  SLCameraController *self, SLAsteroid *asteroid
+) {
+  aqrelease( self->home );
+  self->home = aqretain( asteroid );
+  return self;
+}
+
 void SLCameraController_inputPress( SLCameraController *self ) {
   self->inputPressed = 1;
 }
@@ -82,12 +90,6 @@ void _SLCameraController_update( SLCameraController *self, AQDOUBLE dt ) {
   SLLeaper *leaper = self->leaper;
 
   if ( leaper ) {
-    float scale = self->currentScale * self->scaleValue;
-    camera->viewport = aqaabb_make(
-      leaper->position.y + scale, leaper->position.x + scale,
-      leaper->position.y - scale, leaper->position.x - scale
-    );
-
     if ( leaper->state == StuckLeaperState ) {
       aqvec2 dir = aqvec2_normalized( aqvec2_sub(
         leaper->body->position,
@@ -106,14 +108,27 @@ void _SLCameraController_update( SLCameraController *self, AQDOUBLE dt ) {
       camera->radians = camera->radians +
         ( targetRotation - camera->radians ) * 0.1;
     }
+
+    if (
+      leaper->state == WonLeaperState || leaper->state == LostLeaperState
+    ) {
+      if ( self->home ) {
+        self->center = aqvec2_lerp(
+          self->center, self->home->center, 0.01
+        );
+      }
+
+      camera->radians += 0.01;
+    } else {
+      self->center = leaper->position;
+    }
   }
 
-  if (
-    self->leaper->state == WonLeaperState ||
-      self->leaper->state == LostLeaperState
-  ) {
-    camera->radians += 0.01;
-  }
+  float scale = self->currentScale * self->scaleValue;
+  camera->viewport = aqaabb_make(
+    self->center.y + scale, self->center.x + scale,
+    self->center.y - scale, self->center.x - scale
+  );
 
   self->inputPressed = 0;
 }

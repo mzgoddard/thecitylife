@@ -108,7 +108,13 @@ void initWaterTest() {
 
   AQLoop_addUpdater(
     cameraController =
-      SLCameraController_setLeaper( SLCameraController_create(), leaper )
+      SLCameraController_setHome(
+        SLCameraController_setLeaper(
+          SLCameraController_create(),
+          leaper
+        ),
+        homeAsteroid
+      )
   );
 
   cameraController->minScale = 2;
