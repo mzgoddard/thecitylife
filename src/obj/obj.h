@@ -83,7 +83,7 @@ int aqistype(void *, AQType *);
 #define AQCALL(obj,interface,func,...) ( \
   AQInterface *interface ## _interface = aqcast(obj,interface), \
   interface ## _interface ? \
-    interface ## _interface->func( obj, __ARGS__ ) : \
+    interface ## _interface->func( obj, __VA_ARGS__ ) : \
     NULL \
 )
 
@@ -114,6 +114,37 @@ typedef AQObj AQReleasePool;
 
 AQReleasePool * AQReleasePool_create();
 
-void aqobj_init();
+typedef struct AQCallableInterface {
+  const char *name;
+
+  void * (*call)( void *, ... );
+} AQCallableInterface;
+
+extern AQType AQMethodPtrType;
+
+typedef struct AQMethodPtr {
+  AQObj obj;
+
+  AQObj *context;
+  void *fn;
+} AQMethodPtr;
+
+AQMethodPtr * AQMethodPtr_create( AQObj *, void * );
+void * AQMethodPtr_call( AQMethodPtr *, ... );
+
+extern AQType AQInterfacePtrType;
+
+typedef struct AQInterfacePtr {
+  AQObj obj;
+
+  AQObj *context;
+  AQInterface *interface;
+} AQInterfacePtr;
+
+AQInterfacePtr * AQInterfacePtr_create( AQObj *, AQInterface * );
+void * AQInterfacePtr_call( AQInterfacePtr *, void *fnoffset, ... );
+AQMethodPtr * AQInterfacePtr_methodPtr( AQInterfacePtr *, void *fnoffset, ... );
+
+AQInterfacePtr * aqcastptr( AQObj *, const char *interface );
 
 #endif /* end of include guard: OBJ_H_HYT03822 */

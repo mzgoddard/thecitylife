@@ -4,6 +4,7 @@
 #include "src/game/renderer.h"
 #include "src/game/shaders.h"
 #include "src/game/view.h"
+#include "src/game/colors.h"
 
 typedef struct AQRenderer {
   AQObj object;
@@ -51,7 +52,12 @@ void AQRenderer_removeView( void *object ) {
 }
 
 void AQRenderer_draw() {
-  glClearColor( 10 / 255.0, 22 / 255.0, 31 / 255.0, 1 );
+  glClearColor(
+    clearColor.r / 255.0,
+    clearColor.g / 255.0,
+    clearColor.b / 255.0,
+    1
+  );
   glClear(GL_COLOR_BUFFER_BIT);
 
   static GLfloat matrix[16] = {

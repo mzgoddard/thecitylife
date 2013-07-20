@@ -1,6 +1,7 @@
 #include "src/game/asteroidview.h"
 #include "src/game/view.h"
 #include "src/game/draw.h"
+#include "src/game/colors.h"
 
 void _SLAsteroidGroupView_draw( SLAsteroidGroupView * );
 
@@ -52,7 +53,7 @@ void _SLAsteroidGroupView_iterator(
       colorvertex_next,
       colorvertex_getcolor,
       asteroid->isHome ?
-        (struct glcolor) {145, 255, 85, 255} :
+        homeAsteroidColor :
         (struct glcolor) asteroid->color
     );
   }

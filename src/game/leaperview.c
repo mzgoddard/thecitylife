@@ -2,6 +2,7 @@
 #include "src/game/view.h"
 #include "src/game/loop.h"
 #include "src/game/draw.h"
+#include "src/game/colors.h"
 
 void _SLLeaperView_draw( SLLeaperView * );
 
@@ -91,7 +92,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
     ),
     colorvertex_next,
     colorvertex_getcolor,
-    (struct glcolor) { 255, 116, 59, 255 }
+    leaperColor
   );
   vertices = AQDraw_color(
     vertices,
@@ -100,7 +101,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
     ),
     colorvertex_next,
     colorvertex_getcolor,
-    (struct glcolor) { 255, 116, 59, 255 }
+    leaperColor
   );
 
   // Oxygen.
@@ -119,7 +120,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
     ),
     colorvertex_next,
     colorvertex_getcolor,
-    (struct glcolor) { 145, 255, 85, 64 }
+    leaperOxygenBarBackColor
   );
 
   aqvec2 oxygenAxisAxis = aqvec2_make( cos( radians + M_PI / 2 + M_PI / 3 ), sin( radians + M_PI / 2 + M_PI / 3 ));
@@ -137,7 +138,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
     ),
     colorvertex_next,
     colorvertex_getcolor,
-    (struct glcolor) { 145, 255, 85, 255 }
+    leaperOxygenBarForeColor
   );
 
   // Resource.
@@ -156,7 +157,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
     ),
     colorvertex_next,
     colorvertex_getcolor,
-    (struct glcolor) { 27, 43, 204, 64 }
+    leaperResourceBarBackColor
   );
 
   aqvec2 resourceAxisAxis = aqvec2_make( cos( radians - M_PI / 2 - M_PI / 3 ), sin( radians - M_PI / 2 - M_PI / 3 ));
@@ -174,7 +175,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
     ),
     colorvertex_next,
     colorvertex_getcolor,
-    (struct glcolor) { 27, 43, 204, 255 }
+    leaperResourceBarForeColor
   );
 
   AQShaders_useProgram( ColorShaderProgram );

@@ -8,6 +8,7 @@
 #include "src/game/leaperview.h"
 #include "src/game/loop.h"
 #include "src/game/asteroid.h"
+#include "src/game/colors.h"
 
 void _SLLeaper_update( SLLeaper *, AQDOUBLE );
 void * _SLLeaper_view( SLLeaper * );
@@ -15,6 +16,14 @@ void * _SLLeaper_view( SLLeaper * );
 void _SLLeaper_oncollision( AQParticle *, AQParticle *, void * );
 void _SLLeaper_gotoState( SLLeaper *, SLLeaperState );
 // void _SLLeaper_...
+
+// AQIMPLEMENT( SLLeaper, AQViewable,
+//   _SLLeaper_view
+// );
+// 
+// AQIMPLEMENT( SLLeaper, SLUpdater,
+//   _SLLeaper_update
+// );
 
 AQViewableInterface _SLLeaperViewable = (AQViewableInterface) {
   (const char *) &AQViewableId,
@@ -60,6 +69,11 @@ SLLeaper * SLLeaper_done( SLLeaper *self ) {
 
   return self;
 }
+
+// AQGETINTERFACE( SLLeaper,
+//   AQVIEWABLE( AQViewable ),
+//   AQUPDATER( SLUpdater )
+// )
 
 void * SLLeaper_getInterface( SLLeaper *self, const char * interfaceId ) {
   if ( interfaceId == AQViewableId ) {
@@ -143,17 +157,15 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
         // Resource asteroid.
         if ( self->visited == 3 || ( self->visited > 3 && rand() < RAND_MAX / 2 ) ) {
           asteroid->resource = rand() % 128;
-          asteroid->color = (struct glcolor) {
-            27, 43, 204, 255
-          };
+          asteroid->color = resourceAsteroidColor;
         // Normal asteroid.
         } else {
           float percent = rand() / (float) RAND_MAX;
           asteroid->color = (struct glcolor) {
-            138 / 2 + percent * 138 / 2,
-            85 / 2 + percent * 85 / 2,
-            63 / 2 + percent * 63 / 2,
-            255
+            normalAsteroidColor.r / 2 + percent * normalAsteroidColor.r / 2,
+            normalAsteroidColor.g / 2 + percent * normalAsteroidColor.g / 2,
+            normalAsteroidColor.b / 2 + percent * normalAsteroidColor.b / 2,
+            normalAsteroidColor.a
           };
         }
       }
@@ -171,13 +183,11 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
           self->onresource( self->totalResource );
         }
 
-        float resourcePercent = 1 - asteroid->resource / (float) SLLeaper_maxResource;
-        asteroid->color.r =
-          ( 138 - 27 ) * resourcePercent + 27;
-        asteroid->color.g =
-          ( 85 - 43 ) * resourcePercent + 43;
-        asteroid->color.b =
-          ( 63 - 204 ) * resourcePercent + 204;
+        float resourcePercent = 1.0 -
+          asteroid->resource / (float) SLLeaper_maxResource;
+        asteroid->color = SL_lerpColor(
+          normalAsteroidColor, resourceAsteroidColor, resourcePercent
+        );
       }
     }
   }
