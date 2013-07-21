@@ -14,6 +14,10 @@ struct glcolor * colorvertex_getcolor( void * );
 void * AQDraw_rect( void *vertices, vertexitr, aqaabb );
 void * AQDraw_rotatedRect( void *vertices, vertexitr, aqaabb, AQDOUBLE );
 void * AQDraw_trig( void *vertices, vertexitr, aqvec2, aqvec2, aqvec2 );
+void * AQDraw_polygon(
+  void *vertices, vertexitr next,
+  int sides, aqvec2 center, float radius, float angle
+);
 void * AQDraw_color(
   void *start, void *end, vertexitr, coloritr, struct glcolor
 );

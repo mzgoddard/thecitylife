@@ -12,29 +12,17 @@ struct glcolor * colorvertex_getcolor( void *vertex ) {
 
 void * AQDraw_rect( void *vertices, vertexitr itr, aqaabb rect
 ) {
-  ((GLfloat*)vertices)[0] = rect.left;
-  ((GLfloat*)vertices)[1] = rect.top;
-  vertices = itr( vertices );
+  vertices = AQDraw_trig( vertices, itr,
+    (aqvec2){rect.left,rect.top},
+    (aqvec2){rect.right,rect.top},
+    (aqvec2){rect.right,rect.bottom}
+  );
 
-  ((GLfloat*)vertices)[0] = rect.right;
-  ((GLfloat*)vertices)[1] = rect.top;
-  vertices = itr( vertices );
-
-  ((GLfloat*)vertices)[0] = rect.right;
-  ((GLfloat*)vertices)[1] = rect.bottom;
-  vertices = itr( vertices );
-  
-  ((GLfloat*)vertices)[0] = rect.left;
-  ((GLfloat*)vertices)[1] = rect.top;
-  vertices = itr( vertices );
-  
-  ((GLfloat*)vertices)[0] = rect.left;
-  ((GLfloat*)vertices)[1] = rect.bottom;
-  vertices = itr( vertices );
-  
-  ((GLfloat*)vertices)[0] = rect.right;
-  ((GLfloat*)vertices)[1] = rect.bottom;
-  return itr( vertices );
+  return AQDraw_trig( vertices, itr,
+    (aqvec2){rect.left,rect.top},
+    (aqvec2){rect.left,rect.bottom},
+    (aqvec2){rect.right,rect.bottom}
+  );
 }
 
 void * AQDraw_rotatedRect(
@@ -81,7 +69,45 @@ void * AQDraw_rotatedRect(
   return itr( vertices );
 }
 
-// void * AQDraw_trig( void *vertices, vertexitr, aqvec2, aqvec2, aqvec2 );
+void * AQDraw_trig(
+  void *vertices, vertexitr next, aqvec2 a, aqvec2 b, aqvec2 c
+) {
+  ((GLfloat*)vertices)[0] = a.x;
+  ((GLfloat*)vertices)[1] = a.y;
+  vertices = next( vertices );
+
+  ((GLfloat*)vertices)[0] = b.x;
+  ((GLfloat*)vertices)[1] = b.y;
+  vertices = next( vertices );
+
+  ((GLfloat*)vertices)[0] = c.x;
+  ((GLfloat*)vertices)[1] = c.y;
+  return next( vertices );
+}
+
+void * AQDraw_polygon(
+  void *vertices, vertexitr next,
+  int sides, aqvec2 center, float radius, float angle
+) {
+  aqmat22 rotation = aqmat22_makeRotation( 2 * M_PI / sides );
+  aqvec2 v = aqvec2_rotate( (aqvec2) { 0, radius }, angle );
+  aqvec2 v2 = aqmat22_transform( rotation, v );
+  v = aqvec2_add( center, v );
+
+  for ( int i = 0; i < sides; ++i ) {
+    aqvec2 tmp = aqvec2_add( center, v2 );
+    vertices = AQDraw_trig(
+      vertices, next,
+      v,
+      tmp,
+      center
+    );
+    v = tmp;
+    v2 = aqmat22_transform( rotation, v2 );
+  }
+
+  return vertices;
+}
 
 void * AQDraw_color(
   void *start, void *end,
