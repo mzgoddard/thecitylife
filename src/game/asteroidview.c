@@ -39,16 +39,59 @@ void SLAsteroidGroupView_addAsteroid(
   AQList_push( self->asteroids, (AQObj*) asteroid );
 }
 
+GLfloat * _colorvertex_next3( void *vertex ) {
+  return vertex + sizeof( struct colorvertex ) * 3;
+}
+
 void _SLAsteroidGroupView_iterator(
   SLAsteroid *asteroid, SLAsteroidGroupView *self
 ) {
   if ( asteroid->isVisible ) {
+    struct glcolor asteroidColor = asteroid->isHome ?
+      homeAsteroidColor :
+      (struct glcolor) asteroid->color;
+    asteroidColor.a = asteroid->resource * 2;
+
+    void * glowStart = self->currentVertex;
+
+    if ( asteroidColor.a ) {
+      self->currentVertex = (struct colorvertex *) AQDraw_color(
+        self->currentVertex,
+        AQDraw_polygon(
+          self->currentVertex,
+          colorvertex_next,
+          16,
+          asteroid->center,
+          asteroid->radius * 5,
+          M_PI / 4
+        ),
+        colorvertex_next,
+        colorvertex_getcolor,
+        (struct glcolor) { 0, 0, 0, 0 }
+      );
+
+      AQDraw_color(
+        glowStart + sizeof( struct colorvertex ) * 2,
+        self->currentVertex,
+        _colorvertex_next3,
+        colorvertex_getcolor,
+        asteroidColor
+      );
+    }
+
     self->currentVertex = (struct colorvertex *) AQDraw_color(
       self->currentVertex,
-      AQDraw_rect(
+      AQDraw_polygon(
         self->currentVertex,
         colorvertex_next,
-        aqaabb_makeCenterRadius( asteroid->center, asteroid->radius )
+        asteroid->resource ?
+          (int) (
+            16 * ( asteroid->resource / (float) 128 ) + 16
+          ) :
+          16,
+        asteroid->center,
+        asteroid->radius,
+        M_PI / 4
       ),
       colorvertex_next,
       colorvertex_getcolor,
