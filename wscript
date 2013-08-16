@@ -137,15 +137,8 @@ def build(bld):
 
     if bld.cmd == 'emcc':
         bld(
-            rule='cp ${SRC} ${TGT}',
-            source='src/platform/web/watertest.html',
-            target='watertest.html'
-        )
-
-        bld(
-            rule='cp ${SRC} ${TGT}',
-            source='src/platform/web/spaceleaper.html',
-            target='spaceleaper.html'
+            rule='cp ${SRC} .',
+            source=bld.path.ant_glob( 'src/platform/web/*' )
         )
 
     watertestSource = bld.path.ant_glob(
