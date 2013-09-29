@@ -6,6 +6,7 @@
 #include "./aabb.h"
 #include "./particle.h"
 #include "./ddvt.h"
+#include "./constraint.h"
 #include "./world.h"
 
 void aqpphysindex_init();
