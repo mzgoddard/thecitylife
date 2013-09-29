@@ -8,6 +8,7 @@
 #include "./ddvt.h"
 #include "./constraint.h"
 #include "./world.h"
+#include "./stick.h"
 
 void aqpphysindex_init();
 
