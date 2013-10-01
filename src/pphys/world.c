@@ -1,11 +1,14 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <stddef.h>
 
 #include "./world.h"
+#include "./constraint.h"
 
 AQWorld * AQWorld_init( AQWorld *self ) {
   self->ddvt = aqretain( AQDdvt_create( aqaabb_make( 0, 0, 0, 0 )));
   self->particles = aqretain( aqcreate( &AQListType ));
+  self->constraints = aqretain( aqcreate( &AQListType ));
   self->headCollision = aqcollision_pop( NULL );
   self->nextCollision = self->headCollision;
   return self;
@@ -14,6 +17,7 @@ AQWorld * AQWorld_init( AQWorld *self ) {
 AQWorld * AQWorld_done( AQWorld *self ) {
   aqrelease( self->ddvt );
   aqrelease( self->particles );
+  aqrelease( self->constraints );
   aqcollision_done( self->headCollision );
   return self;
 }
@@ -101,6 +105,13 @@ void _AQWorld_solveIterator( aqcollision *col, void *ctx ) {
   AQParticle_solve( col->a, col->b, col );
 }
 
+void _AQWorld_performConstraints( AQInterfacePtr *interfacePtr, void *ctx ) {
+  AQInterfacePtr_call0(
+    interfacePtr,
+    offsetof( AQConstraintInterface, update )
+  );
+}
+
 void _AQWorld_maintainBoxIterator( AQParticle *particle, void *ctx ) {
   AQWorld *world = (AQWorld *) ctx;
   aqaabb aabb = AQParticle_aabb( particle );
@@ -180,7 +191,13 @@ void AQWorld_step( AQWorld *self, AQDOUBLE dt ) {
   aqcollision_clear( self->headCollision );
   self->nextCollision = self->headCollision;
 
-  AQList_iterate( self->particles, (AQList_iterator) _AQWorld_maintainBoxIterator, self );
+  AQList_iterate(
+    self->constraints, (AQList_iterator) _AQWorld_performConstraints, NULL
+  );
+
+  AQList_iterate(
+    self->particles, (AQList_iterator) _AQWorld_maintainBoxIterator, self
+  );
 }
 
 void AQWorld_addParticle( AQWorld *self, AQParticle *particle ) {
@@ -195,6 +212,35 @@ void AQWorld_addParticle( AQWorld *self, AQParticle *particle ) {
 void AQWorld_removeParticle( AQWorld *self, AQParticle *particle ) {
   AQDdvt_removeParticle( self->ddvt, particle, particle->oldAabb );
   AQList_remove( self->particles, (AQObj *) particle );
+}
+
+void AQWorld_addConstraint( AQWorld *self, void *_constraint ) {
+  AQInterfacePtr *constraintPtr = aqcastptr( _constraint, AQConstraintId );
+  if ( constraintPtr ) {
+    AQInterfacePtr_call1(
+      constraintPtr,
+      offsetof( AQConstraintInterface, setWorld ),
+      self
+    );
+    AQList_push( self->constraints, (AQObj *) constraintPtr );
+  }
+}
+
+int _AQWorld_findConstraintIterator(
+  AQInterfacePtr *constraintPtr, void *ctx
+) {
+  return constraintPtr->context == ctx;
+}
+
+void AQWorld_removeConstraint( AQWorld *self, void *_constraint ) {
+  int index = AQList_findIndex(
+    self->constraints,
+    (AQList_findIterator) _AQWorld_findConstraintIterator,
+    _constraint
+  );
+  if ( !!~index ) {
+    AQList_removeAt( self->constraints, index );
+  }
 }
 
 AQTYPE_INIT_DONE(AQWorld);

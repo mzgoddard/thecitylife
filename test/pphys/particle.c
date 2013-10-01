@@ -4,7 +4,7 @@
 #include "src/pphys/index.h"
 #include "test/runner/runner.h"
 
-void test_vec2_exists( Result **result ) {
+void test_particle_exists( Result **result ) {
   AQParticle *p = aqinit( aqalloc( &AQParticleType ));
   ok( p->object.type == &AQParticleType, "is AQParticle" );
   aqfree( p );
@@ -105,7 +105,7 @@ void test_doubleTest( Result **result ) {
 
 void suite_pphys_particle() {
   suite( "pphys/particle" );
-  test( "exists", test_vec2_exists );
+  test( "exists", test_particle_exists );
   test( "integrate", test_particle_integrate );
   test( "collision", test_collision );
   // test( "no double test", test_doubleTest );

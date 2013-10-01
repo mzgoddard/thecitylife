@@ -83,7 +83,7 @@ void test_world_solveMany( Result **result ) {
   q->radius = 1;
   AQWorld_addParticle( world, q );
 
-  ok( world->ddvt->bl->length == 2, "bl is length 2" );
+  ok( world->ddvt->bl && world->ddvt->bl->length == 2, "bl is length 2" );
 
   AQWorld_step( world, 0 );
 
@@ -92,8 +92,8 @@ void test_world_solveMany( Result **result ) {
 
   AQWorld_step( world, 1 / 60 );
 
-  ok( world->ddvt->bl->length == 1, "bl is length 1" );
-  ok( world->ddvt->br->length == 1, "br is length 1" );
+  ok( world->ddvt->bl && world->ddvt->bl->length == 1, "bl is length 1" );
+  ok( world->ddvt->br && world->ddvt->br->length == 1, "br is length 1" );
 
   aqfree( pool );
 }
