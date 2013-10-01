@@ -4,3 +4,9 @@
 [submodule "vendor/stats.js"]
 	path = vendor/stats.js
 	url = https://github.com/mrdoob/stats.js.git
+[submodule "vendor/diskettejs"]
+	path = vendor/diskettejs
+	url = https://github.com/mzgoddard/diskettejs.git
+[submodule "vendor/freealut"]
+	path = vendor/freealut
+	url = https://github.com/vancegroup/freealut.git
