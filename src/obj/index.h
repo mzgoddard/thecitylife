@@ -5,6 +5,10 @@
 #include "string.h"
 #include "array.h"
 #include "list.h"
+#include "compare.h"
+#include "map.h"
+#include "dictmap.h"
+#include "interfaceptr.h"
 
 void aqobjindex_init();
 
