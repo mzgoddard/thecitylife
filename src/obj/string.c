@@ -2,6 +2,14 @@
 #include <string.h>
 
 #include "src/obj/string.h"
+#include "src/obj/compare.h"
+
+int AQString_compare( AQString *self, AQObj *other );
+
+static AQCompareInterface _AQStringCompareInterface = {
+  AQCompareId,
+  (int (*)( void *, void * )) AQString_compare
+};
 
 AQString * AQString_init( AQString *self ) {
   self->size = 0;
@@ -14,6 +22,13 @@ AQString * AQString_done( AQString *self ) {
     free( self->value );
   }
   return self;
+}
+
+void * AQString_getInterface( AQString *self, const char *id ) {
+  if ( id == AQCompareId ) {
+    return &_AQStringCompareInterface;
+  }
+  return NULL;
 }
 
 AQString * aqstr( char *value ) {
@@ -45,4 +60,18 @@ const char * AQString_cstr( AQString *self ) {
   return self->value;
 }
 
-AQTYPE_INIT_DONE( AQString );
+int AQString_compare( AQString *self, AQObj *_other ) {
+  if ( _other->type != &AQStringType ) {
+    return 1;
+  }
+
+  AQString *other = (AQString *) _other;
+
+  return strncmp(
+    self->value,
+    other->value,
+    self->size < other->size ? self->size : other->size
+  );
+}
+
+AQTYPE_INIT_DONE_GETINTERFACE( AQString );
