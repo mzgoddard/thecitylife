@@ -3,6 +3,8 @@
 
 typedef int aqbool;
 
+typedef char AQInterfaceId[];
+
 typedef struct AQInterface {
   char *name;
   // Interfaces have method pointers here.
@@ -117,7 +119,9 @@ AQReleasePool * AQReleasePool_create();
 typedef struct AQCallableInterface {
   const char *name;
 
-  void * (*call)( void *, ... );
+  void * (*call0)( void * );
+  void * (*call1)( void *, void * );
+  void * (*call2)( void *, void *, void * );
 } AQCallableInterface;
 
 extern AQType AQMethodPtrType;
@@ -130,21 +134,8 @@ typedef struct AQMethodPtr {
 } AQMethodPtr;
 
 AQMethodPtr * AQMethodPtr_create( AQObj *, void * );
-void * AQMethodPtr_call( AQMethodPtr *, ... );
-
-extern AQType AQInterfacePtrType;
-
-typedef struct AQInterfacePtr {
-  AQObj obj;
-
-  AQObj *context;
-  AQInterface *interface;
-} AQInterfacePtr;
-
-AQInterfacePtr * AQInterfacePtr_create( AQObj *, AQInterface * );
-void * AQInterfacePtr_call( AQInterfacePtr *, void *fnoffset, ... );
-AQMethodPtr * AQInterfacePtr_methodPtr( AQInterfacePtr *, void *fnoffset, ... );
-
-AQInterfacePtr * aqcastptr( AQObj *, const char *interface );
+void * AQMethodPtr_call0( AQMethodPtr * );
+void * AQMethodPtr_call1( AQMethodPtr *, void * );
+void * AQMethodPtr_call2( AQMethodPtr *, void *, void * );
 
 #endif /* end of include guard: OBJ_H_HYT03822 */

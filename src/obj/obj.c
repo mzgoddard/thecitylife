@@ -64,6 +64,7 @@ void * aqcreate( AQType *type ) {
 }
 
 void * aqcast( void *self, const char *interface ) {
+  if ( !self ) return NULL;
   return ((AQObj *) self )->type->getInterface( self, interface );
 }
 

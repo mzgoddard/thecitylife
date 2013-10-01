@@ -166,6 +166,7 @@ AQObj * aqlistnode_setItem( aqlistnode *self, AQObj *item ) {
 }
 
 struct AQList * AQList_init( struct AQList *self ) {
+  self->length = 0;
   self->head = NULL;
   self->tail = NULL;
   return self;
@@ -306,6 +307,34 @@ AQList * AQList_iterate( AQList *_self, AQList_iterator iterator, void *ctx ) {
     node = node->next;
   }
   return _self;
+}
+
+AQObj * AQList_find( AQList *_self, AQList_findIterator iterator, void *ctx ) {
+  struct AQList *self = (struct AQList *) _self;
+
+  aqlistnode *node = self->head;
+  while( node ) {
+    if ( iterator( node->item, ctx ) ) {
+      return node->item;
+    }
+    node = node->next;
+  }
+  return NULL;
+}
+
+int AQList_findIndex( AQList *_self, AQList_findIterator iterator, void *ctx ) {
+  struct AQList *self = (struct AQList *) _self;
+
+  aqlistnode *node = self->head;
+  int index = 0;
+  while( node ) {
+    if ( iterator( node->item, ctx ) ) {
+      return index;
+    }
+    node = node->next;
+    index++;
+  }
+  return -1;
 }
 
 AQTYPE_ALL(

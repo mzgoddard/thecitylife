@@ -8,6 +8,7 @@ extern AQType AQListType;
 typedef AQObj AQList;
 
 typedef void (*AQList_iterator)( AQObj *, void * );
+typedef int (*AQList_findIterator)( AQObj *, void * );
 
 unsigned int AQList_length(AQList *);
 
@@ -20,6 +21,8 @@ int AQList_indexOf(AQList *, AQObj *);
 AQObj * AQList_remove(AQList *, AQObj *);
 
 AQList * AQList_iterate( AQList *, AQList_iterator, void * );
+AQObj * AQList_find( AQList *, AQList_findIterator, void * );
+int AQList_findIndex( AQList *, AQList_findIterator, void * );
 
 void aqlist_init();
 
