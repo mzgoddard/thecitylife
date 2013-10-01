@@ -1,6 +1,7 @@
 #!/usr/bin/env waf
 
 import os
+import sys
 from waflib.Scripting import run_command
 from waflib.Build import BuildContext, CleanContext, \
     InstallContext, UninstallContext
@@ -195,6 +196,24 @@ def build(bld):
         )
 
     if bld.cmd in [ 'debug', 'release' ]:
+        platformIncludes = ['./src', '.', './vendor/freealut/include']
+        if sys.platform == 'darwin':
+            platformIncludes.append('./src/platform/mac/headers')
+
+        bld.objects(
+            source=bld.path.ant_glob('src/audio/*.c'),
+            includes=platformIncludes,
+            target='libaudiobase',
+            use='libobj'
+        )
+
+        bld.objects(
+            source=bld.path.ant_glob('src/platform/mac/audio/*.c'),
+            includes=platformIncludes,
+            target='libaudioopenal',
+            use='libobj libaudiobase'
+        )
+
         bld.program(
             source=watertestSource,
             includes=['./src/game/watertest', './src', '.'],
@@ -207,8 +226,10 @@ def build(bld):
             source=spaceLeaperSource,
             includes=['./src/game/spaceleaper', './src', '.'],
             target='spaceleaper',
-            framework=[ 'Cocoa', 'OpenGL' ],
-            use='libobj libinput SDL SDL_gfx SDL_image'
+            framework=[ 'Cocoa', 'OpenGL', 'OpenAL' ],
+            libpath=os.path.abspath('vendor/freealut/src'),
+            lib='alut',
+            use='libobj libinput libaudio libaudioopenal SDL SDL_gfx SDL_image'
         )
 
 for x in 'debug release emcc emcc_html'.split():
