@@ -15,7 +15,7 @@ SLUpdaterInterface _SLCameraControllerUpdater = {
 SLCameraController * SLCameraController_init( SLCameraController *self ) {
   memset( &self->state, 0, sizeof(SLCameraController) - sizeof(AQObj) );
   self->minScale = 1;
-  self->maxScale = 10;
+  self->maxScale = 100;
   self->currentScale = 1;
   self->scaleValue = 80;
   return self;
@@ -78,9 +78,9 @@ void _SLCameraController_update( SLCameraController *self, AQDOUBLE dt ) {
       self->leaper->state == WonLeaperState ||
       self->leaper->state == LostLeaperState
   ) {
-    self->currentScale += 0.1;
+    self->currentScale += self->currentScale * 0.1;
   } else {
-    self->currentScale -= 0.05;
+    self->currentScale -= self->currentScale * 0.05;
   }
 
   // Clamp currentScale.
