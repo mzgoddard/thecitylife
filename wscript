@@ -141,6 +141,11 @@ def build(bld):
             source=bld.path.ant_glob( 'src/platform/web/*' )
         )
 
+        bld(
+            rule='cp ${SRC} .',
+            source='vendor/jquery-1.7.1.min.js'
+        )
+
     watertestSource = bld.path.ant_glob(
         'src/game/flowline.c src/game/watertest.c ' +
         'src/platform/sdl/*.c'
