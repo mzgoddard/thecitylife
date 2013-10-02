@@ -54,9 +54,9 @@ void initWaterTest() {
   AQRenderer_boot();
 
   world = AQLoop_world();
-  AQWorld_setAabb( world, (aqaabb) { 6400, 6400, 0, 0 });
+  AQWorld_setAabb( world, (aqaabb) { 25600, 25600, 0, 0 });
   // gravity = (aqvec2) { 0, -4 };
-  AQInput_setWorldFrame( 6400, 6400, 0, 0 );
+  AQInput_setWorldFrame( 25600, 25600, 0, 0 );
 
   asteroids = aqinit( aqalloc( &AQListType ));
 
