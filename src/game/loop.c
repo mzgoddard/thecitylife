@@ -11,7 +11,7 @@ typedef struct loopfuncnode {
 } loopfuncnode;
 
 typedef struct AQLoop {
-  AQObj *object;
+  AQObj object;
 
   AQWorld *world;
 
