@@ -190,8 +190,8 @@ AQList * AQList_push( AQList *_self, AQObj *item ) {
   aqlistnode *node = aqlistnode_init( malloc( sizeof( aqlistnode )));
 
   node->prev = self->tail;
-  if ( self->tail ) {
-    self->tail->next = node;
+  if ( node->prev ) {
+    node->prev->next = node;
   }
 
   aqlistnode_setItem( node, item );
