@@ -15,7 +15,7 @@ typedef struct SLLeaperView {
 
   SLLeaper *leaper;
   GLuint buffer;
-  struct colorvertex vertices[60];
+  struct colorvertex vertices[512];
 } SLLeaperView;
 
 SLLeaperView * SLLeaperView_create( SLLeaper * );

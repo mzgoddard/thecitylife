@@ -65,6 +65,14 @@ struct AQFlowParticleData {
 void _AQFlowLine_oncollision(
   AQParticle *a, AQParticle *b, struct AQFlowParticleData *data
 ) {
+  if (
+    b->oncollision == (AQParticleCollisionCallback) _AQFlowLine_oncollision
+  ) {
+    AQParticle *tmp = b;
+    b = a;
+    a = tmp;
+  }
+  AQWorld_wakeParticle(((struct AQFlowParticleData *) a->userdata )->self->world, b );
   b->acceleration = aqvec2_add(
     b->acceleration,
     aqvec2_scale( data->direction, data->self->force / b->mass )

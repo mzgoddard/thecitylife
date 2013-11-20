@@ -17,6 +17,7 @@ SLLeaperView * SLLeaperView_init( SLLeaperView *self ) {
 }
 
 SLLeaperView * SLLeaperView_done( SLLeaperView *self ) {
+  printf( "***SLLeaperView_done***\n" );
   glDeleteBuffers( 1, &self->buffer );
   aqrelease( self->leaper );
   return self;
@@ -47,8 +48,11 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
     AQLoop_once( (void (*)(void *)) &AQRenderer_removeView, self );
     return;
   }
+  // return;
 
-  aqaabb box = AQParticle_aabb( self->leaper->body );
+  // aqaabb box = AQParticle_aabb( self->leaper->body );
+  self->leaper->position = SLLeaper_calcPosition( self->leaper );
+  aqvec2 center = self->leaper->position;
 
   // self->vertices[0] =
   //   (struct colorvertex) { box.left, box.top, 255, 255, 255, 255 };
@@ -62,33 +66,36 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
   //   (struct colorvertex) { box.left, box.bottom, 255, 255, 255, 255 };
   // self->vertices[5] =
   //   (struct colorvertex) { box.right, box.bottom, 255, 255, 255, 255 };
-  float radius = self->leaper->radius * 1.5;
-  float radians = self->leaper->radians;
+  float radius = self->leaper->radius;
+  float radians = SLLeaper_radians( self->leaper );
   aqvec2 axis = aqvec2_make( cos( radians ), sin( radians ));
   aqaabb box1 = aqaabb_makeCenterRadius(
     aqvec2_sub(
-      aqaabb_center( box ),
-      aqvec2_scale( axis, -radius / 2 )
+      // aqaabb_center( box ),
+      center,
+      aqvec2_scale( axis, -radius * 0.75 )
     ),
     radius / 4
   );
   aqaabb box2 = aqaabb_makeCenterRadius(
     aqvec2_sub(
-      aqaabb_center( box ),
-      aqvec2_scale( axis, radius / 2 )
+      // aqaabb_center( box ),
+      center,
+      aqvec2_scale( axis, 0 )
     ),
-    radius
+    radius * 9 / 10
   );
   box1.top += radius / 4;
   box1.bottom -= radius / 4;
-  box2.right -= radius / 4;
-  box2.left += radius / 4;
+  box2.right -= radius / 3;
+  box2.left += radius / 3;
 
   memset( self->vertices, 0, sizeof(self->vertices) );
-  void * vertices = AQDraw_color(
+  void * vertices = self->vertices;
+  vertices = AQDraw_color(
     self->vertices,
     AQDraw_rotatedRect(
-      self->vertices, colorvertex_next, box2, self->leaper->radians
+      self->vertices, colorvertex_next, box2, radians
     ),
     colorvertex_next,
     colorvertex_getcolor,
@@ -97,7 +104,43 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
   vertices = AQDraw_color(
     vertices,
     AQDraw_rotatedRect(
-      vertices, colorvertex_next, box1, self->leaper->radians
+      vertices, colorvertex_next, box1, radians
+    ),
+    colorvertex_next,
+    colorvertex_getcolor,
+    leaperColor
+  );
+  vertices = AQDraw_color(
+    vertices,
+    // vertices,
+    // AQDraw_rotatedRect(
+    //   vertices, colorvertex_next, box1, radians
+    // ),
+    AQDraw_polygon(
+      AQDraw_polygon(
+        // vertices,
+        AQDraw_polygon(
+          vertices,
+          colorvertex_next,
+          16,
+          // center,
+          ((AQParticle *) AQList_at( self->leaper->bodies, 2 ))->position,
+          ((AQParticle *) AQList_at( self->leaper->bodies, 2 ))->radius,
+          0.0
+        ),
+        colorvertex_next,
+        16,
+        // center,
+        ((AQParticle *) AQList_at( self->leaper->bodies, 1 ))->position,
+        ((AQParticle *) AQList_at( self->leaper->bodies, 1 ))->radius,
+        0.0
+      ),
+      colorvertex_next,
+      16,
+      // center,
+      ((AQParticle *) AQList_at( self->leaper->bodies, 0 ))->position,
+      ((AQParticle *) AQList_at( self->leaper->bodies, 0 ))->radius,
+      0.0
     ),
     colorvertex_next,
     colorvertex_getcolor,
@@ -108,7 +151,8 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
   aqvec2 oxygenAxis = aqvec2_make( cos( radians + M_PI / 2 ), sin( radians + M_PI / 2 ));
   aqaabb fullBar = aqaabb_makeCenterExtents(
     aqvec2_add(
-      aqaabb_center( box ),
+      // aqaabb_center( box ),
+      center,
       aqvec2_scale( oxygenAxis, radius * 2 )
     ),
     aqvec2_make( radius, 1 )
@@ -116,7 +160,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
   vertices = AQDraw_color(
     vertices,
     AQDraw_rotatedRect(
-      vertices, colorvertex_next, fullBar, self->leaper->radians - M_PI / 6 
+      vertices, colorvertex_next, fullBar, radians - M_PI / 6 
     ),
     colorvertex_next,
     colorvertex_getcolor,
@@ -126,7 +170,8 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
   aqvec2 oxygenAxisAxis = aqvec2_make( cos( radians + M_PI / 2 + M_PI / 3 ), sin( radians + M_PI / 2 + M_PI / 3 ));
   aqaabb filledBar = aqaabb_makeCenterExtents(
     aqvec2_add( aqvec2_add(
-      aqaabb_center( box ),
+      // aqaabb_center( box ),
+      center,
       aqvec2_scale( oxygenAxis, radius * 2 )
     ), aqvec2_scale( oxygenAxisAxis, radius - radius * self->leaper->oxygen / SLLeaper_maxOxygen )),
     aqvec2_make( radius * self->leaper->oxygen / SLLeaper_maxOxygen, 1 )
@@ -134,7 +179,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
   vertices = AQDraw_color(
     vertices,
     AQDraw_rotatedRect(
-      vertices, colorvertex_next, filledBar, self->leaper->radians - M_PI / 6 
+      vertices, colorvertex_next, filledBar, radians - M_PI / 6 
     ),
     colorvertex_next,
     colorvertex_getcolor,
@@ -145,7 +190,8 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
   aqvec2 resourceAxis = aqvec2_make( cos( radians - M_PI / 2 ), sin( radians - M_PI / 2 ));
   aqaabb fullResourceBar = aqaabb_makeCenterExtents(
     aqvec2_add(
-      aqaabb_center( box ),
+      // aqaabb_center( box ),
+      center,
       aqvec2_scale( resourceAxis, radius * 2 )
     ),
     aqvec2_make( radius, 1 )
@@ -153,7 +199,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
   vertices = AQDraw_color(
     vertices,
     AQDraw_rotatedRect(
-      vertices, colorvertex_next, fullResourceBar, self->leaper->radians + M_PI / 6 
+      vertices, colorvertex_next, fullResourceBar, radians + M_PI / 6 
     ),
     colorvertex_next,
     colorvertex_getcolor,
@@ -163,7 +209,8 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
   aqvec2 resourceAxisAxis = aqvec2_make( cos( radians - M_PI / 2 - M_PI / 3 ), sin( radians - M_PI / 2 - M_PI / 3 ));
   aqaabb filledResourceBar = aqaabb_makeCenterExtents(
     aqvec2_add( aqvec2_add(
-      aqaabb_center( box ),
+      // aqaabb_center( box ),
+      center,
       aqvec2_scale( resourceAxis, radius * 2 )
     ), aqvec2_scale( resourceAxisAxis, radius - radius * self->leaper->resource / SLLeaper_maxResource )),
     aqvec2_make( radius * self->leaper->resource / SLLeaper_maxResource, 1 )
@@ -171,7 +218,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
   vertices = AQDraw_color(
     vertices,
     AQDraw_rotatedRect(
-      vertices, colorvertex_next, filledResourceBar, self->leaper->radians + M_PI / 6 
+      vertices, colorvertex_next, filledResourceBar, radians + M_PI / 6 
     ),
     colorvertex_next,
     colorvertex_getcolor,
@@ -180,7 +227,7 @@ void _SLLeaperView_draw( SLLeaperView *self ) {
 
   AQShaders_useProgram( ColorShaderProgram );
   AQShaders_draw(
-    self->buffer, self->vertices, sizeof(struct colorvertex) * 6 * 6
+    self->buffer, self->vertices, (((struct colorvertex *) vertices ) - self->vertices ) * sizeof( struct colorvertex )
   );
 }
 

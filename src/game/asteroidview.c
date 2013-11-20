@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "src/game/asteroidview.h"
 #include "src/game/view.h"
 #include "src/game/draw.h"
@@ -18,6 +20,7 @@ SLAsteroidGroupView * SLAsteroidGroupView_init( SLAsteroidGroupView *self ) {
 }
 
 SLAsteroidGroupView * SLAsteroidGroupView_done( SLAsteroidGroupView *self ) {
+  aqrelease( self->asteroids );
   glDeleteBuffers( 1, &self->buffer );
   return self;
 }

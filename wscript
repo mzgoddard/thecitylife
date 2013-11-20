@@ -40,7 +40,9 @@ def configure(ctx):
 
     ctx.setenv('release', cc_env)
     ctx.env.CFLAGS = [ '-g', '-O4', '-std=gnu99' ]
+    # ctx.env.CFLAGS = [ '-g', '-O4', '-std=gnu99', '-msse', '-msse2', '-msse3', '-msse4', '-msse4.1', '-msse4.2' ]
     ctx.env.LINKFLAGS = [ '-O4' ]
+    # ctx.env.LINKFLAGS = [ '-O4', '-msse', '-msse2', '-msse3', '-msse4', '-msse4.1', '-msse4.2' ]
     ctx.env.DEFINES = [ 'ANSI_COLOR=1', 'kParticleCount=8192' ]
 
     ctx.setenv('emcc', env)
@@ -165,6 +167,7 @@ def build(bld):
         'src/game/cameracontroller.c ' +
         'src/game/updater.c src/game/loop.c ' +
         'src/game/leaper.c src/game/leaperview.c src/game/asteroidview.c ' +
+        'src/game/particleview.c ' +
         'src/game/flowline.c src/game/asteroid.c src/game/spaceleaper.c ' +
         'src/platform/sdl/*.c'
     )

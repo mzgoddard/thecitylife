@@ -33,7 +33,7 @@ void * AQString_getInterface( AQString *self, const char *id ) {
 
 AQString * aqstr( char *value ) {
   AQString *self = aqcreate( &AQStringType );
-  self->size = strlen( value );
+  self->size = (unsigned int) strlen( value );
   self->value = malloc( sizeof(char) * self->size );
   strncpy( self->value, value, self->size );
   return self;
