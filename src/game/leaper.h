@@ -19,7 +19,7 @@ static const int SLLeaper_resourceToOxygen = 16;
 extern AQType SLLeaperType;
 
 typedef struct SLLeaper {
-  AQObj *object;
+  AQObj object;
 
   aqvec2 position;
   AQDOUBLE radius;

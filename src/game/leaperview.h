@@ -11,7 +11,7 @@
 AQType SLLeaperViewType;
 
 typedef struct SLLeaperView {
-  AQObj *object;
+  AQObj object;
 
   SLLeaper *leaper;
   GLuint buffer;

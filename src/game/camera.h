@@ -8,7 +8,7 @@
 extern AQType AQCameraType;
 
 typedef struct AQCamera {
-  AQObj *object;
+  AQObj object;
 
   aqaabb viewport;
   aqaabb screen;
