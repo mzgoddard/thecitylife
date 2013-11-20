@@ -9,14 +9,22 @@
 #define AQTAU AQPI * 2
 #define AQEPS 0.00001
 
+#if !__SSE__
 typedef struct aqvec2 {
   AQDOUBLE x;
   AQDOUBLE y;
 } aqvec2;
+#else
+typedef float aqvec2 __attribute__((ext_vector_type(2)));
+#endif
 
+#if !__SSE__
 typedef struct aqmat22 {
   AQDOUBLE aa, ab, ba, bb;
 } aqmat22;
+#else
+typedef float aqmat22 __attribute__((ext_vector_type(4)));
+#endif
 
 typedef struct aqtf {
   aqvec2 position;
@@ -29,6 +37,8 @@ typedef struct aqaabb {
   AQDOUBLE bottom;
   AQDOUBLE left;
 } aqaabb;
+
+// typedef float aqaabb __attribute__((ext_vector_type(4)));
 
 static aqvec2 aqvec2_make(AQDOUBLE x, AQDOUBLE y) { return (aqvec2){ x, y }; }
 static aqvec2 aqvec2_zero() { return (aqvec2){ 0, 0 }; }
@@ -64,23 +74,70 @@ static AQDOUBLE aqmath_hypot(AQDOUBLE a, AQDOUBLE b) {
   return sqrt(aqmath_hypot2(a, b));
 }
 
+static AQDOUBLE aqangle_absDiff( double a, double b ) {
+  double v = fmod( fabs( a - b ), 2 * M_PI );
+
+  if ( v > M_PI ) {
+    v = 2 * M_PI - v;
+  }
+
+  return v;
+}
+
+static AQDOUBLE aqangle_diff( double a, double b ) {
+  double v;
+  a = fmod( a + M_PI, 2 * M_PI ) - M_PI;
+  b = fmod( b + M_PI, 2 * M_PI ) - M_PI;
+
+  v = a - b;
+  v = fmod( v + M_PI, 2 * M_PI ) - M_PI;
+  if ( v < -M_PI ) {
+    v += 2 * M_PI;
+  }
+  if ( v > M_PI ) {
+    v -= 2 * M_PI;
+  }
+
+  return v;
+}
+
 static aqvec2 aqvec2_add(aqvec2 a, aqvec2 b) {
+  #if !__SSE__
   return aqvec2_make(a.x + b.x, a.y + b.y);
+  #else
+  return a + b;
+  #endif
 }
 static aqvec2 aqvec2_sub(aqvec2 a, aqvec2 b) {
+  #if !__SSE__
   return aqvec2_make(a.x - b.x, a.y - b.y);
+  #else
+  return a - b;
+  #endif
 }
 static aqvec2 aqvec2_mul(aqvec2 a, aqvec2 b) {
+  #if !__SSE__
   return aqvec2_make(a.x * b.x, a.y * b.y);
+  #else
+  return a * b;
+  #endif
 }
 static aqvec2 aqvec2_div(aqvec2 a, aqvec2 b) {
+  #if !__SSE__
   return aqvec2_make(a.x / b.x, a.y / b.y);
+  #else
+  return a / b;
+  #endif
 }
 static aqvec2 aqvec2_scale(aqvec2 a, AQDOUBLE s) {
   return aqvec2_make(a.x * s, a.y * s);
 }
 static AQDOUBLE aqvec2_cross(aqvec2 a, aqvec2 b) {
   return a.x * b.y - a.y * b.x;
+}
+
+static AQDOUBLE aqvec2_sum(aqvec2 a) {
+  return a.x + a.y;
 }
 
 static AQDOUBLE aqvec2_dot(aqvec2 a, aqvec2 b) {
@@ -105,15 +162,23 @@ static aqvec2 aqvec2_normalized(aqvec2 a) {
 }
 
 static int aqvec2_eq( aqvec2 a, aqvec2 b ) {
-  return fdim( a.x, b.x ) < AQEPS && fdim( a.y, b.y ) < AQEPS;
+  return fabs( a.x - b.x ) < AQEPS && fabs( a.y - b.y ) < AQEPS;
 }
 
 static aqvec2 aqvec2_lerp( aqvec2 a, aqvec2 b, float t ) {
+  // #if !__SSE__
   return (aqvec2) { ( b.x - a.x ) * t + a.x, ( b.y - a.y ) * t + a.y };
+  // #else
+  // return (aqvec2) ( ( b - a ) * (aqvec2) { t, t } + a );
+  // #endif
 }
 
 static aqvec2 aqmat22_transform(aqmat22 m, aqvec2 v) {
+  #if !__SSE__
   return aqvec2_make(m.aa * v.x + m.ab * v.y, m.ba * v.x + m.bb * v.y);
+  #else
+  return (aqvec2) { aqvec2_sum( m.xy * v ), aqvec2_sum( m.zw * v ) };
+  #endif
 }
 
 static aqvec2 aqvec2_rotate(aqvec2 a, AQDOUBLE r) {
