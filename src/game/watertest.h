@@ -3,7 +3,7 @@
 
 #include "defines.h"
 
-#define kParticleCorrection 0.5
+// #define kParticleCorrection 0.5
 
 void initWaterTest();
 void stepWaterTest(float dt);

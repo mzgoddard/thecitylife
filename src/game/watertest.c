@@ -18,6 +18,7 @@
     #endif
 #endif
 
+#include "appdefines.h"
 #include "./watertest.h"
 
 #include "src/obj/index.h"
@@ -60,7 +61,8 @@ static GLuint compileShader(GLuint shader, const char *source) {
   return shader;
 }
 
-#define kFrameFraction 1.0 / 20
+#define kFrameFraction ( 1.0 / 60 )
+#define kFrameStep ( 1.0 / 20 )
 #ifndef kParticleCount
 #define kParticleCount 2048
 #endif
@@ -79,13 +81,16 @@ static aqvec2 gravity;
 void initWaterTest() {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
   world = aqinit( aqalloc( &AQWorldType ));
-  AQWorld_setAabb( world, (aqaabb) { 640, 640, 0, 0 });
-  gravity = (aqvec2) { 0, -4 };
-  AQInput_setWorldFrame( 640, 640, 0, 0 );
+  aqvec2 viewportSize = (aqvec2) { VIEWPORT_WIDTH_HEIGHT };
+  AQWorld_setAabb( world, (aqaabb) { viewportSize.y, viewportSize.x, 0, 0 });
+  gravity = (aqvec2) { 0, -0.01 / kFrameStep / kFrameStep };
+  printf( "gravity %f %f\n", gravity.x, gravity.y );
+  AQInput_setWorldFrame( viewportSize.y, viewportSize.x, 0, 0 );
   // aq_input_setscreentoworld((aqbox){ 640, 640, 0, 0 });
 
   for ( int i = 0; i < particle_count; ++i ) {
     AQParticle *particle = aqcreate( &AQParticleType );
+    // particle->correction = 0.5 + (float) rand() / RAND_MAX / 2.5;
     particle->position = (aqvec2) {
       rand() % (int) world->aabb.right,
       rand() % (int) world->aabb.top / 3 * 2
@@ -103,7 +108,7 @@ void initWaterTest() {
   flowLine = aqinit( aqalloc( &AQFlowLineType ));
   flowLine->radius = 20;
   flowLine->minPointDistance = 10;
-  flowLine->force = 1000;
+  flowLine->force = 2.5 / kFrameStep / kFrameStep;
   AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 80 });
   AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 100 });
   AQFlowLine_addPoint( flowLine, (aqvec2) { 320, 120 });
@@ -278,12 +283,26 @@ float stddevTime( unsigned int frameTimes[], unsigned int length ) {
   return sqrt( diffSum / (float) length );
 }
 
+static struct applicationEvents {
+  void (*stepStart)();
+  void (*stepEnd)();
+} applicationEvents = {
+  NULL,
+  NULL
+};
+
+typedef void (*EventHandle)();
+void setEventListener( int index, void (*handle)() ) {
+  ((EventHandle *) &applicationEvents )[ index ] = handle;
+}
+
 static float hertztime = 0;
 static float fpstime = 0;
 static int frames = 0;
 static const unsigned int kMaxFrameTimes = 100;
 static unsigned int frameTimes[ kMaxFrameTimes ];
 static int frameTimeIndex = 0;
+
 void stepWaterTest(float dt) {
     AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
     hertztime += dt;
@@ -327,14 +346,22 @@ void stepWaterTest(float dt) {
         if ( getTicks ) {
           startTime = getTicks();
         }
+        if ( applicationEvents.stepStart ) {
+          applicationEvents.stepStart();
+        }
+
         frames++;
         AQList_iterate(
           world->particles,
           (AQList_iterator) gravityIterator,
           NULL );
-        AQWorld_step( world, kFrameFraction );
+        AQWorld_step( world, kFrameStep );
         while (hertztime > kFrameFraction) {
           hertztime -= kFrameFraction;
+        }
+
+        if ( applicationEvents.stepEnd ) {
+          applicationEvents.stepEnd();
         }
         if ( getTicks ) {
           endTime = getTicks();
@@ -378,9 +405,12 @@ void drawWaterTest() {
     //   -160, -120
     // };
 
-    float right = world->aabb.right,
+    aqvec2 size = (aqvec2) { VIEWPORT_WIDTH_HEIGHT };
+    // float right = world->aabb.right,
+    float right = size.x,
     left = 0,
-    top = world->aabb.top,
+    // top = world->aabb.top,
+    top = size.y,
     bottom = 0,
     zFar = 1000,
     zNear = 0;

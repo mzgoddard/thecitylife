@@ -23,6 +23,7 @@
 
 #include "src/input/index.h"
 #include "src/game/watertest.h"
+#include "appdefines.h"
 
 void main_loop();
 static void process_events();
@@ -53,8 +54,16 @@ int main(int argc, char *argv[])
   glEnable( GL_TEXTURE_2D ); // Need this to display a texture XXX unnecessary in OpenGL ES 2.0/WebGL
 #endif
 
-  glViewport( 0, -80, 640, 640 );
+#ifdef VIEWPORT
+  printf( "VIEWPORT dimensions %d %d %d %d.\n", VIEWPORT_DIMENSIONS );
+  VIEWPORT();
+  AQInput_setScreenSize( SCREEN_SIZE );
+  // glViewport( 0, -80, 640, 640 );
+#else
+  printf( "VIEWPORT dimensions %d %d %d %d.\n", 0, 0, 640, 480 );
+  glViewport( 0, 0, 640, 480 );
   AQInput_setScreenSize( 640, 480 );
+#endif
 #if EMSCRIPTEN
   emscripten_set_main_loop(main_loop, 0, 0);
 #endif
