@@ -4,8 +4,8 @@
 
 #include "./particle.h"
 
-static const AQDOUBLE posmul = 1.9999;
-static const AQDOUBLE lastposmul = 0.9999;
+static const AQDOUBLE posmul = 1.999999999;
+static const AQDOUBLE lastposmul = 0.999999999;
 static const AQDOUBLE friction = 0.001;
 
 typedef struct aqcollidewith {
@@ -24,6 +24,7 @@ void * AQParticle_init( AQParticle *self ) {
   self->radius = 1;
   self->mass = 1;
   self->friction = 0.00001;
+  self->correction = 0.5;
   return self;
 }
 
@@ -44,6 +45,7 @@ aqaabb AQParticle_lastAabb( AQParticle *self ) {
 
 void AQParticle_integrate( AQParticle *self, AQDOUBLE dt ) {
   if ( self->isStatic ) { return; }
+  if ( self->isSleeping ) { return; }
 
   aqvec2 position = self->position;
   self->position = aqvec2_add(
@@ -55,6 +57,15 @@ void AQParticle_integrate( AQParticle *self, AQDOUBLE dt ) {
   );
   self->lastPosition = position;
   self->acceleration = (aqvec2) { 0, 0 };
+
+  if ( fabs( aqvec2_mag2(
+    aqvec2_sub( self->position, self->lastPosition ))
+  ) < 0.00001 ) {
+    self->sleepCounter++;
+    if ( self->sleepCounter > 20 ) {
+      self->isSleeping = 1;
+    }
+  }
 }
 
 void AQParticle_testPrep( AQParticle *self ) {
@@ -186,8 +197,14 @@ void AQParticle_solve( AQParticle *self, AQParticle *other, aqcollision *col ) {
   AQDOUBLE
     // lambx = (col->lambx) * ( 0.25 * ( fmin( col->distance / 2, 1 ) ) + 0.25 ),
     // lamby = (col->lamby) * ( 0.25 * ( fmin( col->distance / 2, 1 ) ) + 0.25 ),
-    lambx = (col->lambx) * kParticleCorrection,
-    lamby = (col->lamby) * kParticleCorrection,
+// #ifdef kParticleCorrection
+//     lambx = (col->lambx) * kParticleCorrection,
+//     lamby = (col->lamby) * kParticleCorrection,
+// #else
+    correction = ( self->correction * other->correction ),
+    lambx = (col->lambx) * correction,
+    lamby = (col->lamby) * correction,
+// #endif
     amsq = self->mass,
     bmsq = other->mass,
     mass = amsq + bmsq,
@@ -227,9 +244,11 @@ void AQParticle_solve( AQParticle *self, AQParticle *other, aqcollision *col ) {
 
   if (self->isTrigger) {
     self->oncollision(self, other, self->userdata);
-  } else if (other->isTrigger) {
+  }
+  if (other->isTrigger) {
     other->oncollision(other, self, other->userdata);
-  } else {
+  }
+  if (!self->isTrigger && !other->isTrigger) {
     selflast->x = selfpos->x + avx;
     selflast->y = selfpos->y + avy;
     selfpos->x += lambx * am;
@@ -279,7 +298,10 @@ void _AQParticle_ignore( aqcollidewith **list, AQParticle *ignore ) {
     last = last->next;
   }
   if ( !last ) {
-    *list = last = aqcollidewith_init();
+    last = aqcollidewith_init();
+    if ( !*list ) {
+      *list = last;
+    }
   }
   aqcollidewith_add( last, ignore );
 }
@@ -290,6 +312,11 @@ void AQParticle_ignoreParticle( AQParticle *self, AQParticle *ignore ) {
 
 void AQParticle_ignoreGroup( AQParticle *self, AQParticle *ignore ) {
   _AQParticle_ignore( (aqcollidewith **) &self->ignoreGroup, ignore );
+}
+
+void AQParticle_wake( AQParticle *self ) {
+  self->isSleeping = 0;
+  self->sleepCounter = 0;
 }
 
 aqcollidewith * aqcollidewith_init() {

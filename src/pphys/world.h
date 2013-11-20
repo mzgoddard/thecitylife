@@ -22,6 +22,7 @@ AQWorld * AQWorld_setAabb( AQWorld *, aqaabb );
 void AQWorld_step( AQWorld *, AQDOUBLE dt );
 void AQWorld_addParticle( AQWorld *, AQParticle * );
 void AQWorld_removeParticle( AQWorld *, AQParticle * );
+void AQWorld_wakeParticle( AQWorld *, AQParticle * );
 void AQWorld_addConstraint( AQWorld *, void * );
 void AQWorld_removeConstraint( AQWorld *, void * );
 

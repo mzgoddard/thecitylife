@@ -60,10 +60,18 @@ void _AQWorld_boxTestIterator( AQParticle *a, AQParticle *b, void *ctx ) {
   //   return;
   // }
   if (
-    aqaabb_intersectsBox( a->_aabb, b->_aabb ) &&
+    ( !a->isSleeping || !b->isSleeping ) &&
+      aqaabb_intersectsBox( a->_aabb, b->_aabb ) &&
       AQParticle_test( a, b, self->nextCollision )
   ) {
     self->nextCollision = aqcollision_pop( self->nextCollision );
+
+    if ( a->isSleeping ) {
+      AQWorld_wakeParticle( self, a );
+    }
+    if ( b->isSleeping ) {
+      AQWorld_wakeParticle( self, b );
+    }
   }
 }
 
@@ -106,10 +114,13 @@ void _AQWorld_solveIterator( aqcollision *col, void *ctx ) {
 }
 
 void _AQWorld_performConstraints( AQInterfacePtr *interfacePtr, void *ctx ) {
-  AQInterfacePtr_call0(
-    interfacePtr,
-    offsetof( AQConstraintInterface, update )
+  ((AQConstraintInterface *) interfacePtr->interface)->update(
+    interfacePtr->context
   );
+  // AQInterfacePtr_call0(
+  //   interfacePtr,
+  //   offsetof( AQConstraintInterface, update )
+  // );
 }
 
 void _AQWorld_maintainBoxIterator( AQParticle *particle, void *ctx ) {
@@ -127,7 +138,7 @@ void _AQWorld_maintainBoxIterator( AQParticle *particle, void *ctx ) {
   }
   if ( aabb.bottom < world->aabb.bottom ) {
     particle->position.y += world->aabb.bottom - aabb.bottom;
-    particle->lastPosition.y = particle->position.y;
+    // particle->lastPosition.y = particle->position.y;
     wallContact = 1;
   }
   if ( aabb.top > world->aabb.top ) {
@@ -214,14 +225,20 @@ void AQWorld_removeParticle( AQWorld *self, AQParticle *particle ) {
   AQList_remove( self->particles, (AQObj *) particle );
 }
 
+void AQWorld_wakeParticle( AQWorld *self, AQParticle *particle ) {
+  AQDdvt_wakeParticle( self->ddvt, particle );
+  AQParticle_wake( particle );
+}
+
 void AQWorld_addConstraint( AQWorld *self, void *_constraint ) {
   AQInterfacePtr *constraintPtr = aqcastptr( _constraint, AQConstraintId );
   if ( constraintPtr ) {
-    AQInterfacePtr_call1(
-      constraintPtr,
-      offsetof( AQConstraintInterface, setWorld ),
-      self
-    );
+    ((AQConstraintInterface *) constraintPtr->interface)->setWorld( constraintPtr->context, self );
+    // AQInterfacePtr_call1(
+    //   constraintPtr,
+    //   offsetof( AQConstraintInterface, setWorld ),
+    //   self
+    // );
     AQList_push( self->constraints, (AQObj *) constraintPtr );
   }
 }

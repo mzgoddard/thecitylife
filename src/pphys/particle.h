@@ -25,6 +25,7 @@ typedef struct AQParticle {
   AQDOUBLE _radius;
   AQDOUBLE mass;
   AQDOUBLE friction;
+  AQDOUBLE correction;
 
   aqvec2 oldPosition;
   aqvec2 lastPosition;
@@ -36,8 +37,8 @@ typedef struct AQParticle {
 
   aqbool isStatic;
   aqbool isTrigger;
-  // aqbool isSleeping;
-  // int sleepCounter;
+  aqbool isSleeping;
+  int sleepCounter;
   // AQDOUBLE currentAverageCollisionDepth;
   // int collisionCount;
   // AQDOUBLE lastAverageCollisionDepth;
@@ -75,6 +76,7 @@ void AQParticle_solve( AQParticle *, AQParticle *, aqcollision * );
 int AQParticle_doesIgnore( AQParticle *, AQParticle * );
 void AQParticle_ignoreParticle( AQParticle *, AQParticle * );
 void AQParticle_ignoreGroup( AQParticle *, AQParticle * );
+void AQParticle_wake( AQParticle * );
 
 typedef void (*aqcollision_iterator)( aqcollision *, void * );
 
