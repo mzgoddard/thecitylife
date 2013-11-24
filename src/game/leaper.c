@@ -223,7 +223,7 @@ SLLeaper * SLLeaper_create( aqvec2 position ) {
   return self;
 }
 
-double (*__Angle_absDiff)(double, double) = aqangle_absDiff;
+AQDOUBLE (*__Angle_absDiff)(double, double) = aqangle_absDiff;
 // double __Angle_absDiff( double a, double b ) {
 //   double v = fmod( fabs( a - b ), 2 * M_PI );
 // 
@@ -234,7 +234,7 @@ double (*__Angle_absDiff)(double, double) = aqangle_absDiff;
 //   return v;
 // }
 
-double (*__Angle_diff)(double, double) = aqangle_diff;
+AQDOUBLE (*__Angle_diff)(double, double) = aqangle_diff;
 // double __Angle_diff( double a, double b ) {
 //   double v;
 //   if ( a < M_PI && b < a - M_PI ) {

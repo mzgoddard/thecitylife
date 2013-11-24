@@ -6,6 +6,7 @@
 #define VIEWPORT() glViewport( VIEWPORT_DIMENSIONS )
 #define SPACELEAP_VIEWPORT
 
+#define AQDOUBLE float
 #define PPHYS_ALLOW_SLEEP 1
 
 #endif /* end of include guard: APPDEFINES_H_RDLPTZCR */

@@ -50,6 +50,9 @@ SLAsteroid * SLAsteroid_create(
   particle->mass = self->mass;
   particle->userdata = self;
 
+  particle->friction = 1;
+  particle->isStatic = 1;
+
   AQList_push( self->particles, (AQObj *) particle );
 
   self->world = aqretain( world );

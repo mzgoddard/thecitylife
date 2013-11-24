@@ -55,13 +55,17 @@ def configure(ctx):
     ctx.env.LINK_CC = ctx.env.CC
     # ctx.env.CFLAGS = []
     ctx.env.CFLAGS = [
+        '-g4',
         '-O2',
         '-s', 'ASM_JS=1',
+        '-s', 'FUNCTION_POINTER_ALIGNMENT=1',
     ]
     ctx.env.LINKFLAGS = [
+        '-g4',
         '-s', 'EXPORTED_FUNCTIONS=[\'_main\',\'_malloc\',\'_pauseSpaceLeaper\',\'_resumeSpaceLeaper\',\'_setSpaceLeaperEndCallback\',\'_setSpaceLeaperVisitedCallback\',\'_setSpaceLeaperResourceCallback\',\'_setEventListener\']',
         '-s', 'TOTAL_MEMORY=67108864',
         '-s', 'RESERVED_FUNCTION_POINTERS=16',
+        '-s', 'FUNCTION_POINTER_ALIGNMENT=1',
         '-s', 'ASM_JS=1',
         '-O2',
     ]

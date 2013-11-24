@@ -62,7 +62,7 @@ static GLuint compileShader(GLuint shader, const char *source) {
 }
 
 #define kFrameFraction ( 1.0 / 60 )
-#define kFrameStep ( 1.0 / 20 )
+#define kFrameStep ( 1.0 / 60 )
 #ifndef kParticleCount
 #define kParticleCount 2048
 #endif
@@ -90,7 +90,8 @@ void initWaterTest() {
 
   for ( int i = 0; i < particle_count; ++i ) {
     AQParticle *particle = aqcreate( &AQParticleType );
-    // particle->correction = 0.5 + (float) rand() / RAND_MAX / 2.5;
+    particle->friction = 0.01;
+    particle->correction = 0.5 + (float) rand() / RAND_MAX / 2.5;
     particle->position = (aqvec2) {
       rand() % (int) world->aabb.right,
       rand() % (int) world->aabb.top / 3 * 2
