@@ -118,8 +118,15 @@ int _AQParticle_test( AQParticle *self, AQParticle *other, aqcollision *col ) {
       al = ingress,
       pt = (al - ar) / al,
       qt = br / al;
+    #if !__SSE__
     col->lambx = lx * (qt - pt);
     col->lamby = ly * (qt - pt);
+    #else
+    col->lamb = (aqvec2) {
+      lx * (qt - pt),
+      ly * (qt - pt)
+    };
+    #endif
 
     col->a = self;
     col->b = other;
@@ -139,18 +146,31 @@ int AQParticle_test( AQParticle *self, AQParticle *other, aqcollision *col ) {
   // }
 
   AQDOUBLE
+    #if !__SSE__
     ax = self->position.x,
     ay = self->position.y,
-    ar = self->radius,
     bx = other->position.x,
     by = other->position.y,
-    br = other->radius,
     abx = ax - bx,
     aby = ay - by,
+    #endif
+    ar = self->radius,
+    br = other->radius,
     abr = ar + br,
     ingress;
 
+  #if __SSE__
+  aqvec2
+    a = self->position,
+    b = other->position,
+    ab = a - b;
+  #endif
+
+  #if !__SSE__
   ingress = abx*abx+aby*aby;
+  #else
+  ingress = aqvec2_mag2( ab );
+  #endif
   if (((ingress < abr*abr))) {
     if ( aqcollidewith_contains( self->collideWith, other )) {
       return 0;
@@ -177,6 +197,7 @@ int AQParticle_test( AQParticle *self, AQParticle *other, aqcollision *col ) {
       ingress = 1e-5;
     }
 
+    #if !__SSE__
     AQDOUBLE
       lx = abx,
       ly = aby,
@@ -185,6 +206,11 @@ int AQParticle_test( AQParticle *self, AQParticle *other, aqcollision *col ) {
       qt = br / al;
     col->lambx = lx * (qt - pt);
     col->lamby = ly * (qt - pt);
+    #else
+    col->lamb = aqvec2_scale(
+      ab, br / ingress - ( ingress - ar ) / ingress
+    );
+    #endif
 
     col->a = self;
     col->b = other;
@@ -216,29 +242,45 @@ void AQParticle_solve( AQParticle *self, AQParticle *other, aqcollision *col ) {
 //     lamby = (col->lamby) * kParticleCorrection,
 // #else
     correction = ( self->correction * other->correction ),
+    #if !__SSE__
     lambx = (col->lambx) * correction,
     lamby = (col->lamby) * correction,
+    #endif
 // #endif
     amsq = self->mass,
     bmsq = other->mass,
     mass = amsq + bmsq,
     am = bmsq / mass,
     bm = amsq / mass,
+    #if !__SSE__
     avx = selflast->x - selfpos->x,
     avy = selflast->y - selfpos->y,
     avm = aqmath_hypot(avx, avy),
     bvx = otherlast->x - otherpos->x,
     bvy = otherlast->y - otherpos->y,
     bvm = aqmath_hypot(bvx, bvy),
+    #endif
     // fric = fabs(collision->distance) * (avm + bvm > 5 ? 0.05 : self->friction * other->friction);
     // fric = Math.abs(collision->distance) * (avm + bvm > 10 ? 0.99 : self->friction * other->friction);
     fric = fabs(col->distance) * self->friction * other->friction;
+
+  #if __SSE__
+  aqvec2
+    lamb = aqvec2_scale( col->lamb, correction ),
+    av = *selflast - *selfpos,
+    bv = *otherlast - *otherpos;
+
+  AQDOUBLE
+    avm = aqvec2_mag( av ),
+    bvm = aqvec2_mag( bv );
+  #endif
 
   // if (avm + bvm < 30) {
   //   lambx *= 0.3;
   //   lamby *= 0.3;
   // }
 
+  #if !__SSE__
   if (avm != 0) {
     avx = (avx / avm) * (avm - fric);
     avy = (avy / avm) * (avm - fric);
@@ -247,6 +289,14 @@ void AQParticle_solve( AQParticle *self, AQParticle *other, aqcollision *col ) {
     bvx = bvx / bvm * (bvm - fric);
     bvy = bvy / bvm * (bvm - fric);
   }
+  #else
+  if (avm != 0) {
+    av = aqvec2_scale( av, 1 / avm * (avm - fric));
+  }
+  if (bvm != 0) {
+    bv = aqvec2_scale( bv, 1 / bvm * (bvm - fric));
+  }
+  #endif
 
   if (self->isStatic) {
     am = 0;
@@ -263,6 +313,7 @@ void AQParticle_solve( AQParticle *self, AQParticle *other, aqcollision *col ) {
     other->oncollision(other, self, other->userdata);
   }
   if (!self->isTrigger && !other->isTrigger) {
+    #if !__SSE__
     selflast->x = selfpos->x + avx;
     selflast->y = selfpos->y + avy;
     selfpos->x += lambx * am;
@@ -272,6 +323,13 @@ void AQParticle_solve( AQParticle *self, AQParticle *other, aqcollision *col ) {
     otherlast->y = otherpos->y + bvy;
     otherpos->x -= lambx * bm;
     otherpos->y -= lamby * bm;
+    #else
+    *selflast = *selfpos + av;
+    *selfpos += aqvec2_scale( lamb, am );
+    
+    *otherlast = *otherpos + bv;
+    *otherpos -= aqvec2_scale( lamb, bm );
+    #endif
   }
 }
 

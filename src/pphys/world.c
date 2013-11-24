@@ -68,7 +68,19 @@ void _AQWorld_integrateIterator( AQObj *item, void *ctx ) {
   // particle->currentAverageCollisionDepth = 0;
   // particle->collisionCount = 0;
 
-  aqaabb newAabb = particle->_aabb = AQParticle_aabb( particle );
+  aqaabb newAabb = AQParticle_aabb( particle );
+  #if !__SSE__
+  particle->_aabb = newAabb;
+  #else
+  // Play with the order and sign of values to do a signal comparison and
+  // summary to see if two particles' aabb intersect.
+  particle->_aabb = (_aqaabb) {
+    newAabb.top, newAabb.right, -newAabb.bottom, -newAabb.left
+  };
+  particle->_aabb2 = (_aqaabb) {
+    newAabb.bottom, newAabb.left, -newAabb.top, -newAabb.right
+  };
+  #endif
   if ( aqvec2_mag2( aqvec2_sub( particle->position, particle->oldPosition )) > particle->radius / 10 ) {
     AQDdvt_updateParticle( self->world->ddvt, particle, particle->oldAabb, newAabb );
     particle->oldPosition = particle->position;
@@ -85,7 +97,11 @@ void _AQWorld_boxTestIterator( AQParticle *a, AQParticle *b, void *ctx ) {
     #if PPHYS_ALLOW_SLEEP
     ( !a->isSleeping || !b->isSleeping ) &&
     #endif
+      #if !__SSE__
       aqaabb_intersectsBox( a->_aabb, b->_aabb ) &&
+      #else
+      _aqaabb_intersectsBox( a->_aabb, b->_aabb2 ) &&
+      #endif
       AQParticle_test( a, b, self->nextCollision )
   ) {
     self->nextCollision = aqcollision_pop( self->nextCollision );

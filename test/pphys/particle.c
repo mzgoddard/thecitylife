@@ -66,11 +66,19 @@ void test_collision( Result **result ) {
     AQParticle_testPrep( q );
     ok( AQParticle_test( p, q, &collision ), "particles collide" );
     ok( fdim(
+      #if !__SSE__
       collision.lambx,
+      #else
+      collision.lamb.x,
+      #endif
       lValues[ i / 4 * 2 ]
     ) < AQEPS, "lamb x is accurate" );
     ok( fdim(
+      #if !__SSE__
       collision.lamby,
+      #else
+      collision.lamb.y,
+      #endif
       lValues[ i / 4 * 2 + 1 ]
     ) < AQEPS, "lamb y is accurate" );
 
