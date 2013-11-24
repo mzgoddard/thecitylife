@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "appdefines.h"
+
 #include "./ddvt.h"
 
 void _AQDdvt_addParticle( AQDdvt *self, AQParticle *particle, aqaabb *aabb );
@@ -246,6 +248,7 @@ void _AQDdvt_removeParticle( AQDdvt *self, AQParticle *particle, aqaabb *aabb ) 
   }
 }
 
+#if PPHYS_ALLOW_SLEEP
 void _AQDdvt_wakeParticle( AQDdvt *self, AQParticle *particle, aqaabb *aabb ) {
   if ( !self->tl ) {
     self->isSleeping = 0;
@@ -267,6 +270,7 @@ void _AQDdvt_wakeParticle( AQDdvt *self, AQParticle *particle, aqaabb *aabb ) {
     }
   }
 }
+#endif
 
 void _AQDdvt_updateParticle( AQDdvt *self, AQParticle *particle, aqaabb *old, aqaabb *new ) {
   if ( !self->tl ) {
@@ -293,6 +297,7 @@ void AQDdvt_removeParticle( AQDdvt *self, AQParticle *particle, aqaabb aabb ) {
   );
 }
 
+#if PPHYS_ALLOW_SLEEP
 void AQDdvt_wakeParticle( AQDdvt *self, AQParticle *particle ) {
   aqaabb aabb = AQParticle_aabb( particle );
   _AQDdvt_wakeParticle(
@@ -301,6 +306,7 @@ void AQDdvt_wakeParticle( AQDdvt *self, AQParticle *particle ) {
     &aabb
   );
 }
+#endif
 
 void AQDdvt_updateParticle( AQDdvt *self, AQParticle *particle, aqaabb old, aqaabb new ) {
   _AQDdvt_updateParticle( self, particle, &old, &new );

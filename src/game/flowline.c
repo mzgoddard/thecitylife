@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "appdefines.h"
+
 #include "./flowline.h"
 
 AQFlowLine * AQFlowLine_init( AQFlowLine *self ) {
@@ -72,7 +74,11 @@ void _AQFlowLine_oncollision(
     b = a;
     a = tmp;
   }
+
+  #if PPHYS_ALLOW_SLEEP
   AQWorld_wakeParticle(((struct AQFlowParticleData *) a->userdata )->self->world, b );
+  #endif
+
   b->acceleration = aqvec2_add(
     b->acceleration,
     aqvec2_scale( data->direction, data->self->force / b->mass )

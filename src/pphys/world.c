@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stddef.h>
 
+#include "appdefines.h"
+
 #include "./world.h"
 #include "./constraint.h"
 
@@ -60,7 +62,9 @@ void _AQWorld_boxTestIterator( AQParticle *a, AQParticle *b, void *ctx ) {
   //   return;
   // }
   if (
+    #if PPHYS_ALLOW_SLEEP
     ( !a->isSleeping || !b->isSleeping ) &&
+    #endif
       aqaabb_intersectsBox( a->_aabb, b->_aabb ) &&
       AQParticle_test( a, b, self->nextCollision )
   ) {
@@ -124,6 +128,12 @@ void _AQWorld_performConstraints( AQInterfacePtr *interfacePtr, void *ctx ) {
 }
 
 void _AQWorld_maintainBoxIterator( AQParticle *particle, void *ctx ) {
+  #if PPHYS_ALLOW_SLEEP
+  if ( particle->isSleeping ) {
+    return;
+  }
+  #endif
+
   AQWorld *world = (AQWorld *) ctx;
   aqaabb aabb = AQParticle_aabb( particle );
 

@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "appdefines.h"
+
 #include "./particle.h"
 
 static const AQDOUBLE posmul = 1.999999999;
@@ -44,8 +46,18 @@ aqaabb AQParticle_lastAabb( AQParticle *self ) {
 }
 
 void AQParticle_integrate( AQParticle *self, AQDOUBLE dt ) {
-  if ( self->isStatic ) { return; }
+  if ( self->isStatic ) {
+    #if PPHYS_ALLOW_SLEEP
+    self->sleepCounter++;
+    if ( self->sleepCounter > 20 ) {
+      self->isSleeping = 1;
+    }
+    #endif
+    return;
+  }
+  #if PPHYS_ALLOW_SLEEP
   if ( self->isSleeping ) { return; }
+  #endif
 
   aqvec2 position = self->position;
   self->position = aqvec2_add(
@@ -58,14 +70,16 @@ void AQParticle_integrate( AQParticle *self, AQDOUBLE dt ) {
   self->lastPosition = position;
   self->acceleration = (aqvec2) { 0, 0 };
 
+  #if PPHYS_ALLOW_SLEEP
   if ( fabs( aqvec2_mag2(
     aqvec2_sub( self->position, self->lastPosition ))
-  ) < 0.00001 ) {
+  ) < 0.01 ) {
     self->sleepCounter++;
     if ( self->sleepCounter > 20 ) {
       self->isSleeping = 1;
     }
   }
+  #endif
 }
 
 void AQParticle_testPrep( AQParticle *self ) {
@@ -314,10 +328,12 @@ void AQParticle_ignoreGroup( AQParticle *self, AQParticle *ignore ) {
   _AQParticle_ignore( (aqcollidewith **) &self->ignoreGroup, ignore );
 }
 
+#if PPHYS_ALLOW_SLEEP
 void AQParticle_wake( AQParticle *self ) {
   self->isSleeping = 0;
   self->sleepCounter = 0;
 }
+#endif
 
 aqcollidewith * aqcollidewith_init() {
   aqcollidewith *self = malloc( sizeof( aqcollidewith ));

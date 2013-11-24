@@ -6,4 +6,6 @@
 #define VIEWPORT_DIMENSIONS 0, 0, 640, 480
 #define VIEWPORT() glViewport( VIEWPORT_DIMENSIONS )
 
+#define PPHYS_ALLOW_SLEEP 0
+
 #endif /* end of include guard: APPDEFINES_H_RDLPTZCR */
