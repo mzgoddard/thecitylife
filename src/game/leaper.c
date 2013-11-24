@@ -14,7 +14,7 @@
 
 #define FRAME_FRACTION 1.0
 #define CORRECTION_FRACTION 0.25
-#define FLIGHT_SPEED 15
+#define FLIGHT_SPEED 2
 #define TURN_SPEED 5
 #define STUCK_TO_HANGING_POWER 0.2
 
@@ -318,6 +318,11 @@ void SLLeaper_applyDirection( SLLeaper *self, AQDOUBLE radians ) {
       ))->position
     );
 
+    downAngle = _SLLeaper_globalAngleFromCenter(
+      SLLeaper_calcPosition( self ),
+      self->lastTouched->position
+    );
+
     // double diffAngle = ( radians - downAngle + 2 * M_PI );
     // if ( diffAngle > M_PI ) {
     //   diffAngle = M_PI - diffAngle;
@@ -338,9 +343,9 @@ void SLLeaper_applyDirection( SLLeaper *self, AQDOUBLE radians ) {
       detachedAttachedIndex = 0;
       floatingRotateAngle = downAngle + M_PI;
       floatingBodyPower = 0;
-      detachingBodyPower = STUCK_TO_HANGING_POWER * FRAME_FRACTION;
+      detachingBodyPower = FLIGHT_SPEED * FRAME_FRACTION;
 
-      targetState = PreHangingLeaperState;
+      targetState = FloatingLeaperState;
     } else if ( diffAngle > M_PI / 4 && diffAngle < M_PI * 0.75 ) {
       // rotate cw
 
@@ -407,6 +412,22 @@ void SLLeaper_applyDirection( SLLeaper *self, AQDOUBLE radians ) {
           sin( downAngle + M_PI ) * inc * detachingBodyPower
         )
       );
+
+      if ( targetState == FloatingLeaperState ) {
+        detachingBody =
+          (AQParticle *) AQList_at( self->bodies, AQNumber_asInt(
+            AQList_at( self->_attachedIndices, 0 )
+          ));
+        AQList_removeAt( self->_attachedIndices, 0 );
+
+        detachingBody->position = aqvec2_add(
+          detachingBody->position,
+          aqvec2_make(
+            cos( downAngle + M_PI ) * inc * detachingBodyPower,
+            sin( downAngle + M_PI ) * inc * detachingBodyPower
+          )
+        );
+      }
 
       if ( !!~floatingBodyIndex ) {
         AQParticle *floatingBody =
@@ -687,7 +708,7 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
 
   if (
     // self->state != PreHangingLeaperState &&
-    self->state != HangingLeaperState &&
+    self->state != StuckLeaperState &&
       // self->state != RotatingLeaperState &&
       // self->state != StuckLeaperState &&
       // (
@@ -728,17 +749,22 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
     // accelerate to desired speed
     double angularSpeed = fabs( angularVelocity );
     double speedDiff;
-    if ( self->state == PreHangingLeaperState ) {
-      speedDiff = STUCK_TO_HANGING_POWER * FRAME_FRACTION - angularSpeed;
-    } else {
-      speedDiff = TURN_SPEED * FRAME_FRACTION * CORRECTION_FRACTION - angularSpeed;
-    }
+    // if ( self->state == PreHangingLeaperState ) {
+    //   speedDiff = STUCK_TO_HANGING_POWER * FRAME_FRACTION - angularSpeed;
+    // } else {
+    speedDiff = TURN_SPEED * FRAME_FRACTION * CORRECTION_FRACTION - angularSpeed;
+    // }
     int angularVelocitySign = angularVelocity < 0 ? -1 : 1;
+
+    if ( self->state == FloatingLeaperState ) {
+      speedDiff = TURN_SPEED * FRAME_FRACTION;
+      angularVelocitySign = 1;
+    }
 
     double angle =
       _SLLeaper_globalAngleFromCenter( self->position, nearbyBody->position );
-    angle += M_PI / 2;
-    if ( speedDiff > 0 ) {
+    // angle += M_PI / 2;
+    // if ( speedDiff > 0 ) {
       nearbyBody->position = aqvec2_add(
         nearbyBody->position,
         aqvec2_make(
@@ -746,7 +772,7 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
           sin( angle ) * speedDiff * angularVelocitySign
         )
       );
-    }
+    // }
 
     if (
       self->state != PreHangingLeaperState &&
@@ -761,9 +787,10 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
       int diffAngleDownAngleSign = diffAngleDownAngle < 0 ? -1 : 1;
       _SLLeaper_gotoState(
         self,
-        angularVelocitySign == diffAngleDownAngleSign ?
-          RotatingLeaperState :
-          PreHangingLeaperState
+        RotatingLeaperState
+        // angularVelocitySign == diffAngleDownAngleSign ?
+        //   RotatingLeaperState :
+        //   PreHangingLeaperState
       );
     }
   }

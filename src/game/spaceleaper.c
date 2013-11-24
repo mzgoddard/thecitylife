@@ -56,10 +56,23 @@ void initWaterTest() {
   AQLoop_boot();
   AQRenderer_boot();
 
+  int space = 25600;
+  int n = 64;
+  int ambients = 0;
+  int ambientN = 9;
+
+  #if EMSCRIPTEN
+  space = 12800;
+  n = 32;
+  ambientN = 9;
+  #endif
+
+  AQDOUBLE blockSize = (AQDOUBLE) space / n;
+  AQDOUBLE ambientSize = (AQDOUBLE) space / n / ambientN;
+
   world = AQLoop_world();
-  AQWorld_setAabb( world, (aqaabb) { 12800, 12800, 0, 0 });
-  // gravity = (aqvec2) { 0, -4 };
-  AQInput_setWorldFrame( 12800, 12800, 0, 0 );
+  AQWorld_setAabb( world, (aqaabb) { space, space, 0, 0 });
+  AQInput_setWorldFrame( space, space, 0, 0 );
 
   asteroids = aqinit( aqalloc( &AQListType ));
 
@@ -67,8 +80,6 @@ void initWaterTest() {
 
   SLAsteroidGroupView *asteroidView = SLAsteroidGroupView_create();
 
-  int n = 32;
-  int ambients = 0;
   for ( int i = 0; i < n; ++i ) {
     for ( int j = 0; j < n; ++j ) {
       float asteroidRadius = ((double) rand() ) / RAND_MAX * world->aabb.right / n / 8 + world->aabb.right / n / 8;
@@ -83,22 +94,21 @@ void initWaterTest() {
       AQList_push( asteroids, (AQObj *) asteroid );
       SLAsteroidGroupView_addAsteroid( asteroidView, asteroid );
 
-      int ambientN = 6;
       for ( int k = 0; k < ambientN * ambientN; k++ ) {
         aqvec2 position = aqvec2_make(
-          world->aabb.right / n * i + world->aabb.right / n / ambientN * ( k % ambientN ) + rand() % 15,
-          world->aabb.right / n * j + world->aabb.right / n / ambientN * floor( k / ambientN ) + rand() % 15
+          blockSize * i + ambientSize * ( k % ambientN ) + rand() % (int) ( ambientSize - ambientSize * 0.5 ) + ambientSize * 0.25,
+          blockSize * j + ambientSize * floor( k / ambientN ) + rand() % (int) ( ambientSize - ambientSize * 0.5 ) + ambientSize * 0.25
         );
         // aqvec2 position = aqvec2_make(
         //   rand() % (int) ( world->aabb.right / n ) + world->aabb.right / n * i,
         //   rand() % (int) ( world->aabb.top / n ) + world->aabb.top / n * j
         // );
 
-        if ( !aqaabb_intersectsCircle( aqaabb_makeCenterRadius( position, 5 ), asteroid->center, asteroid->radius )) {
+        if ( !aqaabb_intersectsCircle( aqaabb_makeCenterRadius( position, 20 ), asteroid->center, asteroid->radius )) {
           ambients++;
           AQParticle *ambientParticle = aqcreate( &AQParticleType );
           ambientParticle->position = ambientParticle->lastPosition = position;
-          ambientParticle->radius = 20;
+          ambientParticle->radius = ambientSize * 0.25;
           // ambientParticle->isTrigger = 1;
           ambientParticle->friction = 1;
           ambientParticle->mass = 0.01;
