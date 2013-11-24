@@ -14,6 +14,9 @@ typedef struct AQWorld {
   AQList *particles;
   AQList *constraints;
 
+  int awakeParticles;
+  AQList *_sleepingParticles;
+
   aqcollision *headCollision;
   aqcollision *nextCollision;
 } AQWorld;
