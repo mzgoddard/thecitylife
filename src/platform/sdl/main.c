@@ -102,6 +102,8 @@ static void process_events( void )
   /* Our SDL event placeholder. */
   SDL_Event event;
 
+  int hadEvent = 0;
+
   if ( mouseTouch && ( mouseTouch->state & AQTouchTouching ) == 0 ) {
     AQArray *touches = AQInput_getTouches();
     AQArray_remove( touches, (AQObj *) mouseTouch );
@@ -113,6 +115,9 @@ static void process_events( void )
       ( mouseTouch->state & ( AQTouchBegan | AQTouchMoved ))
   ) {
     mouseTouch->state = AQTouchStationary;
+
+    hadEvent = 1;
+    stepInputWaterTest();
   }
 
   float screenWidth; float screenHeight;
@@ -182,8 +187,14 @@ static void process_events( void )
       default:
         break;
     }
+
+    hadEvent = 1;
+    stepInputWaterTest();
+  }
+
+  if ( !hadEvent ) {
+    stepInputWaterTest();
   }
 
   aqfree( pool );
 }
-

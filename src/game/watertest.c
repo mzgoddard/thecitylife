@@ -151,7 +151,7 @@ void initWaterTest() {
     0, 0, 0, 1
   };
   glUniformMatrix4fv(modelview_projection, 1, GL_TRUE, identity);
-    
+
   printf("%d %d %d %d\n", (int) sizeof(AQParticle), shader_program, positionAttribute, modelview_projection);
 
   glGenBuffers(1, &buffer);
@@ -296,6 +296,44 @@ void setEventListener( int index, void (*handle)() ) {
   ((EventHandle *) &applicationEvents )[ index ] = handle;
 }
 
+void stepInputWaterTest() {
+  AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
+
+  AQArray *touches = AQInput_getTouches();
+  AQTouch *touch = (AQTouch *) AQArray_atIndex( touches, 0 );
+  if ( touch ) {
+    // printf( "touch: %s %f %f\n",
+    //   touch->state == AQTouchBegan ?
+    //     "began" :
+    //     touch->state == AQTouchEnded ?
+    //       "ended" :
+    //       "moved",
+    //   touch->wx,
+    //   touch->wy );
+    switch ( touch->state ) {
+      case AQTouchBegan:
+        AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+        break;
+      case AQTouchMoved:
+      case AQTouchStationary:
+        AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+        break;
+      case AQTouchEnded:
+        AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+        AQFlowLine_createParticles( flowLine, world );
+        AQFlowLine_clearPoints( flowLine );
+        printf( "particles: %d %d\n",
+          AQList_length( flowLine->particles ),
+          AQList_length( world->particles ));
+        break;
+      default:
+        break;
+    }
+  }
+
+  aqfree( pool );
+}
+
 static float hertztime = 0;
 static float fpstime = 0;
 static int frames = 0;
@@ -309,38 +347,6 @@ void stepWaterTest(float dt) {
 
     int startTime = 0;
     int endTime = 0;
-
-    AQArray *touches = AQInput_getTouches();
-    AQTouch *touch = (AQTouch *) AQArray_atIndex( touches, 0 );
-    if ( touch ) {
-      // printf( "touch: %s %f %f\n",
-      //   touch->state == AQTouchBegan ?
-      //     "began" :
-      //     touch->state == AQTouchEnded ?
-      //       "ended" :
-      //       "moved",
-      //   touch->wx,
-      //   touch->wy );
-      switch ( touch->state ) {
-        case AQTouchBegan:
-          AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-          break;
-        case AQTouchMoved:
-        case AQTouchStationary:
-          AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-          break;
-        case AQTouchEnded:
-          AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-          AQFlowLine_createParticles( flowLine, world );
-          AQFlowLine_clearPoints( flowLine );
-          printf( "particles: %d %d\n",
-            AQList_length( flowLine->particles ),
-            AQList_length( world->particles ));
-          break;
-        default:
-          break;
-      }
-    }
 
     if (hertztime > kFrameFraction) {
         if ( getTicks ) {

@@ -15,11 +15,6 @@
 #import "appdefines.h"
 #import "watertest.h"
 #import "input.h"
-//#import "all.h"
-
-//void update_touch( aq_click_type button, aq_input_state state, aqvec2 screen );
-//void remove_touches();
-//unsigned int get_button( NSUInteger buttonNumber );
 
 @implementation AQOpenGLView
 
@@ -68,17 +63,15 @@
   AQInput_setScreenSize( self.frame.size.width, self.frame.size.height );
 
   initWaterTest();
-//  NSLog(@"%s", aqt_object->name);
 }
 
 - (void) draw:(NSTimer *)sender {
-//  if (mouseDown) {
     [self drawRect:[self bounds]];
     
     NSDate *now = [NSDate date];
     
     NSTimeInterval dt = fabs([lastDate timeIntervalSinceNow]);
-    //        NSLog(@"%f", dt);
+
     stepWaterTest(dt);
     [self setNeedsDisplay:YES];
 
@@ -93,129 +86,36 @@
         ( mouseTouch->state & ( AQTouchBegan | AQTouchMoved ))
     ) {
       mouseTouch->state = AQTouchStationary;
+      inputEventDirty = YES;
+      stepInputWaterTest();
     }
-    aqfree( pool );
 
-//    remove_touches();
+    if ( !inputEventDirty ) {
+      stepInputWaterTest();
+    } else {
+      inputEventDirty = NO;
+    }
+
+    aqfree( pool );
     
     [lastDate release];
     lastDate = [now retain];
-//  }
 }
 
 - (void) drawRect:(NSRect)dirtyRect {
   [[self openGLContext] makeCurrentContext];
-  
-  //    glViewport(0, 0, 2, 2);
-//  glViewport(0, 0, dirtyRect.size.width, dirtyRect.size.height);
+
   AQInput_setScreenSize( self.frame.size.width, self.frame.size.height );
   float width, height;
   AQInput_getScreenSize( &width, &height );
   float max = width > height ? width : height;
   glViewport(( width - max ) / 2, ( height - max ) / 2, max, max );
   
-//  aq_input_setscreensize( (aqvec2){dirtyRect.size.width, dirtyRect.size.height} );
   drawWaterTest();
   
   glFlush();
 }
 
-//struct find_touch {
-//  aq_click_type find_click;
-//  aq_input_state find_state;
-//  
-//  aq_touch *touch;
-//};
-//
-//void find_touch_iterator(aq_id object, void *userdata, aqbool *stop);
-//void find_touch_iterator(aq_id object, void *userdata, aqbool *stop) {
-//  struct find_touch *find = ( struct find_touch * )userdata;
-//  aq_touch * touch = ( aq_touch * )object;
-//  
-//  if ( find->find_click != 0 ) {
-//    if ( find->find_click == aq_touch_click( touch ) ) {
-//      find->touch = touch;
-//      *stop = false;
-//    }
-//  }
-//  
-//  if ( find->find_state != 0 ) {
-//    if ( find->find_state == aq_touch_state( touch ) ) {
-//      find->touch = touch;
-//      *stop = false;
-//    }
-//  }
-//}
-//
-//void update_touch( aq_click_type button, aq_input_state state, aqvec2 screen ) {
-//  aq_autoreleasepool * pool = aq_autoreleasepool_init( aq_alloc( aqt_autoreleasepool ) );
-//  
-//  aq_list *touches = aq_input_touches();
-//  
-//  struct find_touch find;
-//  find.touch = NULL;
-//  find.find_click = button;
-//  find.find_state = 0;
-//  
-//  aq_list_iterate( touches, &find_touch_iterator, &find );
-//  
-//  aq_touch *touch = find.touch;
-//  if ( !touch ) {
-//    touch = aq_touch_create( (aqvec2){0, 0}, button, state );
-//    aq_list_add( touches, touch );
-//  }
-//  
-//  touch->state = state;
-//  
-//  touch->screen_position = screen;
-//  
-//  aq_release( pool );
-//  
-//  NSLog( @"click %d %d <%f,%f> <%f,%f>", button, state, screen.x, screen.y, aq_touch_world( touch ).x, aq_touch_world( touch ).y );
-//}
-//
-//void remove_touches() {
-//  aq_autoreleasepool * pool = aq_autoreleasepool_init( aq_alloc( aqt_autoreleasepool ) );
-//  
-//  aq_list *touches = aq_input_touches();
-//  
-//  struct find_touch find;
-//  find.touch = NULL;
-//  find.find_click = 0;
-//  find.find_state = AQ_INPUT_END;
-//  
-//  aq_list_iterate( touches, &find_touch_iterator, &find );
-//  aq_touch *touch = find.touch;
-//  while ( touch ) {
-//    aq_list_remove( touches, touch );
-//    touch = find.touch = NULL;
-//    aq_list_iterate( touches, &find_touch_iterator, &find );
-//  }
-//  
-//  aq_release( pool );
-//}
-//
-//unsigned int get_button( NSUInteger buttonNumber ) {
-//  unsigned int button = 0;
-//  switch( buttonNumber ) {
-//    case NSLeftMouseDown:
-//    case NSLeftMouseUp:
-//    case NSLeftMouseDragged:
-//      button = AQ_CLICK_LEFT;
-//      break;
-//    case NSRightMouseDown:
-//    case NSRightMouseUp:
-//    case NSRightMouseDragged:
-//      button = AQ_CLICK_RIGHT;
-//      break;
-//      
-//    default:
-//      button = AQ_CLICK_MIDDLE;
-//      break;
-//  }
-//  
-//  return button;
-//}
 AQTouch *mouseTouch = NULL;
 
 - (void) viewDidEndLiveResize {
@@ -230,8 +130,6 @@ AQTouch *mouseTouch = NULL;
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
 
   mouseDown = mouseDown ? NO : YES;
-  
-//  NSLog(@"%@", theEvent);
   
   NSPoint pt = theEvent.locationInWindow;
 
@@ -255,46 +153,39 @@ AQTouch *mouseTouch = NULL;
     mouseTouch->x, mouseTouch->y, &mouseTouch->wx, &mouseTouch->wy
   );
   AQArray_push( AQInput_getTouches(), (AQObj *) mouseTouch );
-//  NSLog( @"touch %f %f %f %f\n", mouseTouch->x, mouseTouch->y, screenWidth, screenHeight );
+
+  inputEventDirty = YES;
+  stepInputWaterTest();
 
   aqfree( pool );
-
-//  update_touch(
-//               get_button( theEvent.type ),
-//               AQ_INPUT_BEGIN,
-//               (aqvec2) {
-//                 pt.x,
-//                 pt.y
-//               });
-  
-//  [lastDate release];
-//  lastDate = [[NSDate date] retain];
 }
 
+// Handle the event to stop progagation.
 - (void) mouseDragged:(NSEvent *)theEvent {
-//  NSPoint pt = theEvent.locationInWindow;
-//  update_touch(
-//               get_button( theEvent.type ),
-//               AQ_INPUT_STAY,
-//               (aqvec2) {
-//                 pt.x,
-//                 pt.y
-//               });
+  NSPoint pt = theEvent.locationInWindow;
+
+  if ( mouseTouch ) {
+    mouseTouch->state = AQTouchMoved;
+    mouseTouch->x = pt.x;
+    mouseTouch->y = pt.y;
+    mouseTouch->dx = theEvent.deltaX;
+    mouseTouch->dy = theEvent.deltaY;
+    AQInput_screenToWorld(
+      mouseTouch->x, mouseTouch->y, &mouseTouch->wx, &mouseTouch->wy
+    );
+  }
+  
+  inputEventDirty = YES;
+  stepInputWaterTest();
 }
 
 - (void) mouseUp:(NSEvent *)theEvent {
-//  NSPoint pt = theEvent.locationInWindow;
-
   if ( mouseTouch ) {
     mouseTouch->state = AQTouchEnded;
   }
-//  update_touch(
-//               get_button( theEvent.type ),
-//               AQ_INPUT_END,
-//               (aqvec2) {
-//                 pt.x,
-//                 pt.y
-//               });
+  
+  inputEventDirty = YES;
+  stepInputWaterTest();
 }
 
 - (void) rightMouseDown:(NSEvent *)theEvent {

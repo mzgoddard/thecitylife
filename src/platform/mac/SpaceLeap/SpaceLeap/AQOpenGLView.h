@@ -10,6 +10,7 @@
 
 @interface AQOpenGLView : NSOpenGLView {
   BOOL mouseDown;
+  BOOL inputEventDirty;
   NSTimer *animationTimer;
   NSDate *lastDate;
 }

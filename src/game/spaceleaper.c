@@ -311,6 +311,71 @@ float stddevTime( unsigned int frameTimes[], unsigned int length ) {
   return sqrt( diffSum / (float) length );
 }
 
+void stepInputWaterTest() {
+  if ( paused ) return;
+
+  float screenWidth, screenHeight;
+  AQInput_getScreenSize( &screenWidth, &screenHeight );
+
+  float fingerRadius = 30;
+
+  AQArray *touches = AQInput_getTouches();
+  AQTouch *touch = (AQTouch *) AQArray_atIndex( touches, 0 );
+  if ( touch ) {
+    aqvec2 centerDiff = (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 };
+
+    // printf( "touch: %s %f %f\n",
+    //   touch->state == AQTouchBegan ?
+    //     "began" :
+    //     touch->state == AQTouchEnded ?
+    //       "ended" :
+    //       "moved",
+    //   touch->wx,
+    //   touch->wy );
+    switch ( touch->state ) {
+      case AQTouchBegan:
+        // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+
+        if ( leaper && touch->finger == 1 && aqvec2_mag( centerDiff ) > fingerRadius ) {
+          aqvec2 dir = aqvec2_normalized( (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 });
+          AQDOUBLE radians =
+            atan2( -dir.y, -dir.x ) + AQRenderer_camera()->radians;
+          // printf( "%f %s\n", radians, aqvec2_cstr( dir ) );
+
+          SLLeaper_applyDirection( leaper, radians );
+        }
+      case AQTouchMoved:
+      case AQTouchStationary:
+        if ( cameraController ) {
+          if ( touch->finger == 3 || aqvec2_mag( centerDiff ) < fingerRadius ) {
+            SLCameraController_inputPress( cameraController );
+          }
+        }
+
+        if ( leaper && touch->finger == 1 && aqvec2_mag( centerDiff ) > fingerRadius ) {
+          aqvec2 dir = aqvec2_normalized( (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 });
+          AQDOUBLE radians =
+            atan2( -dir.y, -dir.x ) + AQRenderer_camera()->radians;
+          // printf( "%f %s\n", radians, aqvec2_cstr( dir ) );
+
+          SLLeaper_applyDirection( leaper, radians );
+        }
+        // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+        break;
+      case AQTouchEnded:
+        // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+        // AQFlowLine_createParticles( flowLine, world );
+        // AQFlowLine_clearPoints( flowLine );
+        // printf( "particles: %d %d\n",
+        //   AQList_length( flowLine->particles ),
+        //   AQList_length( world->particles ));
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 static float hertztime = 0;
 static float fpstime = 0;
 static int frames = 0;
@@ -325,67 +390,6 @@ void stepWaterTest(float dt) {
 
     int startTime = 0;
     int endTime = 0;
-
-    float screenWidth, screenHeight;
-    AQInput_getScreenSize( &screenWidth, &screenHeight );
-
-    float fingerRadius = 30;
-
-    AQArray *touches = AQInput_getTouches();
-    AQTouch *touch = (AQTouch *) AQArray_atIndex( touches, 0 );
-    if ( touch ) {
-      aqvec2 centerDiff = (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 };
-
-      // printf( "touch: %s %f %f\n",
-      //   touch->state == AQTouchBegan ?
-      //     "began" :
-      //     touch->state == AQTouchEnded ?
-      //       "ended" :
-      //       "moved",
-      //   touch->wx,
-      //   touch->wy );
-      switch ( touch->state ) {
-        case AQTouchBegan:
-          // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-
-          if ( leaper && touch->finger == 1 && aqvec2_mag( centerDiff ) > fingerRadius ) {
-            aqvec2 dir = aqvec2_normalized( (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 });
-            AQDOUBLE radians =
-              atan2( -dir.y, -dir.x ) + AQRenderer_camera()->radians;
-            // printf( "%f %s\n", radians, aqvec2_cstr( dir ) );
-
-            SLLeaper_applyDirection( leaper, radians );
-          }
-        case AQTouchMoved:
-        case AQTouchStationary:
-          if ( cameraController ) {
-            if ( touch->finger == 3 || aqvec2_mag( centerDiff ) < fingerRadius ) {
-              SLCameraController_inputPress( cameraController );
-            }
-          }
-
-          if ( leaper && touch->finger == 1 && aqvec2_mag( centerDiff ) > fingerRadius ) {
-            aqvec2 dir = aqvec2_normalized( (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 });
-            AQDOUBLE radians =
-              atan2( -dir.y, -dir.x ) + AQRenderer_camera()->radians;
-            // printf( "%f %s\n", radians, aqvec2_cstr( dir ) );
-
-            SLLeaper_applyDirection( leaper, radians );
-          }
-          // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-          break;
-        case AQTouchEnded:
-          // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-          // AQFlowLine_createParticles( flowLine, world );
-          // AQFlowLine_clearPoints( flowLine );
-          // printf( "particles: %d %d\n",
-          //   AQList_length( flowLine->particles ),
-          //   AQList_length( world->particles ));
-          break;
-        default:
-          break;
-      }
-    }
 
     if (hertztime > kFrameFraction) {
         if ( getTicks ) {
