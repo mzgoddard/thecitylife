@@ -110,7 +110,7 @@ def build(bld):
 
     bld.objects(
         source=bld.path.ant_glob('src/pphys/*.c'),
-        includes=['./src', '.'],
+        includes=['./src', './src/game/watertest', '.'],
         target='libpphys',
         use='libobj'
     )
@@ -185,7 +185,7 @@ def build(bld):
             source=spaceLeaperSource,
             includes=['./src/game/spaceleaper', './src', '.'],
             target='spaceleaper',
-            use='libobj libpphys libinput'
+            use='libobj libinput'
         )
 
     if bld.cmd in [ 'debug', 'release' ]:
@@ -202,7 +202,7 @@ def build(bld):
             includes=['./src/game/spaceleaper', './src', '.'],
             target='spaceleaper',
             framework=[ 'Cocoa', 'OpenGL' ],
-            use='libobj libpphys libinput SDL SDL_gfx SDL_image'
+            use='libobj libinput SDL SDL_gfx SDL_image'
         )
 
 for x in 'debug release emcc emcc_html'.split():
