@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdlib.h>
 
 #include "./list.h"
@@ -222,12 +223,55 @@ AQObj * AQList_pop( AQList *_self ) {
     }
 
     obj = aqautorelease( node->item );
+    node->prev = NULL;
+    node->next = NULL;
     node->item = NULL;
     free( aqlistnode_done( node ));
     self->length--;
   }
 
   return obj;
+}
+
+AQList * AQList_unshift( AQList *_self, AQObj *obj ) {
+  return AQList_insertAt( _self, obj, 0 );
+}
+
+AQList * AQList_insertAt( AQList *_self, AQObj *obj , int index ) {
+  struct AQList *self = (struct AQList *) _self;
+
+  aqlistnode *insertPt = self->head;
+  for (
+    ;
+    insertPt && index;
+    insertPt = insertPt->next, index--
+  ) {}
+
+  aqlistnode *node = aqlistnode_init( malloc( sizeof( struct aqlistnode )));
+  aqlistnode_setItem( node, obj );
+
+  node->next = insertPt;
+  if ( insertPt ) {
+    node->prev = insertPt->prev;
+    if ( insertPt->prev ) {
+      insertPt->prev->next = node;
+    }
+    insertPt->prev = node;
+  } else {
+    node->prev = self->tail;
+    if ( self->tail ) {
+      node->prev->next = node;
+    }
+    self->tail = node;
+  }
+
+  if ( self->head == insertPt ) {
+    self->head = node;
+  }
+
+  self->length++;
+
+  return _self;
 }
 
 AQObj * AQList_at( AQList *_self, int index ) {
@@ -266,12 +310,12 @@ AQObj * AQList_removeAt(AQList *_self, int index) {
 
     if ( node->prev ) {
       node->prev->next = node->next;
-      node->prev = NULL;
     }
     if ( node->next ) {
       node->next->prev = node->prev;
-      node->next = NULL;
     }
+    node->prev = NULL;
+    node->next = NULL;
 
     obj = aqautorelease( node->item );
     node->item = NULL;
@@ -300,9 +344,16 @@ AQObj * AQList_remove( AQList *self, AQObj *item ) {
 
 AQList * AQList_iterate( AQList *_self, AQList_iterator iterator, void *ctx ) {
   struct AQList *self = (struct AQList *) _self;
+  return AQList_iterateN( _self, self->length, iterator, ctx );
+}
+
+AQList * AQList_iterateN(
+  AQList *_self, int n, AQList_iterator iterator, void *ctx
+) {
+  struct AQList *self = (struct AQList *) _self;
 
   aqlistnode *node = self->head;
-  while( node ) {
+  while( node && n-- ) {
     iterator( node->item, ctx );
     node = node->next;
   }
