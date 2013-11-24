@@ -177,6 +177,7 @@ def build(bld):
         bld.program(
             source=watertestSource,
             includes=['./src/game/watertest', './src', '.'],
+            linkflags=['--js-library', '../../src/platform/web/window.js'],
             target='watertest',
             use='libobj libpphys libinput'
         )
@@ -184,6 +185,7 @@ def build(bld):
         bld.program(
             source=spaceLeaperSource,
             includes=['./src/game/spaceleaper', './src', '.'],
+            linkflags=['--js-library', '../../src/platform/web/window.js'],
             target='spaceleaper',
             use='libobj libinput'
         )
