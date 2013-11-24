@@ -168,7 +168,7 @@ def build(bld):
         'src/game/cameracontroller.c ' +
         'src/game/updater.c src/game/loop.c ' +
         'src/game/leaper.c src/game/leaperview.c src/game/asteroidview.c ' +
-        'src/game/particleview.c ' +
+        'src/game/particleview.c src/game/ambientparticle.c ' +
         'src/game/flowline.c src/game/asteroid.c src/game/spaceleaper.c ' +
         'src/platform/sdl/*.c'
     )

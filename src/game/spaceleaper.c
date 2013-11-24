@@ -19,6 +19,7 @@
 #include "src/game/cameracontroller.h"
 #include "src/game/asteroidview.h"
 #include "src/game/particleview.h"
+#include "src/game/ambientparticle.h"
 
 #define kFrameFraction 1.0 / 20
 #ifndef kParticleCount
@@ -112,6 +113,9 @@ void initWaterTest() {
           // ambientParticle->isTrigger = 1;
           ambientParticle->friction = 1;
           ambientParticle->mass = 0.01;
+          ambientParticle->userdata = aqretain( aqcreate(
+            &SLAmbientParticleType
+          ));
           ambientParticle->oncollision = collision_noop;
           AQWorld_addParticle( world, ambientParticle );
 
@@ -140,7 +144,12 @@ void initWaterTest() {
   SLAsteroid_setIsHome( homeAsteroid, 1 );
   homeAsteroid->isVisible = 1;
 
-  AQRenderer_addView( SLParticleView_getAmbientParticleView() );
+  void *particleView = SLParticleView_getAmbientParticleView();
+  SLParticleView_setHomeAsteroid( particleView, homeAsteroid );
+
+  AQRenderer_addView( particleView );
+  AQLoop_addUpdater( particleView );
+
   AQRenderer_addView( asteroidView );
   AQRenderer_addView( leaper = SLLeaper_create(
     aqvec2_add(
@@ -151,6 +160,8 @@ void initWaterTest() {
   leaper->radians = M_PI / 4;
   leaper->onvisit = visitedCallback;
   leaper->onresource = resourceCallback;
+
+  SLParticleView_setLeaper( particleView, leaper );
 
   AQLoop_addUpdater(
     cameraController =
@@ -415,6 +426,9 @@ void stepWaterTest(float dt) {
     if ( getTicks && startTime != 0 ) {
       frameTimes[ frameTimeIndex++ ] = endTime - startTime;
       if ( frameTimeIndex >= kMaxFrameTimes ) {
+        #if PPHYS_ALLOW_SLEEP
+        printf( "awake %d ", world->awakeParticles );
+        #endif
         printf(
           "min %d, max %d, avg %d, stddev %f\n",
           minTime( frameTimes, kMaxFrameTimes ),

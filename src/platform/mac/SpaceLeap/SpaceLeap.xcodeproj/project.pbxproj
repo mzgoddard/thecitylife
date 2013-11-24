@@ -83,10 +83,11 @@
 		AD93BE421839D74900911046 /* jquery-1.7.1.min.js in Resources */ = {isa = PBXBuildFile; fileRef = AD93BE401839D0EC00911046 /* jquery-1.7.1.min.js */; };
 		AD93BE431839D74900911046 /* spaceleap.ui.js in Resources */ = {isa = PBXBuildFile; fileRef = AD93BE3D1839D0E600911046 /* spaceleap.ui.js */; };
 		AD93BE451839E03700911046 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD93BE441839E03700911046 /* JavaScriptCore.framework */; };
+		ADAFDC0A183F174B00ECB54C /* ambientparticle.c in Sources */ = {isa = PBXBuildFile; fileRef = ADAFDC06183F174B00ECB54C /* ambientparticle.c */; };
+		ADAFDC0B183F174B00ECB54C /* particleview.c in Sources */ = {isa = PBXBuildFile; fileRef = ADAFDC08183F174B00ECB54C /* particleview.c */; };
 		ADC3968C176D94A2003EE938 /* flowline.c in Sources */ = {isa = PBXBuildFile; fileRef = AD4E941D176D924D001DBB4A /* flowline.c */; };
 		ADC39691176DCCA0003EE938 /* input.c in Sources */ = {isa = PBXBuildFile; fileRef = ADC3968F176DCCA0003EE938 /* input.c */; };
 		ADC39694176DCCF8003EE938 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = ADC39692176DCCF8003EE938 /* array.c */; };
-		ADD7277B183BB7F8007506B6 /* particleview.c in Sources */ = {isa = PBXBuildFile; fileRef = ADD72779183BB7F8007506B6 /* particleview.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -229,13 +230,15 @@
 		AD93BE3D1839D0E600911046 /* spaceleap.ui.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = spaceleap.ui.js; path = web/spaceleap.ui.js; sourceTree = "<group>"; };
 		AD93BE401839D0EC00911046 /* jquery-1.7.1.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "jquery-1.7.1.min.js"; path = "../vendor/jquery-1.7.1.min.js"; sourceTree = "<group>"; };
 		AD93BE441839E03700911046 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		ADAFDC06183F174B00ECB54C /* ambientparticle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ambientparticle.c; sourceTree = "<group>"; };
+		ADAFDC07183F174B00ECB54C /* ambientparticle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ambientparticle.h; sourceTree = "<group>"; };
+		ADAFDC08183F174B00ECB54C /* particleview.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = particleview.c; sourceTree = "<group>"; };
+		ADAFDC09183F174B00ECB54C /* particleview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = particleview.h; sourceTree = "<group>"; };
 		ADC3968E176DCCA0003EE938 /* index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = index.h; sourceTree = "<group>"; };
 		ADC3968F176DCCA0003EE938 /* input.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = input.c; sourceTree = "<group>"; };
 		ADC39690176DCCA0003EE938 /* input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = input.h; sourceTree = "<group>"; };
 		ADC39692176DCCF8003EE938 /* array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = array.c; sourceTree = "<group>"; };
 		ADC39693176DCCF8003EE938 /* array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = array.h; sourceTree = "<group>"; };
-		ADD72779183BB7F8007506B6 /* particleview.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = particleview.c; sourceTree = "<group>"; };
-		ADD7277A183BB7F8007506B6 /* particleview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = particleview.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -410,8 +413,10 @@
 				AD5C0BFA1839473B005DBC65 /* asteroidview.h */,
 				AD5C0BFB1839473B005DBC65 /* camera.c */,
 				AD5C0BFC1839473B005DBC65 /* camera.h */,
-				ADD72779183BB7F8007506B6 /* particleview.c */,
-				ADD7277A183BB7F8007506B6 /* particleview.h */,
+				ADAFDC06183F174B00ECB54C /* ambientparticle.c */,
+				ADAFDC07183F174B00ECB54C /* ambientparticle.h */,
+				ADAFDC08183F174B00ECB54C /* particleview.c */,
+				ADAFDC09183F174B00ECB54C /* particleview.h */,
 				AD5C0BFD1839473B005DBC65 /* cameracontroller.c */,
 				AD5C0BFE1839473B005DBC65 /* cameracontroller.h */,
 				AD5C0BFF1839473B005DBC65 /* colors.h */,
@@ -612,6 +617,7 @@
 				AD5C0C5E18394DFD005DBC65 /* cameracontroller.c in Sources */,
 				AD5C0C6118394DFD005DBC65 /* draw.c in Sources */,
 				ADC3968C176D94A2003EE938 /* flowline.c in Sources */,
+				ADAFDC0B183F174B00ECB54C /* particleview.c in Sources */,
 				AD5C0C6418394DFD005DBC65 /* leaper.c in Sources */,
 				AD5C0C6618394DFD005DBC65 /* leaperview.c in Sources */,
 				AD5C0C6818394DFD005DBC65 /* loop.c in Sources */,
@@ -620,13 +626,13 @@
 				AD5C0C6F18394DFD005DBC65 /* spaceleaper.c in Sources */,
 				AD5C0C7118394DFD005DBC65 /* updater.c in Sources */,
 				AD5C0C7318394DFD005DBC65 /* view.c in Sources */,
-				ADD7277B183BB7F8007506B6 /* particleview.c in Sources */,
 				AD5C0BCC18394596005DBC65 /* constraint.c in Sources */,
 				AD11FF8217641E5A004686B3 /* list.c in Sources */,
 				AD11FF8317641E5A004686B3 /* obj.c in Sources */,
 				AD5C0C7C18399B1A005DBC65 /* AQWebView.m in Sources */,
 				AD93BE3F1839D0E600911046 /* spaceleap.ui.js in Sources */,
 				AD93BE411839D0EC00911046 /* jquery-1.7.1.min.js in Sources */,
+				ADAFDC0A183F174B00ECB54C /* ambientparticle.c in Sources */,
 				AD5C0BD4183945BD005DBC65 /* number.c in Sources */,
 				AD93BE3B1839CD9700911046 /* AQWebInterface.m in Sources */,
 				AD5C0BD5183945BD005DBC65 /* string.c in Sources */,

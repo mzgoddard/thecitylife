@@ -11,6 +11,7 @@
 #include "src/game/asteroid.h"
 #include "src/game/colors.h"
 #include "src/game/particleview.h"
+#include "src/game/ambientparticle.h"
 
 #define FRAME_FRACTION 1.0
 #define CORRECTION_FRACTION 0.25
@@ -1045,18 +1046,6 @@ int _SLLeaper_sameParticleFindIterator( AQObj *obj, void *_particle ) {
 }
 
 void _SLLeaper_oncollision( AQParticle *a, AQParticle *b, void *collision ) {
-  if ( a->userdata == NULL || b->userdata == NULL ) {
-    if ( a->userdata == NULL ) {
-      SLParticleView_addAmbientParticle( a );
-      a->lastPosition = a->position;
-    }
-    if ( b->userdata == NULL ) {
-      SLParticleView_addAmbientParticle( b );
-      b->lastPosition = b->position;
-    }
-    return;
-  }
-
   SLLeaper *self;
   if ( aqistype( a->userdata, &SLLeaperType )) {
     self = a->userdata;
@@ -1067,6 +1056,16 @@ void _SLLeaper_oncollision( AQParticle *a, AQParticle *b, void *collision ) {
     AQParticle *tmp = a;
     a = b;
     b = tmp;
+  }
+
+  if (
+    ( b->userdata == NULL || aqistype( b->userdata, &SLAmbientParticleType )) &&
+      ( self->state != LostLeaperState && self->state != WonLeaperState )
+  ) {
+    SLAmbientParticle_startPulse( b->userdata );
+    SLParticleView_addAmbientParticle( b );
+    b->lastPosition = b->position;
+    return;
   }
 
   int index = AQList_findIndex(
