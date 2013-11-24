@@ -2,8 +2,12 @@
 #include <stdlib.h>
 #include <stddef.h>
 
+#include "appdefines.h"
+
 #include "./world.h"
 #include "./constraint.h"
+
+#define FRAME_MAX_SLEEP_SORTING 128
 
 AQWorld * AQWorld_init( AQWorld *self ) {
   self->ddvt = aqretain( AQDdvt_create( aqaabb_make( 0, 0, 0, 0 )));
@@ -11,6 +15,10 @@ AQWorld * AQWorld_init( AQWorld *self ) {
   self->constraints = aqretain( aqcreate( &AQListType ));
   self->headCollision = aqcollision_pop( NULL );
   self->nextCollision = self->headCollision;
+
+  self->awakeParticles = 0;
+  self->_sleepingParticles = aqretain( aqcreate( &AQListType ));
+
   return self;
 }
 
@@ -41,12 +49,38 @@ void _AQWorld_integrateIterator( AQObj *item, void *ctx ) {
   //   particle->acceleration = (aqvec2) { 0, 0 };
   //   return;
   // }
+  #if PPHYS_ALLOW_SLEEP
+  if (
+    particle->isSleeping
+  ) {
+    if (
+      AQList_length( self->world->_sleepingParticles ) < FRAME_MAX_SLEEP_SORTING
+    ) {
+      AQList_push( self->world->_sleepingParticles, (AQObj *) particle );
+    }
+
+    return;
+  }
+  #endif
+
   AQParticle_integrate( particle, self->dt );
   AQParticle_testPrep( particle );
   // particle->currentAverageCollisionDepth = 0;
   // particle->collisionCount = 0;
 
-  aqaabb newAabb = particle->_aabb = AQParticle_aabb( particle );
+  aqaabb newAabb = AQParticle_aabb( particle );
+  #if !__SSE__
+  particle->_aabb = newAabb;
+  #else
+  // Play with the order and sign of values to do a signal comparison and
+  // summary to see if two particles' aabb intersect.
+  particle->_aabb = (_aqaabb) {
+    newAabb.top, newAabb.right, -newAabb.bottom, -newAabb.left
+  };
+  particle->_aabb2 = (_aqaabb) {
+    newAabb.bottom, newAabb.left, -newAabb.top, -newAabb.right
+  };
+  #endif
   if ( aqvec2_mag2( aqvec2_sub( particle->position, particle->oldPosition )) > particle->radius / 10 ) {
     AQDdvt_updateParticle( self->world->ddvt, particle, particle->oldAabb, newAabb );
     particle->oldPosition = particle->position;
@@ -60,10 +94,30 @@ void _AQWorld_boxTestIterator( AQParticle *a, AQParticle *b, void *ctx ) {
   //   return;
   // }
   if (
-    aqaabb_intersectsBox( a->_aabb, b->_aabb ) &&
+    #if PPHYS_ALLOW_SLEEP
+    ( !a->isSleeping || !b->isSleeping ) &&
+    #endif
+      #if !__SSE__
+      aqaabb_intersectsBox( a->_aabb, b->_aabb ) &&
+      #else
+      _aqaabb_intersectsBox( a->_aabb, b->_aabb2 ) &&
+      #endif
       AQParticle_test( a, b, self->nextCollision )
   ) {
     self->nextCollision = aqcollision_pop( self->nextCollision );
+
+    #if PPHYS_ALLOW_SLEEP
+    if ( a->isSleeping ) {
+      AQWorld_wakeParticle( self, a );
+    } else {
+      a->sleepCounter = 0;
+    }
+    if ( b->isSleeping ) {
+      AQWorld_wakeParticle( self, b );
+    } else {
+      b->sleepCounter = 0;
+    }
+    #endif
   }
 }
 
@@ -106,13 +160,22 @@ void _AQWorld_solveIterator( aqcollision *col, void *ctx ) {
 }
 
 void _AQWorld_performConstraints( AQInterfacePtr *interfacePtr, void *ctx ) {
-  AQInterfacePtr_call0(
-    interfacePtr,
-    offsetof( AQConstraintInterface, update )
+  ((AQConstraintInterface *) interfacePtr->interface)->update(
+    interfacePtr->context
   );
+  // AQInterfacePtr_call0(
+  //   interfacePtr,
+  //   offsetof( AQConstraintInterface, update )
+  // );
 }
 
 void _AQWorld_maintainBoxIterator( AQParticle *particle, void *ctx ) {
+  #if PPHYS_ALLOW_SLEEP
+  if ( particle->isSleeping ) {
+    return;
+  }
+  #endif
+
   AQWorld *world = (AQWorld *) ctx;
   aqaabb aabb = AQParticle_aabb( particle );
 
@@ -127,7 +190,7 @@ void _AQWorld_maintainBoxIterator( AQParticle *particle, void *ctx ) {
   }
   if ( aabb.bottom < world->aabb.bottom ) {
     particle->position.y += world->aabb.bottom - aabb.bottom;
-    particle->lastPosition.y = particle->position.y;
+    // particle->lastPosition.y = particle->position.y;
     wallContact = 1;
   }
   if ( aabb.top > world->aabb.top ) {
@@ -179,9 +242,21 @@ void AQWorld_step( AQWorld *self, AQDOUBLE dt ) {
     self,
     dt
   };
+  #if PPHYS_ALLOW_SLEEP
+  AQList_iterateN(
+    self->particles, self->awakeParticles, _AQWorld_integrateIterator, &integrateContext
+  );
+  AQParticle *particle;
+  while (( particle = (AQParticle *) AQList_pop( self->_sleepingParticles ))) {
+    AQList_remove( self->particles, (AQObj *) particle );
+    AQList_push( self->particles, (AQObj *) particle );
+    self->awakeParticles--;
+  }
+  #else
   AQList_iterate(
     self->particles, _AQWorld_integrateIterator, &integrateContext
   );
+  #endif
 
   // iterate pairs and test for collisions
   AQDdvt_iteratePairs( self->ddvt, _AQWorld_boxTestIterator, self );
@@ -195,15 +270,26 @@ void AQWorld_step( AQWorld *self, AQDOUBLE dt ) {
     self->constraints, (AQList_iterator) _AQWorld_performConstraints, NULL
   );
 
+  #if PPHYS_ALLOW_SLEEP
+  AQList_iterateN(
+    self->particles, self->awakeParticles, (AQList_iterator) _AQWorld_maintainBoxIterator, self
+  );
+  #else
   AQList_iterate(
     self->particles, (AQList_iterator) _AQWorld_maintainBoxIterator, self
   );
+  #endif
 }
 
 void AQWorld_addParticle( AQWorld *self, AQParticle *particle ) {
   assert( !isnan(particle->position.x) && !isnan(particle->position.y) );
   AQDdvt_addParticle( self->ddvt, particle );
+  #if PPHYS_ALLOW_SLEEP
+  AQList_unshift( self->particles, (AQObj *) particle );
+  self->awakeParticles++;
+  #else
   AQList_push( self->particles, (AQObj *) particle );
+  #endif
   particle->_radius = particle->radius;
   particle->oldPosition = particle->position;
   particle->oldAabb = AQParticle_aabb( particle );
@@ -211,17 +297,39 @@ void AQWorld_addParticle( AQWorld *self, AQParticle *particle ) {
 
 void AQWorld_removeParticle( AQWorld *self, AQParticle *particle ) {
   AQDdvt_removeParticle( self->ddvt, particle, particle->oldAabb );
+  #if PPHYS_ALLOW_SLEEP
+  int index = AQList_indexOf( self->particles, (AQObj *) particle );
+  if ( index < self->awakeParticles ) {
+    self->awakeParticles--;
+  }
+  AQList_removeAt( self->particles, index );
+  #else
   AQList_remove( self->particles, (AQObj *) particle );
+  #endif
 }
+
+#if PPHYS_ALLOW_SLEEP
+void AQWorld_wakeParticle( AQWorld *self, AQParticle *particle ) {
+  int index = AQList_indexOf( self->particles, (AQObj *) particle );
+  if ( index > self->awakeParticles ) {
+    AQList_unshift( self->particles, AQList_removeAt( self->particles, index ));
+    self->awakeParticles++;
+  }
+
+  AQDdvt_wakeParticle( self->ddvt, particle );
+  AQParticle_wake( particle );
+}
+#endif
 
 void AQWorld_addConstraint( AQWorld *self, void *_constraint ) {
   AQInterfacePtr *constraintPtr = aqcastptr( _constraint, AQConstraintId );
   if ( constraintPtr ) {
-    AQInterfacePtr_call1(
-      constraintPtr,
-      offsetof( AQConstraintInterface, setWorld ),
-      self
-    );
+    ((AQConstraintInterface *) constraintPtr->interface)->setWorld( constraintPtr->context, self );
+    // AQInterfacePtr_call1(
+    //   constraintPtr,
+    //   offsetof( AQConstraintInterface, setWorld ),
+    //   self
+    // );
     AQList_push( self->constraints, (AQObj *) constraintPtr );
   }
 }

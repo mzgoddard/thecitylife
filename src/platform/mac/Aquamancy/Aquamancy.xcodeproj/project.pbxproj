@@ -26,6 +26,12 @@
 		AD11FF94176429A6004686B3 /* watertest.c in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF92176429A6004686B3 /* watertest.c */; };
 		AD11FF97176432E5004686B3 /* AQOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF96176432E5004686B3 /* AQOpenGLView.m */; };
 		AD11FF99176437FA004686B3 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD11FF98176437FA004686B3 /* OpenGL.framework */; };
+		AD5C0BCC18394596005DBC65 /* constraint.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0BC818394596005DBC65 /* constraint.c */; };
+		AD5C0BCD18394596005DBC65 /* stick.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0BCA18394596005DBC65 /* stick.c */; };
+		AD5C0BD3183945BD005DBC65 /* interfaceptr.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0BCE183945BD005DBC65 /* interfaceptr.c */; };
+		AD5C0BD4183945BD005DBC65 /* number.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0BD0183945BD005DBC65 /* number.c */; };
+		AD5C0BD5183945BD005DBC65 /* string.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0BD2183945BD005DBC65 /* string.c */; };
+		AD5C0BD8183945C8005DBC65 /* compare.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0BD6183945C8005DBC65 /* compare.c */; };
 		ADC3968C176D94A2003EE938 /* flowline.c in Sources */ = {isa = PBXBuildFile; fileRef = AD4E941D176D924D001DBB4A /* flowline.c */; };
 		ADC39691176DCCA0003EE938 /* input.c in Sources */ = {isa = PBXBuildFile; fileRef = ADC3968F176DCCA0003EE938 /* input.c */; };
 		ADC39694176DCCF8003EE938 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = ADC39692176DCCF8003EE938 /* array.c */; };
@@ -86,6 +92,17 @@
 		AD11FF98176437FA004686B3 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		AD4E941D176D924D001DBB4A /* flowline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = flowline.c; sourceTree = "<group>"; };
 		AD4E941E176D924D001DBB4A /* flowline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = flowline.h; sourceTree = "<group>"; };
+		AD5C0BC818394596005DBC65 /* constraint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = constraint.c; sourceTree = "<group>"; };
+		AD5C0BC918394596005DBC65 /* constraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = constraint.h; sourceTree = "<group>"; };
+		AD5C0BCA18394596005DBC65 /* stick.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stick.c; sourceTree = "<group>"; };
+		AD5C0BCB18394596005DBC65 /* stick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stick.h; sourceTree = "<group>"; };
+		AD5C0BCE183945BD005DBC65 /* interfaceptr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = interfaceptr.c; sourceTree = "<group>"; };
+		AD5C0BCF183945BD005DBC65 /* interfaceptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interfaceptr.h; sourceTree = "<group>"; };
+		AD5C0BD0183945BD005DBC65 /* number.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = number.c; sourceTree = "<group>"; };
+		AD5C0BD1183945BD005DBC65 /* number.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = number.h; sourceTree = "<group>"; };
+		AD5C0BD2183945BD005DBC65 /* string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = string.c; sourceTree = "<group>"; };
+		AD5C0BD6183945C8005DBC65 /* compare.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compare.c; sourceTree = "<group>"; };
+		AD5C0BD7183945C8005DBC65 /* compare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compare.h; sourceTree = "<group>"; };
 		ADC3968E176DCCA0003EE938 /* index.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = index.h; sourceTree = "<group>"; };
 		ADC3968F176DCCA0003EE938 /* input.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = input.c; sourceTree = "<group>"; };
 		ADC39690176DCCA0003EE938 /* input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = input.h; sourceTree = "<group>"; };
@@ -217,7 +234,14 @@
 			isa = PBXGroup;
 			children = (
 				AD11FF5817641E5A004686B3 /* index.h */,
+				AD5C0BD6183945C8005DBC65 /* compare.c */,
+				AD5C0BD7183945C8005DBC65 /* compare.h */,
 				AD11FF5917641E5A004686B3 /* list.c */,
+				AD5C0BCE183945BD005DBC65 /* interfaceptr.c */,
+				AD5C0BCF183945BD005DBC65 /* interfaceptr.h */,
+				AD5C0BD0183945BD005DBC65 /* number.c */,
+				AD5C0BD1183945BD005DBC65 /* number.h */,
+				AD5C0BD2183945BD005DBC65 /* string.c */,
 				AD11FF5A17641E5A004686B3 /* list.h */,
 				AD11FF5B17641E5A004686B3 /* obj.c */,
 				ADC39692176DCCF8003EE938 /* array.c */,
@@ -238,6 +262,10 @@
 				AD11FF7B17641E5A004686B3 /* ddvt.h */,
 				AD11FF7C17641E5A004686B3 /* index.h */,
 				AD11FF7D17641E5A004686B3 /* math.h */,
+				AD5C0BC818394596005DBC65 /* constraint.c */,
+				AD5C0BC918394596005DBC65 /* constraint.h */,
+				AD5C0BCA18394596005DBC65 /* stick.c */,
+				AD5C0BCB18394596005DBC65 /* stick.h */,
 				AD11FF7E17641E5A004686B3 /* particle.c */,
 				AD11FF7F17641E5A004686B3 /* particle.h */,
 				AD11FF8017641E5A004686B3 /* world.c */,
@@ -378,15 +406,21 @@
 			files = (
 				AD11FF2E17641E2F004686B3 /* main.m in Sources */,
 				AD11FF3517641E2F004686B3 /* AQAppDelegate.m in Sources */,
+				AD5C0BCC18394596005DBC65 /* constraint.c in Sources */,
 				AD11FF8217641E5A004686B3 /* list.c in Sources */,
 				AD11FF8317641E5A004686B3 /* obj.c in Sources */,
+				AD5C0BD4183945BD005DBC65 /* number.c in Sources */,
+				AD5C0BD5183945BD005DBC65 /* string.c in Sources */,
 				AD11FF8D17641E5A004686B3 /* collision.c in Sources */,
+				AD5C0BD3183945BD005DBC65 /* interfaceptr.c in Sources */,
 				AD11FF8E17641E5A004686B3 /* ddvt.c in Sources */,
+				AD5C0BD8183945C8005DBC65 /* compare.c in Sources */,
 				AD11FF8F17641E5A004686B3 /* particle.c in Sources */,
 				AD11FF9017641E5A004686B3 /* world.c in Sources */,
 				AD11FF94176429A6004686B3 /* watertest.c in Sources */,
 				AD11FF97176432E5004686B3 /* AQOpenGLView.m in Sources */,
 				ADC3968C176D94A2003EE938 /* flowline.c in Sources */,
+				AD5C0BCD18394596005DBC65 /* stick.c in Sources */,
 				ADC39691176DCCA0003EE938 /* input.c in Sources */,
 				ADC39694176DCCF8003EE938 /* array.c in Sources */,
 			);
@@ -511,12 +545,15 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Aquamancy/Aquamancy-Prefix.pch";
+				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = (
 					../../../../,
 					../../../,
+					../../../game/watertest,
 				);
 				INFOPLIST_FILE = "Aquamancy/Aquamancy-Info.plist";
 				LLVM_LTO = NO;
+				LLVM_VECTORIZE_LOOPS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -526,14 +563,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
+				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Aquamancy/Aquamancy-Prefix.pch";
+				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = (
 					../../../../,
 					../../../,
+					../../../game/watertest,
 				);
 				INFOPLIST_FILE = "Aquamancy/Aquamancy-Info.plist";
 				LLVM_LTO = NO;
+				LLVM_VECTORIZE_LOOPS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

@@ -5,21 +5,51 @@
 #include "src/pphys/index.h"
 
 typedef enum SLLeaperState {
+
+  // Floating, unattached to any asteroid.
+  //
+  // Changes to Stuck or PreHanging.
   FloatingLeaperState,
+
+  // Intermediate step between Floating and Stuck. Unused.
   LandingLeaperState,
+
+  // Two of three "legs" are attached to an asteroid.
+  //
+  // Changes to Rotating or PreHanging.
   StuckLeaperState,
+
+  // Rotating on one its "legs" that is attached to an asteroid.
+  //
+  // Changes to Stuck or PreHaning.
+  RotatingLeaperState,
+
+  // One leg attached as the other two face toward the player's
+  // launch trajectory.
+  //
+  // Changes to Stuck or Rotating.
+  PreHangingLeaperState,
+
+  // One leg attached and two facing the player's launch trajectory.
+  //
+  // Changes to Rotating, PreHanging, or Floating.
+  HangingLeaperState,
+
+  // Player lost the game. Ran out of oxygen.
   LostLeaperState,
+
+  // Player won the game. Unused.
   WonLeaperState
 } SLLeaperState;
 
-static const int SLLeaper_maxOxygen = 512;
-static const int SLLeaper_maxResource = 128;
+static const int SLLeaper_maxOxygen = 2048;
+static const int SLLeaper_maxResource = 256;
 static const int SLLeaper_resourceToOxygen = 16;
 
 extern AQType SLLeaperType;
 
 typedef struct SLLeaper {
-  AQObj *object;
+  AQObj object;
 
   aqvec2 position;
   AQDOUBLE radius;
@@ -27,7 +57,13 @@ typedef struct SLLeaper {
 
   AQParticle *body;
   AQParticle *trigger;
+  AQList *bodies;
+  AQList *triggers;
+  AQList *sticks;
   AQWorld *world;
+
+  int rotatingOnIndex;
+  AQList *_attachedIndices;
 
   SLLeaperState state;
   AQParticle *lastTouched;
@@ -46,5 +82,8 @@ typedef struct SLLeaper {
 
 SLLeaper * SLLeaper_create( aqvec2 position );
 void SLLeaper_applyDirection( SLLeaper *, AQDOUBLE radians );
+
+aqvec2 SLLeaper_calcPosition( SLLeaper * );
+double SLLeaper_radians( SLLeaper * );
 
 #endif /* end of include guard: LEAPER_H_EFYEZNG8 */

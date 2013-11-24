@@ -37,6 +37,7 @@ FuncWrapper * FuncWrapper_new(char * name, TestFunc func) {
   FuncWrapper *wrapper = malloc( sizeof( FuncWrapper ));
   wrapper->name = name;
   wrapper->func = func;
+  wrapper->next = NULL;
   return wrapper;
 }
 

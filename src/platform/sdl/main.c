@@ -14,6 +14,7 @@
 
 #if EMSCRIPTEN
 #include <emscripten.h>
+#include "platform/window.h"
 #endif
 
 #include <stdio.h>
@@ -23,13 +24,15 @@
 
 #include "src/input/index.h"
 #include "src/game/watertest.h"
+#include "appdefines.h"
 
 void main_loop();
 static void process_events();
 
+SDL_Surface *screen;
+
 int main(int argc, char *argv[])
 {
-  SDL_Surface *screen;
 
   // Slightly different SDL initialization
   if ( SDL_Init(SDL_INIT_VIDEO) != 0 ) {
@@ -39,7 +42,11 @@ int main(int argc, char *argv[])
 
   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // *new*
 
-  screen = SDL_SetVideoMode( 640, 480, 16, SDL_OPENGL ); // *changed*
+  #if EMSCRIPTEN
+  screen = SDL_SetVideoMode( 640, 480, 16, SDL_OPENGL | SDL_RESIZABLE ); // *changed*
+  #else
+  screen = SDL_SetVideoMode( 640, 480, 16, SDL_OPENGL ); // *changed*  
+  #endif
   if ( !screen ) {
     printf("Unable to set video mode: %s\n", SDL_GetError());
     return 1;
@@ -53,8 +60,22 @@ int main(int argc, char *argv[])
   glEnable( GL_TEXTURE_2D ); // Need this to display a texture XXX unnecessary in OpenGL ES 2.0/WebGL
 #endif
 
-  glViewport( 0, -80, 640, 640 );
+#if EMSCRIPTEN
+#ifdef SPACELEAP_VIEWPORT
+  enable_resizable();
+#endif
+#endif
+
+#ifdef VIEWPORT
+  printf( "VIEWPORT dimensions %d %d %d %d.\n", VIEWPORT_DIMENSIONS );
+  VIEWPORT();
+  AQInput_setScreenSize( SCREEN_SIZE );
+  // glViewport( 0, -80, 640, 640 );
+#else
+  printf( "VIEWPORT dimensions %d %d %d %d.\n", 0, 0, 640, 480 );
+  glViewport( 0, 0, 640, 480 );
   AQInput_setScreenSize( 640, 480 );
+#endif
 #if EMSCRIPTEN
   emscripten_set_main_loop(main_loop, 0, 0);
 #endif
@@ -93,6 +114,8 @@ static void process_events( void )
   /* Our SDL event placeholder. */
   SDL_Event event;
 
+  int hadEvent = 0;
+
   if ( mouseTouch && ( mouseTouch->state & AQTouchTouching ) == 0 ) {
     AQArray *touches = AQInput_getTouches();
     AQArray_remove( touches, (AQObj *) mouseTouch );
@@ -104,6 +127,9 @@ static void process_events( void )
       ( mouseTouch->state & ( AQTouchBegan | AQTouchMoved ))
   ) {
     mouseTouch->state = AQTouchStationary;
+
+    hadEvent = 1;
+    stepInputWaterTest();
   }
 
   float screenWidth; float screenHeight;
@@ -112,6 +138,20 @@ static void process_events( void )
   /* Grab all the events off the queue. */
   while( SDL_PollEvent( &event ) ) {
     switch( event.type ) {
+      case SDL_VIDEORESIZE:
+        printf( "resize %d %d\n", event.resize.w, event.resize.h );
+        screenWidth = event.resize.w;
+        screenHeight = event.resize.h;
+        int max = screenWidth > screenHeight ? screenWidth : screenHeight;
+        #ifdef SPACELEAP_VIEWPORT
+        AQInput_setScreenSize( screenWidth, screenHeight );
+        glViewport(
+          ( screenWidth - max ) / 2, ( screenHeight - max ) / 2,
+          max, max
+        );
+        #endif
+        break;
+
       // case SDL_KEYDOWN:
       //     /* Handle key presses. */
       //     handle_key_down( &event.key.keysym );
@@ -173,8 +213,14 @@ static void process_events( void )
       default:
         break;
     }
+
+    hadEvent = 1;
+    stepInputWaterTest();
+  }
+
+  if ( !hadEvent ) {
+    stepInputWaterTest();
   }
 
   aqfree( pool );
 }
-

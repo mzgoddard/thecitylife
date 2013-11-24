@@ -25,25 +25,31 @@ typedef struct AQParticle {
   AQDOUBLE _radius;
   AQDOUBLE mass;
   AQDOUBLE friction;
+  AQDOUBLE correction;
 
   aqvec2 oldPosition;
   aqvec2 lastPosition;
   // aqvec2 lastVelocity;
   aqvec2 acceleration;
 
+  #if !__SSE__
   aqaabb _aabb;
+  #else
+  _aqaabb _aabb;
+  _aqaabb _aabb2;
+  #endif
   aqaabb oldAabb;
 
   aqbool isStatic;
   aqbool isTrigger;
-  // aqbool isSleeping;
-  // int sleepCounter;
+  aqbool isSleeping;
+  unsigned char sleepCounter;
   // AQDOUBLE currentAverageCollisionDepth;
   // int collisionCount;
   // AQDOUBLE lastAverageCollisionDepth;
 
-  AQParticleMask collisionType;
-  AQParticleMask collideAgainst;
+  // AQParticleMask collisionType;
+  // AQParticleMask collideAgainst;
 
   AQParticleCollisionCallback oncollision;
   void *userdata;
@@ -60,8 +66,12 @@ typedef struct AQParticle {
 typedef struct aqcollision {
   AQParticle *a;
   AQParticle *b;
+  #if !__SSE__
   AQDOUBLE lambx;
   AQDOUBLE lamby;
+  #else
+  aqvec2 lamb;
+  #endif
   AQDOUBLE distance;
   struct aqcollision *next;
 } aqcollision;
@@ -75,6 +85,7 @@ void AQParticle_solve( AQParticle *, AQParticle *, aqcollision * );
 int AQParticle_doesIgnore( AQParticle *, AQParticle * );
 void AQParticle_ignoreParticle( AQParticle *, AQParticle * );
 void AQParticle_ignoreGroup( AQParticle *, AQParticle * );
+void AQParticle_wake( AQParticle * );
 
 typedef void (*aqcollision_iterator)( aqcollision *, void * );
 

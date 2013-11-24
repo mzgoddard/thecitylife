@@ -15,7 +15,7 @@ SLUpdaterInterface _SLCameraControllerUpdater = {
 SLCameraController * SLCameraController_init( SLCameraController *self ) {
   memset( &self->state, 0, sizeof(SLCameraController) - sizeof(AQObj) );
   self->minScale = 1;
-  self->maxScale = 10;
+  self->maxScale = 100;
   self->currentScale = 1;
   self->scaleValue = 80;
   return self;
@@ -62,7 +62,7 @@ void SLCameraController_inputPress( SLCameraController *self ) {
 void _SLCameraController_update( SLCameraController *self, AQDOUBLE dt ) {
   float screenWidth, screenHeight;
   AQInput_getScreenSize( &screenWidth, &screenHeight );
-  float widthHeightMax = fmax( screenWidth, screenHeight );
+  // float widthHeightMax = fmax( screenWidth, screenHeight );
   AQCamera *camera = AQRenderer_camera();
   camera->screen = aqaabb_make( screenHeight, screenWidth, 0, 0 );
 
@@ -78,9 +78,9 @@ void _SLCameraController_update( SLCameraController *self, AQDOUBLE dt ) {
       self->leaper->state == WonLeaperState ||
       self->leaper->state == LostLeaperState
   ) {
-    self->currentScale += 0.1;
+    self->currentScale += self->currentScale * 0.1;
   } else {
-    self->currentScale -= 0.05;
+    self->currentScale -= self->currentScale * 0.05;
   }
 
   // Clamp currentScale.
@@ -90,9 +90,14 @@ void _SLCameraController_update( SLCameraController *self, AQDOUBLE dt ) {
   SLLeaper *leaper = self->leaper;
 
   if ( leaper ) {
-    if ( leaper->state == StuckLeaperState ) {
+    if (
+      leaper->state == StuckLeaperState ||
+        leaper->state == RotatingLeaperState ||
+        leaper->state == PreHangingLeaperState ||
+        leaper->state == HangingLeaperState
+    ) {
       aqvec2 dir = aqvec2_normalized( aqvec2_sub(
-        leaper->body->position,
+        leaper->position,
         self->leaper->lastTouched->position
       ));
 
@@ -120,7 +125,19 @@ void _SLCameraController_update( SLCameraController *self, AQDOUBLE dt ) {
 
       camera->radians += 0.01;
     } else {
-      self->center = leaper->position;
+      if (
+        leaper->state == StuckLeaperState ||
+          leaper->state == RotatingLeaperState ||
+          leaper->state == PreHangingLeaperState ||
+          leaper->state == HangingLeaperState
+      ) {
+        aqvec2 leaperCenterDiff = aqvec2_sub( leaper->position, leaper->lastTouched->position );
+        aqvec2 leaperCenterNormalized = aqvec2_normalized( leaperCenterDiff );
+        aqvec2 leaperCenterOrbit = aqvec2_add( leaper->lastTouched->position, aqvec2_scale( leaperCenterNormalized, leaper->radius + leaper->lastTouched->radius ));
+        self->center = aqvec2_lerp( self->center, leaperCenterOrbit, 0.15 );
+      } else {
+        self->center = aqvec2_lerp( self->center, leaper->position, 0.15 );
+      }
     }
   }
 

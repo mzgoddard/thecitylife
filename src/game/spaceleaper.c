@@ -18,6 +18,8 @@
 #include "src/game/leaper.h"
 #include "src/game/cameracontroller.h"
 #include "src/game/asteroidview.h"
+#include "src/game/particleview.h"
+#include "src/game/ambientparticle.h"
 
 #define kFrameFraction 1.0 / 20
 #ifndef kParticleCount
@@ -47,16 +49,31 @@ void (*endCallback)() = NULL;
 void (*visitedCallback)( unsigned int ) = NULL;
 void (*resourceCallback)( unsigned int ) = NULL;
 
+void collision_noop( void *a, void *b, void *col ) {}
+
 void initWaterTest() {
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
 
   AQLoop_boot();
   AQRenderer_boot();
 
+  int space = 25600;
+  int n = 64;
+  int ambients = 0;
+  int ambientN = 9;
+
+  #if EMSCRIPTEN
+  space = 12800;
+  n = 32;
+  ambientN = 9;
+  #endif
+
+  AQDOUBLE blockSize = (AQDOUBLE) space / n;
+  AQDOUBLE ambientSize = (AQDOUBLE) space / n / ambientN;
+
   world = AQLoop_world();
-  AQWorld_setAabb( world, (aqaabb) { 6400, 6400, 0, 0 });
-  // gravity = (aqvec2) { 0, -4 };
-  AQInput_setWorldFrame( 6400, 6400, 0, 0 );
+  AQWorld_setAabb( world, (aqaabb) { space, space, 0, 0 });
+  AQInput_setWorldFrame( space, space, 0, 0 );
 
   asteroids = aqinit( aqalloc( &AQListType ));
 
@@ -64,7 +81,6 @@ void initWaterTest() {
 
   SLAsteroidGroupView *asteroidView = SLAsteroidGroupView_create();
 
-  int n = 64;
   for ( int i = 0; i < n; ++i ) {
     for ( int j = 0; j < n; ++j ) {
       float asteroidRadius = ((double) rand() ) / RAND_MAX * world->aabb.right / n / 8 + world->aabb.right / n / 8;
@@ -79,6 +95,36 @@ void initWaterTest() {
       AQList_push( asteroids, (AQObj *) asteroid );
       SLAsteroidGroupView_addAsteroid( asteroidView, asteroid );
 
+      for ( int k = 0; k < ambientN * ambientN; k++ ) {
+        aqvec2 position = aqvec2_make(
+          blockSize * i + ambientSize * ( k % ambientN ) + rand() % (int) ( ambientSize - ambientSize * 0.5 ) + ambientSize * 0.25,
+          blockSize * j + ambientSize * floor( k / ambientN ) + rand() % (int) ( ambientSize - ambientSize * 0.5 ) + ambientSize * 0.25
+        );
+        // aqvec2 position = aqvec2_make(
+        //   rand() % (int) ( world->aabb.right / n ) + world->aabb.right / n * i,
+        //   rand() % (int) ( world->aabb.top / n ) + world->aabb.top / n * j
+        // );
+
+        if ( !aqaabb_intersectsCircle( aqaabb_makeCenterRadius( position, 20 ), asteroid->center, asteroid->radius )) {
+          ambients++;
+          AQParticle *ambientParticle = aqcreate( &AQParticleType );
+          ambientParticle->position = ambientParticle->lastPosition = position;
+          ambientParticle->radius = ambientSize * 0.25;
+          // ambientParticle->isTrigger = 1;
+          ambientParticle->friction = 1;
+          ambientParticle->mass = 0.01;
+          ambientParticle->userdata = aqretain( aqcreate(
+            &SLAmbientParticleType
+          ));
+          ambientParticle->oncollision = collision_noop;
+          AQWorld_addParticle( world, ambientParticle );
+
+          // if ( k == 0 ) {
+            // SLParticleView_addAmbientParticle( ambientParticle );
+          // }
+        }
+      }
+
       if (
         i < n / 8 * 5 && i > n / 8 * 3 &&
           j < n / 8 * 5 && j > n / 8 * 3
@@ -92,8 +138,17 @@ void initWaterTest() {
     }
   }
 
+  printf( "%d Ambients.\n", ambients );
+
   assert( homeAsteroid );
   SLAsteroid_setIsHome( homeAsteroid, 1 );
+  homeAsteroid->isVisible = 1;
+
+  void *particleView = SLParticleView_getAmbientParticleView();
+  SLParticleView_setHomeAsteroid( particleView, homeAsteroid );
+
+  AQRenderer_addView( particleView );
+  AQLoop_addUpdater( particleView );
 
   AQRenderer_addView( asteroidView );
   AQRenderer_addView( leaper = SLLeaper_create(
@@ -106,6 +161,8 @@ void initWaterTest() {
   leaper->onvisit = visitedCallback;
   leaper->onresource = resourceCallback;
 
+  SLParticleView_setLeaper( particleView, leaper );
+
   AQLoop_addUpdater(
     cameraController =
       SLCameraController_setHome(
@@ -117,7 +174,7 @@ void initWaterTest() {
       )
   );
 
-  cameraController->minScale = 2;
+  cameraController->minScale = 4;
 
   glGenBuffers(1, &buffer);
 
@@ -254,6 +311,71 @@ float stddevTime( unsigned int frameTimes[], unsigned int length ) {
   return sqrt( diffSum / (float) length );
 }
 
+void stepInputWaterTest() {
+  if ( paused ) return;
+
+  float screenWidth, screenHeight;
+  AQInput_getScreenSize( &screenWidth, &screenHeight );
+
+  float fingerRadius = 30;
+
+  AQArray *touches = AQInput_getTouches();
+  AQTouch *touch = (AQTouch *) AQArray_atIndex( touches, 0 );
+  if ( touch ) {
+    aqvec2 centerDiff = (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 };
+
+    // printf( "touch: %s %f %f\n",
+    //   touch->state == AQTouchBegan ?
+    //     "began" :
+    //     touch->state == AQTouchEnded ?
+    //       "ended" :
+    //       "moved",
+    //   touch->wx,
+    //   touch->wy );
+    switch ( touch->state ) {
+      case AQTouchBegan:
+        // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+
+        if ( leaper && touch->finger == 1 && aqvec2_mag( centerDiff ) > fingerRadius ) {
+          aqvec2 dir = aqvec2_normalized( (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 });
+          AQDOUBLE radians =
+            atan2( -dir.y, -dir.x ) + AQRenderer_camera()->radians;
+          // printf( "%f %s\n", radians, aqvec2_cstr( dir ) );
+
+          SLLeaper_applyDirection( leaper, radians );
+        }
+      case AQTouchMoved:
+      case AQTouchStationary:
+        if ( cameraController ) {
+          if ( touch->finger == 3 || aqvec2_mag( centerDiff ) < fingerRadius ) {
+            SLCameraController_inputPress( cameraController );
+          }
+        }
+
+        if ( leaper && touch->finger == 1 && aqvec2_mag( centerDiff ) > fingerRadius ) {
+          aqvec2 dir = aqvec2_normalized( (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 });
+          AQDOUBLE radians =
+            atan2( -dir.y, -dir.x ) + AQRenderer_camera()->radians;
+          // printf( "%f %s\n", radians, aqvec2_cstr( dir ) );
+
+          SLLeaper_applyDirection( leaper, radians );
+        }
+        // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+        break;
+      case AQTouchEnded:
+        // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
+        // AQFlowLine_createParticles( flowLine, world );
+        // AQFlowLine_clearPoints( flowLine );
+        // printf( "particles: %d %d\n",
+        //   AQList_length( flowLine->particles ),
+        //   AQList_length( world->particles ));
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 static float hertztime = 0;
 static float fpstime = 0;
 static int frames = 0;
@@ -268,58 +390,6 @@ void stepWaterTest(float dt) {
 
     int startTime = 0;
     int endTime = 0;
-
-    float screenWidth, screenHeight;
-    AQInput_getScreenSize( &screenWidth, &screenHeight );
-
-    float fingerRadius = 30;
-
-    AQArray *touches = AQInput_getTouches();
-    AQTouch *touch = (AQTouch *) AQArray_atIndex( touches, 0 );
-    if ( touch ) {
-      aqvec2 centerDiff = (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 };
-
-      // printf( "touch: %s %f %f\n",
-      //   touch->state == AQTouchBegan ?
-      //     "began" :
-      //     touch->state == AQTouchEnded ?
-      //       "ended" :
-      //       "moved",
-      //   touch->wx,
-      //   touch->wy );
-      switch ( touch->state ) {
-        case AQTouchBegan:
-          // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-
-          if ( leaper && touch->finger == 1 && aqvec2_mag( centerDiff ) > fingerRadius ) {
-            aqvec2 dir = aqvec2_normalized( (aqvec2) { touch->x - screenWidth / 2, touch->y - screenHeight / 2 });
-            AQDOUBLE radians =
-              atan2( -dir.y, -dir.x ) + AQRenderer_camera()->radians;
-            printf( "%f %s\n", radians, aqvec2_cstr( dir ) );
-
-            SLLeaper_applyDirection( leaper, radians );
-          }
-        case AQTouchMoved:
-        case AQTouchStationary:
-          if ( cameraController ) {
-            if ( touch->finger == 3 || aqvec2_mag( centerDiff ) < fingerRadius ) {
-              SLCameraController_inputPress( cameraController );
-            }
-          }
-          // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-          break;
-        case AQTouchEnded:
-          // AQFlowLine_addPoint( flowLine, (aqvec2) { touch->wx, touch->wy });
-          // AQFlowLine_createParticles( flowLine, world );
-          // AQFlowLine_clearPoints( flowLine );
-          // printf( "particles: %d %d\n",
-          //   AQList_length( flowLine->particles ),
-          //   AQList_length( world->particles ));
-          break;
-        default:
-          break;
-      }
-    }
 
     if (hertztime > kFrameFraction) {
         if ( getTicks ) {
@@ -360,6 +430,9 @@ void stepWaterTest(float dt) {
     if ( getTicks && startTime != 0 ) {
       frameTimes[ frameTimeIndex++ ] = endTime - startTime;
       if ( frameTimeIndex >= kMaxFrameTimes ) {
+        #if PPHYS_ALLOW_SLEEP
+        printf( "awake %d ", world->awakeParticles );
+        #endif
         printf(
           "min %d, max %d, avg %d, stddev %f\n",
           minTime( frameTimes, kMaxFrameTimes ),
@@ -389,19 +462,19 @@ void drawWaterTest() {
 
   AQShaders_useProgram( ColorShaderProgram );
 
-  struct gldata data;
-  data.index = 0;
-  AQList_iterate(
-    world->particles,
-    (AQList_iterator) set_particle_vertices,
-    &data
-  );
-
-  AQShaders_draw(
-    buffer,
-    data.particles,
-    sizeof(struct glparticle) * (data.index)
-  );
+  // struct gldata data;
+  // data.index = 0;
+  // AQList_iterate(
+  //   world->particles,
+  //   (AQList_iterator) set_particle_vertices,
+  //   &data
+  // );
+  // 
+  // AQShaders_draw(
+  //   buffer,
+  //   data.particles,
+  //   sizeof(struct glparticle) * (data.index)
+  // );
 
   aqfree( pool );
 }

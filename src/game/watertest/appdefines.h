@@ -1,0 +1,12 @@
+#ifndef APPDEFINES_H_RDLPTZCR
+#define APPDEFINES_H_RDLPTZCR
+
+#define SCREEN_SIZE 640, 480
+#define VIEWPORT_WIDTH_HEIGHT 640, 480
+#define VIEWPORT_DIMENSIONS 0, 0, 640, 480
+#define VIEWPORT() glViewport( VIEWPORT_DIMENSIONS )
+
+#define AQDOUBLE float
+#define PPHYS_ALLOW_SLEEP 0
+
+#endif /* end of include guard: APPDEFINES_H_RDLPTZCR */

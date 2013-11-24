@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "src/pphys/constraint.h"
 #include "src/pphys/stick.h"
@@ -7,8 +8,8 @@ void AQStick_setWorld( AQStick *self, AQWorld *world );
 
 AQConstraintInterface _AQStick_ConstraintInterface = {
   AQConstraintId,
-  (void (*)(void *, void *)) AQStick_setWorld,
-  (void (*)(void *)) AQStick_update
+  (void (*)(void *, void *)) &AQStick_setWorld,
+  (void (*)(void *)) &AQStick_update
 };
 
 AQStick * AQStick_init( AQStick *self ) {
@@ -61,12 +62,12 @@ void AQStick_update( AQStick *self ) {
   // a += scale( diffDiff, a->mass / totalMass )
   a->position = aqvec2_add(
     a->position,
-    aqvec2_scale( diff, a->mass / totalMass )
+    aqvec2_scale( diff, a->mass / totalMass * 0.5 )
   );
   // b -= scale( diffDiff, b->mass / totalMass )
   b->position = aqvec2_sub(
     b->position,
-    aqvec2_scale( diff, b->mass / totalMass )
+    aqvec2_scale( diff, b->mass / totalMass * 0.5 )
   );
 }
 

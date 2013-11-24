@@ -40,7 +40,9 @@ def configure(ctx):
 
     ctx.setenv('release', cc_env)
     ctx.env.CFLAGS = [ '-g', '-O4', '-std=gnu99' ]
+    # ctx.env.CFLAGS = [ '-g', '-O4', '-std=gnu99', '-msse', '-msse2', '-msse3', '-msse4', '-msse4.1', '-msse4.2' ]
     ctx.env.LINKFLAGS = [ '-O4' ]
+    # ctx.env.LINKFLAGS = [ '-O4', '-msse', '-msse2', '-msse3', '-msse4', '-msse4.1', '-msse4.2' ]
     ctx.env.DEFINES = [ 'ANSI_COLOR=1', 'kParticleCount=8192' ]
 
     ctx.setenv('emcc', env)
@@ -51,11 +53,20 @@ def configure(ctx):
     )
     ctx.env.IS_EMSCRIPTEN = True
     ctx.env.LINK_CC = ctx.env.CC
-    ctx.env.CFLAGS = [ '-O2' ]
+    # ctx.env.CFLAGS = []
+    ctx.env.CFLAGS = [
+        '-g4',
+        '-O2',
+        '-s', 'ASM_JS=1',
+        '-s', 'FUNCTION_POINTER_ALIGNMENT=1',
+    ]
     ctx.env.LINKFLAGS = [
-        '-s', 'EXPORTED_FUNCTIONS=[\'_main\',\'_malloc\',\'_pauseSpaceLeaper\',\'_resumeSpaceLeaper\',\'_setSpaceLeaperEndCallback\',\'_setSpaceLeaperVisitedCallback\',\'_setSpaceLeaperResourceCallback\']',
-        '-s',
-        'RESERVED_FUNCTION_POINTERS=16',
+        '-g4',
+        '-s', 'EXPORTED_FUNCTIONS=[\'_main\',\'_malloc\',\'_pauseSpaceLeaper\',\'_resumeSpaceLeaper\',\'_setSpaceLeaperEndCallback\',\'_setSpaceLeaperVisitedCallback\',\'_setSpaceLeaperResourceCallback\',\'_setEventListener\']',
+        '-s', 'TOTAL_MEMORY=67108864',
+        '-s', 'RESERVED_FUNCTION_POINTERS=16',
+        '-s', 'FUNCTION_POINTER_ALIGNMENT=1',
+        '-s', 'ASM_JS=1',
         '-O2',
     ]
     ctx.env.DEFINES = [ 'ANSI_COLOR=1' ]
@@ -65,8 +76,8 @@ def configure(ctx):
     emcc_env = ctx.env
 
     ctx.setenv('emcc_html', emcc_env)
-    ctx.env.CFLAGS = [ '-O2', '-s', 'ASM_JS=1' ]
-    ctx.env.LINKFLAGS = [ '-O2', '-s', 'ASM_JS=1' ]
+    ctx.env.CFLAGS = []
+    ctx.env.LINKFLAGS = []
     ctx.env.DEFINES = [ 'kParticleCount=8192' ]
     ctx.env.cprogram_PATTERN = '%s.html'
 
@@ -103,7 +114,7 @@ def build(bld):
 
     bld.objects(
         source=bld.path.ant_glob('src/pphys/*.c'),
-        includes=['./src', '.'],
+        includes=['./src', './src/game/watertest', '.'],
         target='libpphys',
         use='libobj'
     )
@@ -138,7 +149,15 @@ def build(bld):
     if bld.cmd == 'emcc':
         bld(
             rule='cp ${SRC} .',
-            source=bld.path.ant_glob( 'src/platform/web/*' )
+            source=bld.path.ant_glob(
+                'src/platform/web/* ' +
+                'vendor/stats.js/build/stats.min.js'
+            )
+        )
+
+        bld(
+            rule='cp ${SRC} .',
+            source='vendor/jquery-1.7.1.min.js'
         )
 
     watertestSource = bld.path.ant_glob(
@@ -147,11 +166,13 @@ def build(bld):
     )
 
     spaceLeaperSource = bld.path.ant_glob(
+        'src/pphys/*.c ' +
         'src/game/camera.c src/game/shaders.c src/game/renderer.c ' +
         'src/game/view.c src/game/draw.c ' +
         'src/game/cameracontroller.c ' +
         'src/game/updater.c src/game/loop.c ' +
         'src/game/leaper.c src/game/leaperview.c src/game/asteroidview.c ' +
+        'src/game/particleview.c src/game/ambientparticle.c ' +
         'src/game/flowline.c src/game/asteroid.c src/game/spaceleaper.c ' +
         'src/platform/sdl/*.c'
     )
@@ -159,22 +180,24 @@ def build(bld):
     if bld.cmd in [ 'emcc', 'emcc_html' ]:
         bld.program(
             source=watertestSource,
-            includes=['./src', '.'],
+            includes=['./src/game/watertest', './src', '.'],
+            linkflags=['--js-library', '../../src/platform/web/window.js'],
             target='watertest',
             use='libobj libpphys libinput'
         )
 
         bld.program(
             source=spaceLeaperSource,
-            includes=['./src', '.'],
+            includes=['./src/game/spaceleaper', './src', '.'],
+            linkflags=['--js-library', '../../src/platform/web/window.js'],
             target='spaceleaper',
-            use='libobj libpphys libinput'
+            use='libobj libinput'
         )
 
     if bld.cmd in [ 'debug', 'release' ]:
         bld.program(
             source=watertestSource,
-            includes=['./src', '.'],
+            includes=['./src/game/watertest', './src', '.'],
             target='watertest',
             framework=[ 'Cocoa', 'OpenGL' ],
             use='libobj libpphys libinput SDL SDL_gfx SDL_image'
@@ -182,10 +205,10 @@ def build(bld):
 
         bld.program(
             source=spaceLeaperSource,
-            includes=['./src', '.'],
+            includes=['./src/game/spaceleaper', './src', '.'],
             target='spaceleaper',
             framework=[ 'Cocoa', 'OpenGL' ],
-            use='libobj libpphys libinput SDL SDL_gfx SDL_image'
+            use='libobj libinput SDL SDL_gfx SDL_image'
         )
 
 for x in 'debug release emcc emcc_html'.split():

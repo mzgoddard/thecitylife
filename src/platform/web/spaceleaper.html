@@ -124,6 +124,7 @@
             //text = text.replace('\n', '<br>', 'g');
             element.value += text + "\n";
             element.scrollTop = 99999; // focus on bottom
+            console.log( text );
           };
         })(),
         printErr: function(text) {
@@ -178,16 +179,25 @@
       Space Leap
     </div>
     <div class="story-end"><div>
+      <div>
+        <a class="story-end-hide" href="#" onclick="$('.story-end-1, .story-end-hide').hide(); $('.story-end-show').show(); return false;">hide</a>
+        <a style="display:none" class="story-end-show" href="#" onclick="$('.story-end-1, .story-end-hide').show(); $('.story-end-show').hide(); return false;">show</a>
+      </div>
+
+      <div class="story-end-1">
       <p>Space Anomaly 3122D - Report 6</p>
 
       <p>Time is short ...</p>
 
-      <p>I hope you find this capsule.</p>
+      <p>I hope you find this capsule. The data I have found should be useful.</p>
 
-      <p>It feels like I can taste the vacuum outside, but I know my brain is just playing tricks on me.</p>
+      <p>Goodbye.</p>
+
+      <!-- <p>It feels like I can taste the vacuum outside, but I know my brain is just playing tricks on me.</p> -->
 
       <p>- Theresa<br>
       -- END OF ENTRY --</p>
+      </div>
 
       <div class="final-score">
         <div class="score visited">Visited <div>0</div></div>
@@ -202,7 +212,7 @@
       <div class="score resource">Resource Total <div>0</div></div>
       <div class="score survived-for">Since last report <div>0:00.00</div></div>
     </div></div>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="jquery-1.7.1.min.js"></script>
     <script src="spaceleap.ui.js" type="text/javascript" charset="utf-8"></script>
   </body>
 </html>

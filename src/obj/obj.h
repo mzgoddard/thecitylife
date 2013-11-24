@@ -1,7 +1,7 @@
 #ifndef OBJ_H_HYT03822
 #define OBJ_H_HYT03822
 
-typedef int aqbool;
+typedef unsigned char aqbool;
 
 typedef char AQInterfaceId[];
 

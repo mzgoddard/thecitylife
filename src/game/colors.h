@@ -6,8 +6,10 @@
 static struct glcolor clearColor = { 10, 22, 31, 255 };
 
 static struct glcolor homeAsteroidColor = { 255, 211, 193, 255 };
-static struct glcolor resourceAsteroidColor = { 127, 105, 96, 255 };
+// static struct glcolor resourceAsteroidColor = { 127, 105, 96, 255 };
+static struct glcolor resourceAsteroidColor = { 21, 137, 168, 255 };
 static struct glcolor normalAsteroidColor = { 138, 85, 63, 255 };
+static struct glcolor particleColor = { 192, 255, 255, 128 };
 
 static struct glcolor leaperOxygenBarForeColor = { 255, 211, 193, 255 };
 static struct glcolor leaperOxygenBarBackColor = { 255, 211, 193, 64 };

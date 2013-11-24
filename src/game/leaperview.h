@@ -11,11 +11,11 @@
 AQType SLLeaperViewType;
 
 typedef struct SLLeaperView {
-  AQObj *object;
+  AQObj object;
 
   SLLeaper *leaper;
   GLuint buffer;
-  struct colorvertex vertices[60];
+  struct colorvertex vertices[512];
 } SLLeaperView;
 
 SLLeaperView * SLLeaperView_create( SLLeaper * );

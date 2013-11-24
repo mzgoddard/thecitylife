@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "appdefines.h"
+
 #include "./ddvt.h"
 
 void _AQDdvt_addParticle( AQDdvt *self, AQParticle *particle, aqaabb *aabb );
@@ -221,6 +223,8 @@ void _AQDdvt_fromChildren( AQDdvt *self ) {
 }
 
 void _AQDdvt_addParticle( AQDdvt *self, AQParticle *particle, aqaabb *aabb ) {
+  self->isSleeping = 0;
+
   if ( !self->tl && self->length < MAX_DDVT_PARTICLES ) {
     _AQDdvt_addParticleLeaf( self, particle );
   } else {
@@ -243,6 +247,30 @@ void _AQDdvt_removeParticle( AQDdvt *self, AQParticle *particle, aqaabb *aabb ) 
     }
   }
 }
+
+#if PPHYS_ALLOW_SLEEP
+void _AQDdvt_wakeParticle( AQDdvt *self, AQParticle *particle, aqaabb *aabb ) {
+  if ( !self->tl ) {
+    self->isSleeping = 0;
+  } else {
+    int contained = 0;
+    #define CHECK_AND_WAKE(box) \
+      if ( aqaabb_intersectsBox( self->box->aabb, *aabb )) { \
+        _AQDdvt_wakeParticle( self->box, particle, aabb ); \
+        contained = 1; \
+      }
+    CHECK_AND_WAKE(tl);
+    CHECK_AND_WAKE(tr);
+    CHECK_AND_WAKE(bl);
+    CHECK_AND_WAKE(br);
+    #undef CHECK_AND_WAKE
+
+    if ( contained ) {
+      self->isSleeping = 0;
+    }
+  }
+}
+#endif
 
 void _AQDdvt_updateParticle( AQDdvt *self, AQParticle *particle, aqaabb *old, aqaabb *new ) {
   if ( !self->tl ) {
@@ -269,6 +297,17 @@ void AQDdvt_removeParticle( AQDdvt *self, AQParticle *particle, aqaabb aabb ) {
   );
 }
 
+#if PPHYS_ALLOW_SLEEP
+void AQDdvt_wakeParticle( AQDdvt *self, AQParticle *particle ) {
+  aqaabb aabb = AQParticle_aabb( particle );
+  _AQDdvt_wakeParticle(
+    self,
+    particle,
+    &aabb
+  );
+}
+#endif
+
 void AQDdvt_updateParticle( AQDdvt *self, AQParticle *particle, aqaabb old, aqaabb new ) {
   _AQDdvt_updateParticle( self, particle, &old, &new );
 }
@@ -293,6 +332,10 @@ void AQDdvt_iteratePairs(
   AQDdvt_pairIterator pairIterator,
   void *ctx
 ) {
+  if ( self->isSleeping ) {
+    return;
+  }
+
   if ( !self->tl ) {
     int i, j;
     int length = self->length;
@@ -305,16 +348,36 @@ void AQDdvt_iteratePairs(
     //     pairIterator( *itr, *jtr, ctx );
     //   }
     // }
+    int sleeping = 0;
     for ( i = 0; i < length - 1; ++i ) {
+      if ( self->particles[ i ]->isSleeping ) {
+        sleeping++;
+      }
       for ( j = i + 1; j < length; ++j ) {
         pairIterator( self->particles[ i ], self->particles[ j ], ctx );
       }
+    }
+    if ( length > 0 && self->particles[ i ]->isSleeping ) {
+      sleeping++;
+    }
+
+    if ( sleeping == length ) {
+      self->isSleeping = 1;
     }
   } else {
     AQDdvt_iteratePairs( self->tl, pairIterator, ctx );
     AQDdvt_iteratePairs( self->tr, pairIterator, ctx );
     AQDdvt_iteratePairs( self->bl, pairIterator, ctx );
     AQDdvt_iteratePairs( self->br, pairIterator, ctx );
+
+    if (
+      self->tl->isSleeping &&
+        self->tr->isSleeping &&
+        self->bl->isSleeping &&
+        self->br->isSleeping
+    ) {
+      self->isSleeping = 1;
+    }
   }
 }
 
