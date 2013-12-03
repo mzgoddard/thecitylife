@@ -175,6 +175,7 @@ void initWaterTest() {
   );
 
   cameraController->minScale = 4;
+  cameraController->floatingScale = 20;
 
   glGenBuffers(1, &buffer);
 

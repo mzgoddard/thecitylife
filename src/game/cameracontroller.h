@@ -43,6 +43,8 @@ typedef struct SLCameraController {
   aqvec2 center;
   float minScale;
   float maxScale;
+  float floatingScale;
+
   float currentScale;
   float scaleValue;
 

@@ -79,6 +79,14 @@ void _SLCameraController_update( SLCameraController *self, AQDOUBLE dt ) {
       self->leaper->state == LostLeaperState
   ) {
     self->currentScale += self->currentScale * 0.1;
+  } else if ( self->leaper->state == FloatingLeaperState ) {
+    if ( fabs( self->floatingScale - self->currentScale ) < self->currentScale * 0.1 ) {
+      self->currentScale = self->floatingScale;
+    } else {
+      self->currentScale +=
+        ( self->floatingScale - self->currentScale > 0 ? 1 : -1 ) *
+          self->currentScale * 0.1;
+    }
   } else {
     self->currentScale -= self->currentScale * 0.05;
   }
