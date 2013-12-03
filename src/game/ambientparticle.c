@@ -1,9 +1,12 @@
 #include <stdlib.h>
+#include <string.h>
 
+#include "src/audio/audio.h"
 #include "./ambientparticle.h"
 
 void * SLAmbientParticle_init( void *_self ) {
   SLAmbientParticle *self = _self;
+  memset( _self + sizeof(AQObj), 0, sizeof(SLAmbientParticle) - sizeof(AQObj) );
   self->contactPulseValue = 0;
   return _self;
 }
@@ -18,6 +21,12 @@ SLAmbientParticle * SLAmbientParticle_create() {
 
 void SLAmbientParticle_startPulse( SLAmbientParticle *self ) {
   if ( self->contactPulseValue == 0 ) {
+    AQSound_playAt(
+      AQSound_load( aqstr( "star_pulse.wav" )),
+      self->particle->position.x,
+      self->particle->position.y
+    );
+
     self->contactPulseValue = 20;
   }
   if ( self->contactPulseValue < 15 ) {
@@ -29,6 +38,13 @@ void SLAmbientParticle_tick( SLAmbientParticle *self ) {
   if ( self->contactPulseValue > 0 ) {
     self->contactPulseValue--;
   }
+}
+
+void SLAmbientParticle_setParticle(
+  SLAmbientParticle *self, AQParticle *particle
+) {
+  aqrelease( self->particle );
+  self->particle = aqretain( particle );
 }
 
 struct glcolor SLAmbientParticle_color( SLAmbientParticle *self ) {

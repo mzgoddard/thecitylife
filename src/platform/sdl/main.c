@@ -12,6 +12,10 @@
 #include "SDL/SDL_opengl.h"
 #endif
 
+#ifdef AUDIO_OPENAL
+#include "openal.h"
+#endif
+
 #if EMSCRIPTEN
 #include <emscripten.h>
 #include "platform/window.h"
@@ -32,7 +36,7 @@ static void process_events();
 
 SDL_Surface *screen;
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
 
   // Slightly different SDL initialization

@@ -53,7 +53,7 @@ AQApp * AQApp_initApp( int argc, const char **argv ) {
 
   for ( int i = 0; i < argc; ++i ) {
     printf( "argv[%d]: %s\n", i, argv[ i ]);
-    AQList_push( _app->arguments, (AQObj*) aqstr( argv[ i ]));
+    AQList_push( _app->arguments, (AQObj*) aqstr( (char *) argv[ i ]));
   }
 
   return _app;

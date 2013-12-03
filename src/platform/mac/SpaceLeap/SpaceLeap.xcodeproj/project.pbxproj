@@ -76,6 +76,16 @@
 		AD5C0C7318394DFD005DBC65 /* view.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0C131839473B005DBC65 /* view.c */; };
 		AD5C0C7918398686005DBC65 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD5C0C7818398686005DBC65 /* WebKit.framework */; };
 		AD5C0C7C18399B1A005DBC65 /* AQWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0C7B18399B1A005DBC65 /* AQWebView.m */; };
+		AD60B7F4184C466000A993FD /* audio.c in Sources */ = {isa = PBXBuildFile; fileRef = AD60B7EE184C466000A993FD /* audio.c */; };
+		AD60B7F5184C466000A993FD /* audio_dummy.c in Sources */ = {isa = PBXBuildFile; fileRef = AD60B7F0184C466000A993FD /* audio_dummy.c */; };
+		AD60B7FB184C483800A993FD /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD60B7FA184C483800A993FD /* OpenAL.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		AD60B800184C488300A993FD /* audio_openal.c in Sources */ = {isa = PBXBuildFile; fileRef = AD60B7FF184C488300A993FD /* audio_openal.c */; };
+		AD60B811184C499400A993FD /* asteroidhit.wav in Resources */ = {isa = PBXBuildFile; fileRef = AD60B809184C498800A993FD /* asteroidhit.wav */; };
+		AD60B812184C499400A993FD /* jump.wav in Resources */ = {isa = PBXBuildFile; fileRef = AD60B80B184C498800A993FD /* jump.wav */; };
+		AD60B813184C499400A993FD /* oxygengain.wav in Resources */ = {isa = PBXBuildFile; fileRef = AD60B80C184C498800A993FD /* oxygengain.wav */; };
+		AD60B814184C499400A993FD /* resourcegain.wav in Resources */ = {isa = PBXBuildFile; fileRef = AD60B80E184C498800A993FD /* resourcegain.wav */; };
+		AD60B815184C499900A993FD /* star_pulse.wav in Resources */ = {isa = PBXBuildFile; fileRef = AD60B810184C498800A993FD /* star_pulse.wav */; };
+		AD60B818184C4A6600A993FD /* libalut.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AD60B817184C4A6600A993FD /* libalut.0.dylib */; };
 		AD93BE3B1839CD9700911046 /* AQWebInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = AD93BE3A1839CD9700911046 /* AQWebInterface.m */; };
 		AD93BE3E1839D0E600911046 /* baseline.html in Resources */ = {isa = PBXBuildFile; fileRef = AD93BE3C1839D0E600911046 /* baseline.html */; };
 		AD93BE3F1839D0E600911046 /* spaceleap.ui.js in Sources */ = {isa = PBXBuildFile; fileRef = AD93BE3D1839D0E600911046 /* spaceleap.ui.js */; };
@@ -88,6 +98,9 @@
 		ADC3968C176D94A2003EE938 /* flowline.c in Sources */ = {isa = PBXBuildFile; fileRef = AD4E941D176D924D001DBB4A /* flowline.c */; };
 		ADC39691176DCCA0003EE938 /* input.c in Sources */ = {isa = PBXBuildFile; fileRef = ADC3968F176DCCA0003EE938 /* input.c */; };
 		ADC39694176DCCF8003EE938 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = ADC39692176DCCF8003EE938 /* array.c */; };
+		ADD75A34184C4B0800F61857 /* app.c in Sources */ = {isa = PBXBuildFile; fileRef = ADD75A32184C4B0800F61857 /* app.c */; };
+		ADD75A35184C4C3100F61857 /* dictmap.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0C2818394763005DBC65 /* dictmap.c */; };
+		ADD75A36184C4C3800F61857 /* map.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0C2F18394763005DBC65 /* map.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -224,6 +237,24 @@
 		AD5C0C7818398686005DBC65 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		AD5C0C7A18399B1A005DBC65 /* AQWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AQWebView.h; sourceTree = "<group>"; };
 		AD5C0C7B18399B1A005DBC65 /* AQWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AQWebView.m; sourceTree = "<group>"; };
+		AD60B7EE184C466000A993FD /* audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = audio.c; sourceTree = "<group>"; };
+		AD60B7EF184C466000A993FD /* audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audio.h; sourceTree = "<group>"; };
+		AD60B7F0184C466000A993FD /* audio_dummy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = audio_dummy.c; sourceTree = "<group>"; };
+		AD60B7F1184C466000A993FD /* audio_dummy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audio_dummy.h; sourceTree = "<group>"; };
+		AD60B7F2184C466000A993FD /* audio_openal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audio_openal.h; sourceTree = "<group>"; };
+		AD60B7F3184C466000A993FD /* audio_webaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audio_webaudio.h; sourceTree = "<group>"; };
+		AD60B7FA184C483800A993FD /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		AD60B7FF184C488300A993FD /* audio_openal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = audio_openal.c; path = platform/mac/audio/audio_openal.c; sourceTree = "<group>"; };
+		AD60B802184C48A000A993FD /* openal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = openal.h; path = platform/mac/headers/openal.h; sourceTree = "<group>"; };
+		AD60B809184C498800A993FD /* asteroidhit.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = asteroidhit.wav; sourceTree = "<group>"; };
+		AD60B80A184C498800A993FD /* death.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = death.wav; sourceTree = "<group>"; };
+		AD60B80B184C498800A993FD /* jump.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = jump.wav; sourceTree = "<group>"; };
+		AD60B80C184C498800A993FD /* oxygengain.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = oxygengain.wav; sourceTree = "<group>"; };
+		AD60B80D184C498800A993FD /* resourcegain.bak.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = resourcegain.bak.wav; sourceTree = "<group>"; };
+		AD60B80E184C498800A993FD /* resourcegain.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = resourcegain.wav; sourceTree = "<group>"; };
+		AD60B80F184C498800A993FD /* sound.cfxr */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = sound.cfxr; sourceTree = "<group>"; };
+		AD60B810184C498800A993FD /* star_pulse.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = star_pulse.wav; sourceTree = "<group>"; };
+		AD60B817184C4A6600A993FD /* libalut.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libalut.0.dylib; path = ../../../../vendor/freealut/src/libalut.0.dylib; sourceTree = "<group>"; };
 		AD93BE391839CD9700911046 /* AQWebInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AQWebInterface.h; sourceTree = "<group>"; };
 		AD93BE3A1839CD9700911046 /* AQWebInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AQWebInterface.m; sourceTree = "<group>"; };
 		AD93BE3C1839D0E600911046 /* baseline.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = baseline.html; path = web/baseline.html; sourceTree = "<group>"; };
@@ -239,6 +270,8 @@
 		ADC39690176DCCA0003EE938 /* input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = input.h; sourceTree = "<group>"; };
 		ADC39692176DCCF8003EE938 /* array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = array.c; sourceTree = "<group>"; };
 		ADC39693176DCCF8003EE938 /* array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = array.h; sourceTree = "<group>"; };
+		ADD75A32184C4B0800F61857 /* app.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = app.c; sourceTree = "<group>"; };
+		ADD75A33184C4B0800F61857 /* app.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = app.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -246,6 +279,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD60B818184C4A6600A993FD /* libalut.0.dylib in Frameworks */,
+				AD60B7FB184C483800A993FD /* OpenAL.framework in Frameworks */,
 				AD93BE451839E03700911046 /* JavaScriptCore.framework in Frameworks */,
 				AD5C0C7918398686005DBC65 /* WebKit.framework in Frameworks */,
 				AD11FF99176437FA004686B3 /* OpenGL.framework in Frameworks */,
@@ -268,6 +303,7 @@
 		AD11FF1517641E2F004686B3 = {
 			isa = PBXGroup;
 			children = (
+				AD60B816184C49CA00A993FD /* data */,
 				AD5C0BEE1839471A005DBC65 /* SpaceLeapTests */,
 				AD5C0BD9183946E6005DBC65 /* SpaceLeap */,
 				AD11FF98176437FA004686B3 /* OpenGL.framework */,
@@ -289,6 +325,8 @@
 		AD11FF2017641E2F004686B3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AD60B817184C4A6600A993FD /* libalut.0.dylib */,
+				AD60B7FA184C483800A993FD /* OpenAL.framework */,
 				AD93BE441839E03700911046 /* JavaScriptCore.framework */,
 				AD5C0C7818398686005DBC65 /* WebKit.framework */,
 				AD11FF2117641E2F004686B3 /* Cocoa.framework */,
@@ -312,11 +350,14 @@
 			isa = PBXGroup;
 			children = (
 				AD93BE401839D0EC00911046 /* jquery-1.7.1.min.js */,
+				AD60B7ED184C466000A993FD /* audio */,
 				AD93BE3D1839D0E600911046 /* spaceleap.ui.js */,
 				AD93BE3C1839D0E600911046 /* baseline.html */,
+				AD60B7FC184C486A00A993FD /* platform */,
 				ADC3968D176DCCA0003EE938 /* input */,
 				AD11FF91176429A6004686B3 /* game */,
 				AD11FF5617641E5A004686B3 /* index.h */,
+				ADD75A31184C4B0800F61857 /* sys */,
 				AD11FF5717641E5A004686B3 /* obj */,
 				AD11FF7617641E5A004686B3 /* pphys */,
 			);
@@ -488,6 +529,76 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		AD60B7ED184C466000A993FD /* audio */ = {
+			isa = PBXGroup;
+			children = (
+				AD60B7EE184C466000A993FD /* audio.c */,
+				AD60B7EF184C466000A993FD /* audio.h */,
+				AD60B7F0184C466000A993FD /* audio_dummy.c */,
+				AD60B7F1184C466000A993FD /* audio_dummy.h */,
+				AD60B7F2184C466000A993FD /* audio_openal.h */,
+				AD60B7F3184C466000A993FD /* audio_webaudio.h */,
+			);
+			path = audio;
+			sourceTree = "<group>";
+		};
+		AD60B7FC184C486A00A993FD /* platform */ = {
+			isa = PBXGroup;
+			children = (
+				AD60B7FD184C487400A993FD /* mac */,
+			);
+			name = platform;
+			sourceTree = "<group>";
+		};
+		AD60B7FD184C487400A993FD /* mac */ = {
+			isa = PBXGroup;
+			children = (
+				AD60B801184C489900A993FD /* headers */,
+				AD60B7FE184C487B00A993FD /* audio */,
+			);
+			name = mac;
+			sourceTree = "<group>";
+		};
+		AD60B7FE184C487B00A993FD /* audio */ = {
+			isa = PBXGroup;
+			children = (
+				AD60B7FF184C488300A993FD /* audio_openal.c */,
+			);
+			name = audio;
+			sourceTree = "<group>";
+		};
+		AD60B801184C489900A993FD /* headers */ = {
+			isa = PBXGroup;
+			children = (
+				AD60B802184C48A000A993FD /* openal.h */,
+			);
+			name = headers;
+			sourceTree = "<group>";
+		};
+		AD60B808184C498800A993FD /* sound */ = {
+			isa = PBXGroup;
+			children = (
+				AD60B809184C498800A993FD /* asteroidhit.wav */,
+				AD60B80A184C498800A993FD /* death.wav */,
+				AD60B80B184C498800A993FD /* jump.wav */,
+				AD60B80C184C498800A993FD /* oxygengain.wav */,
+				AD60B80D184C498800A993FD /* resourcegain.bak.wav */,
+				AD60B80E184C498800A993FD /* resourcegain.wav */,
+				AD60B80F184C498800A993FD /* sound.cfxr */,
+				AD60B810184C498800A993FD /* star_pulse.wav */,
+			);
+			name = sound;
+			path = ../../../../data/sound;
+			sourceTree = "<group>";
+		};
+		AD60B816184C49CA00A993FD /* data */ = {
+			isa = PBXGroup;
+			children = (
+				AD60B808184C498800A993FD /* sound */,
+			);
+			name = data;
+			sourceTree = "<group>";
+		};
 		ADC3968D176DCCA0003EE938 /* input */ = {
 			isa = PBXGroup;
 			children = (
@@ -496,6 +607,15 @@
 				ADC39690176DCCA0003EE938 /* input.h */,
 			);
 			path = input;
+			sourceTree = "<group>";
+		};
+		ADD75A31184C4B0800F61857 /* sys */ = {
+			isa = PBXGroup;
+			children = (
+				ADD75A32184C4B0800F61857 /* app.c */,
+				ADD75A33184C4B0800F61857 /* app.h */,
+			);
+			path = sys;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -573,6 +693,11 @@
 				AD93BE421839D74900911046 /* jquery-1.7.1.min.js in Resources */,
 				AD93BE431839D74900911046 /* spaceleap.ui.js in Resources */,
 				AD5C0BE9183946E6005DBC65 /* Credits.rtf in Resources */,
+				AD60B815184C499900A993FD /* star_pulse.wav in Resources */,
+				AD60B811184C499400A993FD /* asteroidhit.wav in Resources */,
+				AD60B812184C499400A993FD /* jump.wav in Resources */,
+				AD60B813184C499400A993FD /* oxygengain.wav in Resources */,
+				AD60B814184C499400A993FD /* resourcegain.wav in Resources */,
 				AD93BE3E1839D0E600911046 /* baseline.html in Resources */,
 				AD5C0BEA183946E6005DBC65 /* InfoPlist.strings in Resources */,
 				AD5C0BEB183946E6005DBC65 /* MainMenu.xib in Resources */,
@@ -611,6 +736,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ADD75A36184C4C3800F61857 /* map.c in Sources */,
+				ADD75A35184C4C3100F61857 /* dictmap.c in Sources */,
 				AD5C0C5818394DFD005DBC65 /* asteroid.c in Sources */,
 				AD5C0C5A18394DFD005DBC65 /* asteroidview.c in Sources */,
 				AD5C0C5C18394DFD005DBC65 /* camera.c in Sources */,
@@ -620,6 +747,8 @@
 				ADAFDC0B183F174B00ECB54C /* particleview.c in Sources */,
 				AD5C0C6418394DFD005DBC65 /* leaper.c in Sources */,
 				AD5C0C6618394DFD005DBC65 /* leaperview.c in Sources */,
+				AD60B800184C488300A993FD /* audio_openal.c in Sources */,
+				AD60B7F5184C466000A993FD /* audio_dummy.c in Sources */,
 				AD5C0C6818394DFD005DBC65 /* loop.c in Sources */,
 				AD5C0C6B18394DFD005DBC65 /* renderer.c in Sources */,
 				AD5C0C6D18394DFD005DBC65 /* shaders.c in Sources */,
@@ -637,6 +766,7 @@
 				AD93BE3B1839CD9700911046 /* AQWebInterface.m in Sources */,
 				AD5C0BD5183945BD005DBC65 /* string.c in Sources */,
 				AD11FF8D17641E5A004686B3 /* collision.c in Sources */,
+				AD60B7F4184C466000A993FD /* audio.c in Sources */,
 				AD5C0BD3183945BD005DBC65 /* interfaceptr.c in Sources */,
 				AD5C0BE8183946E6005DBC65 /* AQOpenGLView.m in Sources */,
 				AD5C0BEC183946E6005DBC65 /* main.m in Sources */,
@@ -644,6 +774,7 @@
 				AD5C0BD8183945C8005DBC65 /* compare.c in Sources */,
 				AD11FF8F17641E5A004686B3 /* particle.c in Sources */,
 				AD11FF9017641E5A004686B3 /* world.c in Sources */,
+				ADD75A34184C4B0800F61857 /* app.c in Sources */,
 				AD5C0BCD18394596005DBC65 /* stick.c in Sources */,
 				AD5C0BE7183946E6005DBC65 /* AQAppDelegate.m in Sources */,
 				ADC39691176DCCA0003EE938 /* input.c in Sources */,
@@ -799,12 +930,21 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SpaceLeap/SpaceLeap-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					AUDIO_OPENAL,
+					"DEBUG=1",
+				);
 				HEADER_SEARCH_PATHS = (
 					../../../../,
 					../../../,
 					../../../game/spaceleaper,
+					../../../../vendor/freealut/include,
 				);
 				INFOPLIST_FILE = "SpaceLeap/SpaceLeap-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/Zen/Projects/spaceleap/vendor/freealut/src,
+				);
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = SpaceLeap;
@@ -820,12 +960,18 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SpaceLeap/SpaceLeap-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = AUDIO_OPENAL;
 				HEADER_SEARCH_PATHS = (
 					../../../../,
 					../../../,
 					../../../game/spaceleaper,
+					../../../../vendor/freealut/include,
 				);
 				INFOPLIST_FILE = "SpaceLeap/SpaceLeap-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/Zen/Projects/spaceleap/vendor/freealut/src,
+				);
 				LLVM_LTO = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = SpaceLeap;

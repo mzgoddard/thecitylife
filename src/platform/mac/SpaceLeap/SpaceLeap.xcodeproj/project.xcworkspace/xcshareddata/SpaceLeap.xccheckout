@@ -12,6 +12,8 @@
 	<dict>
 		<key>3A2A1880-7FD2-4076-9564-158E65CAE081</key>
 		<string>ssh://github.com/mzgoddard/spaceleap.git</string>
+		<key>B3BE1CA6-5AEE-4458-9A46-AF5571DD1C5C</key>
+		<string>https://github.com/vancegroup/freealut.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>src/platform/mac/SpaceLeap/SpaceLeap.xcodeproj/project.xcworkspace</string>
@@ -19,6 +21,8 @@
 	<dict>
 		<key>3A2A1880-7FD2-4076-9564-158E65CAE081</key>
 		<string>../../../../../..</string>
+		<key>B3BE1CA6-5AEE-4458-9A46-AF5571DD1C5C</key>
+		<string>../../../../../../vendor/freealut</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>ssh://github.com/mzgoddard/spaceleap.git</string>
@@ -28,6 +32,14 @@
 	<string>3A2A1880-7FD2-4076-9564-158E65CAE081</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>B3BE1CA6-5AEE-4458-9A46-AF5571DD1C5C</string>
+			<key>IDESourceControlWCCName</key>
+			<string>freealut</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>

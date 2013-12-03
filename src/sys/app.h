@@ -6,7 +6,7 @@ typedef struct AQApp {
   AQObj object;
 
   int _argc;
-  char **_argv;
+  const char **_argv;
 
   AQList *arguments;
   AQString *binaryPath;

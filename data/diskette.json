@@ -1,0 +1,9 @@
+{
+  "files": [
+    "sound/asteroidhit.wav",
+    "sound/jump.wav",
+    "sound/oxygengain.wav",
+    "sound/resourcegain.wav",
+    "sound/star_pulse.wav"
+  ]
+}

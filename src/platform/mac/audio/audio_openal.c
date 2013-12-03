@@ -1,5 +1,51 @@
+#include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "src/pphys/math.h"
 #include "src/audio/audio_openal.h"
+#include "src/sys/app.h"
+
+char * _alGetErrorString( ALenum error ) {
+  switch( error ) {
+    case AL_NO_ERROR:
+      return "No Error";
+    case AL_INVALID_NAME:
+      return "Invalid Name";
+    case AL_INVALID_ENUM:
+      return "Invalid Enum";
+    case AL_INVALID_VALUE:
+      return "Invalid Value";
+    case AL_INVALID_OPERATION:
+      return "Invalid Operation";
+    case AL_OUT_OF_MEMORY:
+      return "Out of Memory";
+    default:
+      return "Unknown Error";
+  }
+}
+
+char * _alcGetErrorString( ALenum error ) {
+  return "Unknown Error";
+}
+
+void _logALError() {
+  ALenum error = alGetError();
+  if ( error != AL_NO_ERROR ) {
+    printf( "Error performing al action. %s\n", _alGetErrorString( error ));
+  }
+}
+
+void _logALUTError() {
+  ALenum error;
+  if (( error = alutGetError()) != ALUT_ERROR_NO_ERROR ) {
+    printf( "Error performing alut action. %s\n", alutGetErrorString( error ));
+    if ( error == ALUT_ERROR_IO_ERROR ) {
+      printf( "IOError: %s\n", strerror( errno ));
+    }
+  }
+}
 
 static AQAudioDriverInterface _AQOpenALDriver_AudioDriverInterface = {
   AQAudioDriverId,
@@ -61,12 +107,20 @@ _AQOpenALSource * _AQOpenALSource_create() {
 }
 
 AQOpenALDriver * AQOpenALDriver_init( AQOpenALDriver *self ) {
+  memset(
+    self + sizeof( AQObj ),
+    0,
+    sizeof( AQOpenALDriver ) - sizeof( AQObj )
+  );
+
   self->soundMap = aqinit( aqalloc( &AQDictMapType ) );
   self->sourceList = aqinit( aqalloc( &AQListType ) );
   return self;
 }
 
 AQOpenALDriver * AQOpenALDriver_done( AQOpenALDriver *self ) {
+  aqrelease( self->soundMap );
+  aqrelease( self->sourceList );
   return self;
 }
 
@@ -78,6 +132,8 @@ void * AQOpenALDriver_getInterface( AQOpenALDriver *self, void *id ) {
 }
 
 AQOpenALDriver * AQOpenALDriver_create() {
+  alutInitWithoutContext(NULL, NULL);
+
   AQOpenALDriver * ctx = aqcreate( &AQOpenALDriverType );
 
   ctx->device = alcOpenDevice( NULL );
@@ -103,7 +159,22 @@ AQOpenALDriver * AQOpenALDriver_create() {
     }
   }
   // clear any errors
-  alGetError();
+  ALenum error = alGetError();
+  if ( error != AL_NO_ERROR ) {
+    printf( "Error creating openal driver: %x.\n", error );
+  } else if ( ctx->device && ctx->context ) {
+    #if ANSI_COLOR
+    printf( "\x1b[32mNo error creating openal driver.\x1b[0m\n" );
+    #else
+    printf( "No error creating openal driver.\n" );
+    #endif
+  }
+
+  _logALUTError();
+
+  // alDistanceModel( AL_LINEAR_DISTANCE_CLAMPED );
+  alDistanceModel( AL_INVERSE_DISTANCE_CLAMPED );
+  // alDistanceModel( AL_EXPONENTIAL_DISTANCE );
 
   return ctx;
 }
@@ -130,9 +201,21 @@ AQSound * AQOpenALDriver_loadSound(
 
   sound = aqcreate( &AQSoundType );
   sound->path = aqretain( path );
+
+  AQString *_path = AQString_concat(
+    AQString_concat( AQApp_app()->resourcePath, aqstr( "/" ) ),
+    path
+  );
+
   sound->_buffer = aqretain( _AQOpenALBuffer_create(
-    alutCreateBufferFromFile( AQString_cstr( path ) )
+    alutCreateBufferFromFile( AQString_cstr(
+      _path
+    ) )
   ) );
+
+  _logALError();
+  _logALUTError();
+
   AQMap_set( self->soundMap, path, sound );
 
   return sound;
@@ -142,7 +225,7 @@ int _AQOpenALDriver_findSourceIterator( AQObj *obj, void *ctx ) {
   _AQOpenALSource * source = (_AQOpenALSource *) obj;
   int isPlaying;
   alGetSourcei( source->source, AL_SOURCE_STATE, &isPlaying );
-  return isPlaying == AL_PLAYING;
+  return isPlaying != AL_PLAYING;
 }
 
 _AQOpenALSource * _AQOpenALDriver_findSource( AQOpenALDriver *self ) {
@@ -154,8 +237,12 @@ _AQOpenALSource * _AQOpenALDriver_findSource( AQOpenALDriver *self ) {
     AQList_push( self->sourceList, (AQObj *) source );
   }
 
-  alSourcei( source->source, AL_SOURCE_RELATIVE, AL_FALSE );
+  alSourcei( source->source, AL_SOURCE_RELATIVE, AL_TRUE );
+  alSource3f( source->source, AL_POSITION, 0, 0, 0 );
   alSourcei( source->source, AL_LOOPING, AL_FALSE );
+  alSourcef( source->source, AL_PITCH, 1.0 );
+
+  _logALError();
 
   return source;
 }
@@ -170,6 +257,9 @@ AQSoundInstance * AQOpenALDriver_playSound(
     ( (_AQOpenALBuffer *) sound->_buffer )->buffer
   );
   alSourcePlay( source->source );
+
+  _logALError();
+  _logALUTError();
 
   AQSoundInstance *instance = aqcreate( &AQSoundInstanceType );
   instance->sound = aqretain( sound );
@@ -205,7 +295,12 @@ AQSoundInstance * AQOpenALDriver_playSoundAt(
     AL_BUFFER,
     ( (_AQOpenALBuffer *) sound->_buffer )->buffer
   );
+  alSourcei( source->source, AL_SOURCE_RELATIVE, AL_FALSE );
   alSource3f( source->source, AL_POSITION, x, y, 0 );
+  alSourcef( source->source, AL_MAX_DISTANCE, 10000 );
+  alSourcef( source->source, AL_ROLLOFF_FACTOR, 1 );
+  alSourcef( source->source, AL_REFERENCE_DISTANCE, 1 );
+  alSourcef( source->source, AL_PITCH, (rand() / (float) RAND_MAX) * 0.2 + 0.9 );
   alSourcePlay( source->source );
 
   AQSoundInstance *instance = aqcreate( &AQSoundInstanceType );
