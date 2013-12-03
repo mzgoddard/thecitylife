@@ -135,6 +135,13 @@ def build(bld):
     )
 
     bld.objects(
+        source=bld.path.ant_glob('src/sys/*.c'),
+        includes=['./src', '.'],
+        target='libsys',
+        use='libobj'
+    )
+
+    bld.objects(
         source='test/runner/runner.c test/runner/resultformatter.c',
         includes='.',
         target='libtest'
@@ -192,7 +199,7 @@ def build(bld):
             includes=['./src/game/spaceleaper', './src', '.'],
             linkflags=['--js-library', '../../src/platform/web/window.js'],
             target='spaceleaper',
-            use='libobj libinput'
+            use='libobj libinput libsys'
         )
 
     if bld.cmd in [ 'debug', 'release' ]:
@@ -219,7 +226,7 @@ def build(bld):
             includes=['./src/game/watertest', './src', '.'],
             target='watertest',
             framework=[ 'Cocoa', 'OpenGL' ],
-            use='libobj libpphys libinput SDL SDL_gfx SDL_image'
+            use='libobj libpphys libsys libinput SDL SDL_gfx SDL_image'
         )
 
         bld.program(
@@ -229,7 +236,8 @@ def build(bld):
             framework=[ 'Cocoa', 'OpenGL', 'OpenAL' ],
             libpath=os.path.abspath('vendor/freealut/src'),
             lib='alut',
-            use='libobj libinput libaudio libaudioopenal SDL SDL_gfx SDL_image'
+            use='libobj libinput libsys libaudiobase libaudioopenal ' +
+                'SDL SDL_gfx SDL_image'
         )
 
 for x in 'debug release emcc emcc_html'.split():

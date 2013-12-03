@@ -22,6 +22,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "src/sys/app.h"
 #include "src/input/index.h"
 #include "src/game/watertest.h"
 #include "appdefines.h"
@@ -79,6 +80,10 @@ int main(int argc, char *argv[])
 #if EMSCRIPTEN
   emscripten_set_main_loop(main_loop, 0, 0);
 #endif
+
+  AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
+  AQApp_initApp( argc, argv );
+  aqfree( pool );
 
   initWaterTest();
 
