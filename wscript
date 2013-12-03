@@ -1,6 +1,7 @@
 #!/usr/bin/env waf
 
 import os
+import sys
 from waflib.Scripting import run_command
 from waflib.Build import BuildContext, CleanContext, \
     InstallContext, UninstallContext
@@ -83,6 +84,8 @@ def configure(ctx):
 
 from waflib.TaskGen import after_method,before_method,feature,taskgen_method,extension
 
+from waflib import Task
+
 from waflib.Node import Node
 
 # relative include paths for emcc
@@ -96,6 +99,47 @@ def apply_incpaths_emcc(self):
         )
         self.includes_nodes=lst
         self.env['INCPATHS'] = [x.path_from(self.bld.bldnode) for x in lst]
+
+once = True
+class grunt(Task.Task):
+    run_str='grunt'
+    shell=True
+    # HACK: this will make sure emcc runs before but if we want to run grunt
+    # before and after an emcc task, this will need to work another way.
+    after='cprogram'
+
+# Let Waf know js is a valid extension. Currently don't anything to it.
+@extension('.js')
+def process_js(self, node):
+    if 'c' in self.features:
+        self.js_library_paths=getattr(self,'js_library_paths',[])
+        self.js_library_paths.append(node.abspath())
+
+        self.env.append_value('LINKFLAGS', '--js-library')
+        self.env.append_value('LINKFLAGS', node.abspath())
+
+@after_method('apply_link','apply_incpaths')
+def apply_js_nodes(self):
+    if type(self.js_library_paths) is list:
+        link_task=getattr(self,'link_task',None)
+        if link_task:
+            link_task.dep_nodes.extend(self.to_nodes(self.js_library_paths))
+
+        lst=self.includes_nodes
+        lst.extend(self.to_incnodes(self.to_list(self.js_library_paths)))
+        self.includes_nodes=lst
+
+@feature('grunt')
+@after_method('process_source')
+def apply_grunt(self):
+    self.process_use()
+    self.target=self.bld.bldnode.make_node(self.target)
+
+    task=self.create_task('grunt', self.source, self.target)
+    task.dep_nodes.append(self.bld.path.find_node('Gruntfile.js'))
+    task.dep_nodes.extend(
+        [self.bld.bldnode.make_node(x) for x in self.to_list(self.use)]
+    )
 
 def build(bld):
     # Force emscripten to optimize compiled objects.
@@ -134,6 +178,13 @@ def build(bld):
     )
 
     bld.objects(
+        source=bld.path.ant_glob('src/sys/*.c'),
+        includes=['./src', '.'],
+        target='libsys',
+        use='libobj'
+    )
+
+    bld.objects(
         source='test/runner/runner.c test/runner/resultformatter.c',
         includes='.',
         target='libtest'
@@ -146,11 +197,18 @@ def build(bld):
         use='libtest libobj libpphystest'
     )
 
+    if bld.cmd in ['debug', 'release']:
+        bld(
+            rule='cp ${SRC} .',
+            source=bld.path.ant_glob('data/sound/*.wav')
+        )
+
     if bld.cmd == 'emcc':
         bld(
             rule='cp ${SRC} .',
             source=bld.path.ant_glob(
-                'src/platform/web/* ' +
+                'src/platform/web/watertest.ui.js ' +
+                'src/platform/web/*.html ' +
                 'vendor/stats.js/build/stats.min.js'
             )
         )
@@ -158,6 +216,16 @@ def build(bld):
         bld(
             rule='cp ${SRC} .',
             source='vendor/jquery-1.7.1.min.js'
+        )
+
+        bld(
+            rule='../../vendor/diskettejs/bin/convert ' +
+                '-c ../../data/diskette.json ' +
+                '-I ../../data ' +
+                '-O ./',
+            source=bld.path.ant_glob(
+                'data/**'
+            )
         )
 
     watertestSource = bld.path.ant_glob(
@@ -178,37 +246,85 @@ def build(bld):
     )
 
     if bld.cmd in [ 'emcc', 'emcc_html' ]:
+        watertestEmccSource = watertestSource
+        watertestEmccSource.extend( bld.path.ant_glob(
+            'src/platform/web/window.js'
+        ))
+
         bld.program(
-            source=watertestSource,
+            source=watertestEmccSource,
             includes=['./src/game/watertest', './src', '.'],
-            linkflags=['--js-library', '../../src/platform/web/window.js'],
+            # linkflags=['--js-library', '../../src/platform/web/window.js'],
             target='watertest',
             use='libobj libpphys libinput'
         )
 
+        spaceLeaperEmccSource = spaceLeaperSource
+        spaceLeaperEmccSource.extend( bld.path.ant_glob(
+            'src/audio/audio.c src/platform/web/audio_webaudio.c ' +
+            'src/platform/web/window.js ' +
+            'src/platform/web/audio_webaudio.js'
+        ))
+
         bld.program(
-            source=spaceLeaperSource,
+            source=spaceLeaperEmccSource,
             includes=['./src/game/spaceleaper', './src', '.'],
-            linkflags=['--js-library', '../../src/platform/web/window.js'],
+            defines=[ 'AUDIO_WEBAUDIO' ],
+            # linkflags=['--js-library', '../../src/platform/web/window.js'],
             target='spaceleaper',
-            use='libobj libinput'
+            use='libobj libinput libsys'
+        )
+
+    if bld.cmd == 'emcc':
+        bld(
+            features='grunt',
+            source=bld.path.ant_glob(
+                'src/platform/web/*.js'
+            ),
+            target='spaceleap.js',
+            use='spaceleaper.js'
         )
 
     if bld.cmd in [ 'debug', 'release' ]:
+        platformIncludes = ['./src', '.', './vendor/freealut/include']
+        if sys.platform == 'darwin':
+            platformIncludes.append('./src/platform/mac/headers')
+
+        spaceleaperPlatformIncludes = ['./src/game/spaceleaper', './src', '.']
+        spaceleaperPlatformIncludes.extend(platformIncludes)
+
+        bld.objects(
+            source=bld.path.ant_glob('src/audio/*.c'),
+            includes=spaceleaperPlatformIncludes,
+            target='libaudiobase',
+            use='libobj'
+        )
+
+        bld.objects(
+            source=bld.path.ant_glob('src/platform/mac/audio/*.c'),
+            includes=spaceleaperPlatformIncludes,
+            target='libaudioopenal',
+            use='libobj libaudiobase'
+        )
+
         bld.program(
             source=watertestSource,
             includes=['./src/game/watertest', './src', '.'],
             target='watertest',
             framework=[ 'Cocoa', 'OpenGL' ],
-            use='libobj libpphys libinput SDL SDL_gfx SDL_image'
+            use='libobj libpphys libsys libinput SDL SDL_gfx SDL_image'
         )
 
         bld.program(
             source=spaceLeaperSource,
-            includes=['./src/game/spaceleaper', './src', '.'],
+            includes=spaceleaperPlatformIncludes,
             target='spaceleaper',
-            framework=[ 'Cocoa', 'OpenGL' ],
-            use='libobj libinput SDL SDL_gfx SDL_image'
+            defines=[ 'AUDIO_OPENAL' ],
+            framework=[ 'Cocoa', 'OpenGL', 'OpenAL' ],
+            libpath=os.path.abspath('vendor/freealut/src'),
+            lib='alut',
+            use='libobj libinput libsys libaudiobase libaudioopenal ' +
+                'SDL SDL_gfx SDL_image'
         )
 
 for x in 'debug release emcc emcc_html'.split():

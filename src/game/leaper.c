@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "src/obj/number.h"
+#include "src/audio/audio.h"
 #include "src/game/leaper.h"
 #include "src/game/view.h"
 #include "src/game/updater.h"
@@ -620,6 +621,11 @@ void _SLLeaper_drainAsteroid( SLLeaper *self, SLAsteroid *asteroid ) {
     asteroid->color = SL_lerpColor(
       normalAsteroidColor, resourceAsteroidColor, resourcePercent
     );
+
+    if ( self->gainSoundTimer == 0 ) {
+      AQSound_play( AQSound_load( aqstr( "resourcegain.wav" )));
+      self->gainSoundTimer = 12;
+    }
   }
 }
 
@@ -657,6 +663,13 @@ aqvec2 SLLeaper_calcPosition( SLLeaper *self ) {
 }
 
 void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
+  if (
+    self->state == LostLeaperState ||
+      self->state == WonLeaperState
+  ) {
+    return;
+  }
+
   // _SLLeaper_setPosition( self, self->position );
 
   // printf( "%d ", self->state );
@@ -691,6 +704,8 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
   }
 
   self->position = aqvec2_scale( position, 1.0 / 3.0 );
+
+  AQAudioDriver_setListenerPosition( self->position.x, self->position.y );
   // _SLLeaper_setPosition( self, aqvec2_scale( position, 1.0 / 3.0 ));
 
   // // Rotate to have bottom face direction of flight.
@@ -832,6 +847,8 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
       // printf( "feet %f %f %d ", distance[0], distance[1], AQList_length( self->_attachedIndices ));
 
       _SLLeaper_gotoState( self, StuckLeaperState );
+
+      AQSound_play( AQSound_load( aqstr( "asteroidhit.wav" )));
     }
   }
 
@@ -886,6 +903,8 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
 
     if ( AQList_length( self->_attachedIndices ) == 2 ) {
       _SLLeaper_gotoState( self, StuckLeaperState );
+
+      AQSound_play( AQSound_load( aqstr( "asteroidhit.wav" )));
     }
   }
 
@@ -1004,13 +1023,30 @@ void _SLLeaper_update( SLLeaper *self, AQDOUBLE dt ) {
 
   //
   // Update oxygen.
-  if ( self->isHome ) {
+  if ( self->isHome && self->oxygenTimer == 0 ) {
     int oxygen = self->resource < 5 ? self->resource : 5;
     if ( oxygen > ( SLLeaper_maxOxygen - self->oxygen ) / SLLeaper_resourceToOxygen ) {
       oxygen = ( SLLeaper_maxOxygen - self->oxygen ) / SLLeaper_resourceToOxygen;
     }
     self->resource -= oxygen;
     self->oxygen += oxygen * SLLeaper_resourceToOxygen;
+    self->oxygenTimer = 5;
+
+    if (
+      oxygen > 0 &&
+        self->gainSoundTimer == 0 &&
+        self->oxygen < SLLeaper_maxOxygen - 128
+    ) {
+      AQSound_play( AQSound_load( aqstr( "oxygengain.wav" )));
+      self->gainSoundTimer = 20;
+    }
+  }
+
+  if ( self->oxygenTimer > 0 ) {
+    self->oxygenTimer--;
+  }
+  if ( self->gainSoundTimer > 0 ) {
+    self->gainSoundTimer--;
   }
 
   if ( self->state != FloatingLeaperState ) {
@@ -1104,6 +1140,8 @@ void _SLLeaper_gotoState( SLLeaper *self, SLLeaperState newState ) {
 
   if ( newState == FloatingLeaperState ) {
     AQList_removeAt( self->_attachedIndices, 0 );
+
+    AQSound_play( AQSound_load( aqstr( "jump.wav" )));
   }
 
   self->state = newState;

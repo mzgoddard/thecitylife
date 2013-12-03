@@ -77,6 +77,9 @@ typedef struct SLLeaper {
   int resource;
   int totalResource;
 
+  int oxygenTimer;
+  int gainSoundTimer;
+
   void *view;
 } SLLeaper;
 

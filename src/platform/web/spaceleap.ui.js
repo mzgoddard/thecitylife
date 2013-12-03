@@ -65,7 +65,7 @@ Module.visitedCallback = function( _visits ) {
 Module.resourceCallback = function( _resource ) {
   resource = _resource;
   $('.resource > div').text( resource );
-}
+};
 Module.ccall(
   'setSpaceLeaperEndCallback',
   'undefined',
@@ -84,5 +84,6 @@ Module.ccall(
   ['number'],
   [Runtime.addFunction(Module.resourceCallback)]
 );
+Module.ccall('pauseSpaceLeaper','undefined',[],[]);
 
 _gaq.push(['_trackEvent','SpaceLeap','Version','1.0']);

@@ -7,15 +7,23 @@
         // Therefore pass a slightly peculiar combo of these two to guarantee that a left-right scrollbar never appears if there is more than one screenful
         // of content in the page.
         Runtime.dynCall('viii', resizeHandler, [document.body.clientWidth, window.innerHeight, userData]);
-      }
+      };
       window.addEventListener("resize", handlerFunc, true);
     },
 
     enable_resizable: function() {
+      var scale = window.devicePixelRatio;
+
       window.addEventListener( 'resize', function() {
-        Module.setCanvasSize( document.body.clientWidth, window.innerHeight );
+        Module.setCanvasSize(
+          document.body.clientWidth * scale,
+          window.innerHeight * scale
+        );
       }, true );
-      Module.setCanvasSize( document.body.clientWidth, window.innerHeight );
+      Module.setCanvasSize(
+        document.body.clientWidth * scale,
+        window.innerHeight * scale
+      );
     }
   };
 

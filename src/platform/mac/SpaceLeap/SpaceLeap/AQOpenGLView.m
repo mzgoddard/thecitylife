@@ -15,6 +15,7 @@
 #import "appdefines.h"
 #import "watertest.h"
 #import "input.h"
+#import "sys/app.h"
 
 @implementation AQOpenGLView
 
@@ -33,24 +34,6 @@
   [super dealloc];
 }
 
-- (BOOL) acceptsFirstResponder {
-  return YES;
-}
-
-- (BOOL) becomeFirstResponder {
-  NSLog( @"Become first resopnder." );
-  return YES;
-}
-
-- (BOOL) resignFirstResponder {
-  NSLog( @"Resign first responder." );
-  return YES;
-}
-
-- (BOOL) acceptsFirstMouse:(NSEvent *)theEvent {
-  return YES;
-}
-
 - (void) prepareOpenGL {
   int swapInt = 1;
   
@@ -58,7 +41,23 @@
   
   glClearColor(0, 0, 0, 0);
   VIEWPORT();
-  NSLog(@"hi");
+
+  NSArray *arguments = [[NSProcessInfo processInfo] arguments];
+  unsigned int argc = (unsigned int) [arguments count];
+  const char **argv = calloc(argc, sizeof(char *));
+  [arguments enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    argv[idx] = [obj cStringUsingEncoding:NSASCIIStringEncoding];
+  }];
+
+  AQReleasePool *pool = aqinit(aqalloc(&AQReleasePoolType));
+  AQApp_initApp(argc, argv);
+  AQApp *app = AQApp_app();
+  AQApp_setResourcePath(
+    app,
+    AQString_concat( app->resourcePath, aqstr( "/../Resources" ))
+  );
+  aqfree(pool);
+  free(argv);
 
   AQInput_setScreenSize( self.frame.size.width, self.frame.size.height );
 

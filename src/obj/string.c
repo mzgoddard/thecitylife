@@ -49,10 +49,18 @@ AQString * aqrep( AQObj *object ) {
   }
 }
 
-// AQString * AQString_concat( AQString *a, AQString *b ) {
-//   char *
-//   return aqstr( )
-// }
+AQString * AQString_concat( AQString *a, AQString *b ) {
+  char *tmp = malloc( a->size + b->size + 1 );
+  strncpy( tmp, a->value, a->size );
+  strncpy( tmp + a->size, b->value, b->size );
+  tmp[ a->size + b->size ] = '\0';
+
+  AQString *str = aqcreate( &AQStringType );
+  str->size = a->size + b->size;
+  str->value = tmp;
+
+  return str;
+}
 
 // AQString * AQString_format(AQString *, ...);
 

@@ -12,6 +12,10 @@
 #include "SDL/SDL_opengl.h"
 #endif
 
+#ifdef AUDIO_OPENAL
+#include "openal.h"
+#endif
+
 #if EMSCRIPTEN
 #include <emscripten.h>
 #include "platform/window.h"
@@ -22,6 +26,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "src/sys/app.h"
 #include "src/input/index.h"
 #include "src/game/watertest.h"
 #include "appdefines.h"
@@ -31,7 +36,7 @@ static void process_events();
 
 SDL_Surface *screen;
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
 
   // Slightly different SDL initialization
@@ -79,6 +84,10 @@ int main(int argc, char *argv[])
 #if EMSCRIPTEN
   emscripten_set_main_loop(main_loop, 0, 0);
 #endif
+
+  AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
+  AQApp_initApp( argc, argv );
+  aqfree( pool );
 
   initWaterTest();
 

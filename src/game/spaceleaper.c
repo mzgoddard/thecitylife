@@ -9,6 +9,16 @@
 #include "src/obj/index.h"
 #include "src/pphys/index.h"
 #include "src/input/index.h"
+#include "src/audio/audio.h"
+
+#include "src/audio/audio_dummy.h"
+#ifdef AUDIO_OPENAL
+#include "src/audio/audio_openal.h"
+#endif
+#ifdef AUDIO_WEBAUDIO
+#include "src/audio/audio_webaudio.h"
+#endif
+
 #include "src/game/flowline.h"
 #include "src/game/asteroid.h"
 #include "src/game/camera.h"
@@ -56,6 +66,24 @@ void initWaterTest() {
 
   AQLoop_boot();
   AQRenderer_boot();
+
+  #ifdef AUDIO_OPENAL
+  AQAudioDriver_setContext( (AQObj*) AQOpenALDriver_create() );
+  #else
+  #ifdef AUDIO_WEBAUDIO
+  AQAudioDriver_setContext( (AQObj*) AQWebAudioDriver_create() );
+  #else
+  AQAudioDriver_setContext( (AQObj*) AQDummyDriver_create() );
+  #endif
+  #endif
+
+  AQAudioDriver_setMasterVolume( 1 );
+
+  // Preload sounds.
+  AQSound_load( aqstr( "asteroidhit.wav" ));
+  AQSound_load( aqstr( "jump.wav" ));
+  AQSound_load( aqstr( "resourcegain.wav" ));
+  AQSound_load( aqstr( "oxygengain.wav" ));
 
   int space = 25600;
   int n = 64;
@@ -113,9 +141,9 @@ void initWaterTest() {
           // ambientParticle->isTrigger = 1;
           ambientParticle->friction = 1;
           ambientParticle->mass = 0.01;
-          ambientParticle->userdata = aqretain( aqcreate(
-            &SLAmbientParticleType
-          ));
+          SLAmbientParticle *ambientData = aqcreate( &SLAmbientParticleType );
+          SLAmbientParticle_setParticle( ambientData, ambientParticle );
+          ambientParticle->userdata = aqretain( ambientData );
           ambientParticle->oncollision = collision_noop;
           AQWorld_addParticle( world, ambientParticle );
 
@@ -175,6 +203,7 @@ void initWaterTest() {
   );
 
   cameraController->minScale = 4;
+  cameraController->floatingScale = 20;
 
   glGenBuffers(1, &buffer);
 
