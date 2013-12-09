@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "obj.h"
 
@@ -30,6 +31,14 @@ void aqfree( void *self ) {
   if ( !self ) { return; }
   ((AQObj *) self )->refCount = 0;
   free( ((AQObj *) self )->type->done( self ));
+}
+
+void * aqzero( void *self ) {
+  if ( !self ) { return self; }
+  memset(
+    self + sizeof(AQObj), 0, ((AQObj*) self)->type->size - sizeof(AQObj)
+  );
+  return self;
 }
 
 void * aqinit( void *self ) {

@@ -3,6 +3,7 @@
 
 #include "obj.h"
 #include "string.h"
+#include "number.h"
 #include "array.h"
 #include "list.h"
 #include "compare.h"
