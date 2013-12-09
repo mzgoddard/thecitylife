@@ -15,8 +15,14 @@ var AQAudioContext;
     this.chainPromise = when();
 
     var contextConstructor = (
-      webkitAudioContext || mozAudioContext || AudioContext
+      window.webkitAudioContext || window.mozAudioContext || window.AudioContext
     );
+
+    if ( !contextConstructor ) {
+      console.error( 'WebAudio is not supported. Sound will not be played.' );
+      return;
+    }
+
     this.webAudioContext = new contextConstructor();
 
     this.webAudioDestination = this.webAudioContext.destination;
@@ -39,6 +45,14 @@ var AQAudioContext;
   };
 
   AQAudioContext.prototype._initDiskette = function() {
+    if ( !this.webAudioContext ) {
+      return {
+        read: function() {
+          return when.defer().promise;
+        }
+      };
+    }
+
     if ( diskette === null ) {
       diskette = new Diskette();
       diskette.config( 'diskette.json' );
@@ -54,7 +68,9 @@ var AQAudioContext;
   AQAudioContext.prototype.done = function() {};
 
   AQAudioContext.prototype.setListenerPosition = function( x, y ) {
-    this.webAudioContext.listener.setPosition( x, y, 0 );
+    if ( this.webAudioContext ) {
+      this.webAudioContext.listener.setPosition( x, y, 0 );
+    }
   };
 
   AQAudioContext.prototype.createBuffer = function( path ) {
@@ -70,10 +86,12 @@ var AQAudioContext;
     this._chain(
       self._initDiskette().read( path, 'arraybuffer' ).then(function( data ) {
         var defer = when.defer();
-        self.webAudioContext.decodeAudioData( data, function( buffer ) {
-          bufferData.buffer = buffer;
-          defer.resolve( bufferData );
-        }, defer.reject );
+        if ( self.webAudioContext ) {
+          self.webAudioContext.decodeAudioData( data, function( buffer ) {
+            bufferData.buffer = buffer;
+            defer.resolve( bufferData );
+          }, defer.reject );
+        }
         return defer.promise;
       })
     );
@@ -110,6 +128,13 @@ var AQAudioContext;
   function AQAudioSource( ctx ) {
     this.id = ctx.nextSourceId++;
     this.context = ctx;
+
+    this.playing = false;
+
+    if ( !ctx.webAudioContext ) {
+      return;
+    }
+
     this.sourceNode = ctx.webAudioContext.createBufferSource();
     this.sourceNode.onended = function() {
       this.playing = false;
@@ -119,8 +144,6 @@ var AQAudioContext;
     this.gainNode = null;
 
     this.playNode = this.sourceNode;
-
-    this.playing = false;
   }
 
   AQAudioSource.prototype.isPlaying = function() {
@@ -136,6 +159,10 @@ var AQAudioContext;
   AQAudioSource.prototype.setPosition = function( x, y ) {
     if ( this.pannerNode !== null ) { return; }
 
+    if ( !this.context.webAudioContext ) {
+      return;
+    }
+
     this.pannerNode = this.context.webAudioContext.createPanner();
     this.pannerNode.setPosition( x, y, 0 );
     this.playNode.connect( this.pannerNode );
@@ -143,6 +170,10 @@ var AQAudioContext;
   };
 
   AQAudioSource.prototype.play = function() {
+    if ( !this.context.webAudioContext ) {
+      return;
+    }
+
     this.playNode.connect( this.context.targetNode );
     this.sourceNode.start( 0 );
 
