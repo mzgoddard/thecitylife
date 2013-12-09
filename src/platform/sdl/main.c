@@ -36,7 +36,7 @@ static void process_events();
 
 SDL_Surface *screen;
 
-int main(int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
 
   // Slightly different SDL initialization
@@ -86,7 +86,7 @@ int main(int argc, const char *argv[])
 #endif
 
   AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
-  AQApp_initApp( argc, argv );
+  AQApp_initApp( argc, (const char **) argv );
   aqfree( pool );
 
   initWaterTest();
@@ -161,10 +161,13 @@ static void process_events( void )
         #endif
         break;
 
-      // case SDL_KEYDOWN:
-      //     /* Handle key presses. */
-      //     handle_key_down( &event.key.keysym );
-      //     break;
+      case SDL_KEYDOWN:
+          AQInput_pressKey( event.key.keysym.sym );
+          break;
+
+      case SDL_KEYUP:
+          AQInput_releaseKey( event.key.keysym.sym );
+          break;
 
       case SDL_MOUSEMOTION:
         if ( mouseTouch ) {
