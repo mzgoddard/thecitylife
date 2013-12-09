@@ -933,12 +933,14 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					AUDIO_OPENAL,
 					"DEBUG=1",
+					XCODE,
 				);
 				HEADER_SEARCH_PATHS = (
 					../../../../,
 					../../../,
 					../../../game/spaceleaper,
 					../../../../vendor/freealut/include,
+					../headers,
 				);
 				INFOPLIST_FILE = "SpaceLeap/SpaceLeap-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -960,12 +962,16 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SpaceLeap/SpaceLeap-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = AUDIO_OPENAL;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					AUDIO_OPENAL,
+					XCODE,
+				);
 				HEADER_SEARCH_PATHS = (
 					../../../../,
 					../../../,
 					../../../game/spaceleaper,
 					../../../../vendor/freealut/include,
+					../headers,
 				);
 				INFOPLIST_FILE = "SpaceLeap/SpaceLeap-Info.plist";
 				LIBRARY_SEARCH_PATHS = (

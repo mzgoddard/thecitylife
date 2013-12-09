@@ -33,4 +33,20 @@
   return (NSView*) [self nextKeyView];
 }
 
+- (void) keyDown:(NSEvent *)theEvent {
+  if (self.wantsWebEvents) {
+    return [super keyDown:theEvent];
+  } else {
+    [[[[self superview] subviews] objectAtIndex:0] keyDown:theEvent];
+  }
+}
+
+- (void) keyUp:(NSEvent *)theEvent {
+  if (self.wantsWebEvents) {
+    return [super keyUp:theEvent];
+  } else {
+    [[[[self superview] subviews] objectAtIndex:0] keyUp:theEvent];
+  }
+}
+
 @end

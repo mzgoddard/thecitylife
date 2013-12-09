@@ -200,7 +200,16 @@ AQTouch *mouseTouch = NULL;
 }
 
 - (void) keyDown:(NSEvent *)theEvent {
-  
+  AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
+  NSLog( @"down %d\n", theEvent.keyCode );
+  AQInput_pressKey( theEvent.keyCode );
+  aqfree( pool );
+}
+
+- (void) keyUp:(NSEvent *)theEvent {
+  AQReleasePool *pool = aqinit( aqalloc( &AQReleasePoolType ));
+  AQInput_releaseKey( theEvent.keyCode );
+  aqfree( pool );
 }
 
 @end
