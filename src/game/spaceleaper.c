@@ -5,6 +5,12 @@
 
 #include "./spaceleaper.h"
 
+#ifdef EMSCRIPTEN
+#include <SDL/SDL.h>
+#else
+#include <SDL/SDL_keysym.h>
+#endif
+
 #include "src/game/opengl.h"
 #include "src/obj/index.h"
 #include "src/pphys/index.h"
@@ -205,6 +211,17 @@ void initWaterTest() {
   cameraController->minScale = 4;
   cameraController->floatingScale = 20;
 
+  // Init input actions.
+  AQInputAction *leftAction = AQInputAction_create( aqstr( "rotate-left" ));
+  AQInputAction *rightAction = AQInputAction_create( aqstr( "rotate-right" ));
+  AQInputAction *jumpAction = AQInputAction_create( aqstr( "jump" ));
+  AQInputAction *zoomAction = AQInputAction_create( aqstr( "zoom" ));
+
+  AQInput_setActionToKeys( leftAction, SDLK_a, SDLK_j, SDLK_z, SDLK_LEFT, 0 );
+  AQInput_setActionToKeys( rightAction, SDLK_d, SDLK_l, SDLK_x, SDLK_RIGHT, 0 );
+  AQInput_setActionToKeys( jumpAction, SDLK_w, SDLK_i, SDLK_SPACE, SDLK_UP, 0 );
+  AQInput_setActionToKeys( zoomAction, SDLK_s, SDLK_k, SDLK_LSHIFT, SDLK_DOWN, 0 );
+
   glGenBuffers(1, &buffer);
 
   aqfree( pool );
@@ -347,6 +364,29 @@ void stepInputWaterTest() {
   AQInput_getScreenSize( &screenWidth, &screenHeight );
 
   float fingerRadius = 30;
+
+  AQInputAction *action = AQInput_findAction( aqstr( "rotate-left" ));
+  if ( action->active ) {
+    float radians = AQRenderer_camera()->radians;
+    SLLeaper_applyDirection( leaper, radians );
+  }
+
+  action = AQInput_findAction( aqstr( "rotate-right" ));
+  if ( action->active ) {
+    float radians = AQRenderer_camera()->radians + M_PI;
+    SLLeaper_applyDirection( leaper, radians );
+  }
+
+  action = AQInput_findAction( aqstr( "jump" ));
+  if ( action->active ) {
+    float radians = AQRenderer_camera()->radians - M_PI / 2;
+    SLLeaper_applyDirection( leaper, radians );
+  }
+
+  action = AQInput_findAction( aqstr( "zoom" ));
+  if ( action->active ) {
+    SLCameraController_inputPress( cameraController );
+  }
 
   AQArray *touches = AQInput_getTouches();
   AQTouch *touch = (AQTouch *) AQArray_atIndex( touches, 0 );
