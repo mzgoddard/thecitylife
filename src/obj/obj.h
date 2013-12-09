@@ -70,6 +70,7 @@ struct AQInterface * AQObj_getInterface( AQObj * self, const char *interface );
 
 void * aqalloc(AQType *);
 void aqfree(void *);
+void * aqzero(void *);
 
 void * aqinit(void *);
 void * aqdone(void *);

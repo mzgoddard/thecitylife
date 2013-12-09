@@ -3,6 +3,7 @@
 
 #include "src/game/loop.h"
 #include "src/game/updater.h"
+#include "src/input/input.h"
 
 typedef struct loopfuncnode {
   void (*fn)( void *ctx );
@@ -20,7 +21,7 @@ typedef struct AQLoop {
   loopfuncnode *nextOnceFunction;
 } AQLoop;
 
-AQLoop *_loop;
+AQLoop *_loop = NULL;
 
 loopfuncnode * loopfuncnode_init() {
   loopfuncnode *self = malloc( sizeof(loopfuncnode) );
@@ -80,28 +81,36 @@ AQLoop * AQLoop_done( AQLoop *self ) {
 AQTYPE_INIT_DONE( AQLoop );
 
 void AQLoop_boot() {
-  _loop = aqinit( aqalloc( &AQLoopType ));
+  if ( !_loop ) {
+    _loop = aqinit( aqalloc( &AQLoopType ));
+  }
 }
 
 AQWorld * AQLoop_world() {
+  AQLoop_boot();
   return _loop->world;
 }
 
 void AQLoop_once( void (*fn)( void *ctx ), void *ctx ) {
+  AQLoop_boot();
   _loop->nextOnceFunction = loopfuncnode_add(
     _loop->nextOnceFunction, fn, ctx
   );
 }
 
 void AQLoop_addUpdater( void *object ) {
+  AQLoop_boot();
   SLUpdater_addToList( _loop->updaters, object );
 }
 
 void AQLoop_removeUpdater( void *object ) {
+  AQLoop_boot();
   SLUpdater_removeFromList( _loop->updaters, object );
 }
 
 void AQLoop_step( AQDOUBLE dt ) {
+  AQLoop_boot();
+
   AQLoop *self = _loop;
   SLUpdater_iterateList( self->updaters, dt );
 
@@ -110,4 +119,5 @@ void AQLoop_step( AQDOUBLE dt ) {
   self->nextOnceFunction = self->onceFunctions;
 
   AQWorld_step( self->world, dt );
+  AQInput_step();
 }

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "./number.h"
+#include "./compare.h"
 
 AQInterfaceId AQNumberId = "AQNumber";
 
@@ -32,6 +33,13 @@ AQNumberInterface _AQInt_NumberInterface = {
   AQInt_asDouble
 };
 
+int AQInt_compare( void *, void * );
+
+AQCompareInterface _AQInt_CompareInterface = {
+  AQCompareId,
+  AQInt_compare
+};
+
 int AQDouble_asInt( void *_self ) {
   AQDouble *self = _self;
   return self->value;
@@ -48,11 +56,20 @@ AQNumberInterface _AQDouble_NumberInterface = {
   AQDouble_asDouble
 };
 
+int AQDouble_compare( void *, void * );
+
+AQCompareInterface _AQDouble_CompareInterface = {
+  AQCompareId,
+  AQDouble_compare
+};
+
 AQInt * AQInt_init( AQInt *self ) { return self; }
 AQInt * AQInt_done( AQInt *self ) { return self; }
 void * AQInt_getInterface( AQInt *self, AQInterfaceId id ) {
   if ( id == AQNumberId ) {
     return &_AQInt_NumberInterface;
+  } else if ( id == AQCompareId ) {
+    return &_AQInt_CompareInterface;
   }
   return NULL;
 }
@@ -62,6 +79,8 @@ AQDouble * AQDouble_done( AQDouble *self ) { return self; }
 void * AQDouble_getInterface( AQDouble *self, AQInterfaceId id ) {
   if ( id == AQNumberId ) {
     return &_AQDouble_NumberInterface;
+  } else if ( id == AQCompareId ) {
+    return &_AQDouble_CompareInterface;
   }
   return NULL;
 }
@@ -101,3 +120,23 @@ double AQNumber_asDouble( void *_self ) {
 
 AQTYPE( AQInt );
 AQTYPE( AQDouble );
+
+int AQInt_compare( void *a, void *b ) {
+  if ( aqistype( b, &AQIntType )) {
+    return ((AQInt*) a)->value - ((AQInt*) b)->value;
+  } else if ( aqistype( b, &AQDoubleType )) {
+    return ((AQInt*) a)->value - ((AQDouble*) b)->value;
+  } else {
+    return 1;
+  }
+}
+
+int AQDouble_compare( void *a, void *b ) {
+  if ( aqistype( b, &AQDoubleType )) {
+    return ((AQDouble*) a)->value - ((AQDouble*) b)->value;
+  } else if ( aqistype( b, &AQIntType )) {
+    return ((AQDouble*) a)->value - ((AQInt*) b)->value;
+  } else {
+    return 1;
+  }
+}

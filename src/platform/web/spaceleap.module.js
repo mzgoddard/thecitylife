@@ -27,6 +27,9 @@ var Module = {
     var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
     var statusElement = document.getElementById('status');
     var progressElement = document.getElementById('progress');
+    if (!progressElement) {
+      return;
+    }
     if (m) {
       text = m[1];
       progressElement.value = parseInt(m[2])*100;
