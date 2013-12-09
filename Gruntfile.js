@@ -14,6 +14,24 @@ module.exports = function(grunt) {
             'src/platform/web/audiocontext.js',
             'build/emcc/spaceleaper.js',
             'vendor/jquery-1.7.1.min.js',
+            'src/platform/web/spaceleap.shim.missing.js',
+            'src/platform/web/spaceleap.shim.emscripten.js',
+            'src/platform/web/spaceleap.ui.js'
+          ]
+        }
+      },
+
+      spaceleap_native: {
+        options: {
+          sourcesContent: true
+        },
+        files: {
+          'build/native/spaceleap.js': [
+            'src/platform/web/when_shim.js',
+            'vendor/diskettejs/node_modules/when/when.js',
+            'vendor/diskettejs/diskette.js',
+            'vendor/jquery-1.7.1.min.js',
+            'src/platform/web/spaceleap.shim.missing.js',
             'src/platform/web/spaceleap.ui.js'
           ]
         }

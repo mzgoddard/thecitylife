@@ -208,7 +208,7 @@ def build(bld):
             rule='cp ${SRC} .',
             source=bld.path.ant_glob(
                 'src/platform/web/watertest.ui.js ' +
-                'src/platform/web/*.html ' +
+                'src/platform/web/*.html src/web/index.html ' +
                 'vendor/stats.js/build/stats.min.js'
             )
         )
