@@ -217,7 +217,7 @@ def build(bld):
             rule='cp ${SRC} .',
             source=bld.path.ant_glob(
                 'src/platform/web/watertest.ui.js ' +
-                'src/platform/web/*.html src/ui/index.html ' +
+                'src/platform/web/*.html src/ui/index.html src/ui/bean.html ' +
                 'vendor/stats.js/build/stats.min.js'
             )
         )
@@ -254,6 +254,17 @@ def build(bld):
         'src/platform/sdl/*.c'
     )
 
+    beanSource = bld.path.ant_glob(
+        'src/pphys/*.c ' +
+        'src/game/camera.c src/game/shaders.c src/game/renderer.c ' +
+        'src/game/view.c src/game/draw.c ' +
+        'src/game/cameracontrollerbean.c ' +
+        'src/game/updater.c src/game/loop.c ' +
+        'src/game/actor.c src/game/actorview.c ' +
+        'src/game/bean.c ' +
+        'src/platform/sdl/*.c'
+    )
+
     if bld.cmd in [ 'emcc', 'emcc_html' ]:
         watertestEmccSource = watertestSource
         watertestEmccSource.extend( bld.path.ant_glob(
@@ -284,6 +295,21 @@ def build(bld):
             use='libobj libinput libsys'
         )
 
+        beanEmccSource = beanSource
+        beanEmccSource.extend( bld.path.ant_glob(
+            'src/audio/audio.c src/platform/web/audio_webaudio.c ' +
+            'src/platform/web/library_window.js ' +
+            'src/platform/web/library_audio_webaudio.js'
+        ))
+
+        bld.program(
+            source=beanEmccSource,
+            includes=['./src/game/bean', './src', '.'],
+            defines=[ 'AUDIO_WEBAUDIO' ],
+            target='_bean',
+            use='libobj libinput libsys'
+        )
+
     if bld.cmd == 'emcc':
         bld(
             features='grunt',
@@ -303,18 +329,35 @@ def build(bld):
         spaceleaperPlatformIncludes = ['./src/game/spaceleaper', './src', '.']
         spaceleaperPlatformIncludes.extend(platformIncludes)
 
+        beanPlatformIncludes = ['./src/game/bean', './src', '.']
+        beanPlatformIncludes.extend(platformIncludes)
+
         bld.objects(
             source=bld.path.ant_glob('src/audio/*.c'),
             includes=spaceleaperPlatformIncludes,
-            target='libaudiobase',
+            target='libaudiobase_sl',
             use='libobj'
         )
 
         bld.objects(
             source=bld.path.ant_glob('src/platform/mac/audio/*.c'),
             includes=spaceleaperPlatformIncludes,
-            target='libaudioopenal',
-            use='libobj libaudiobase'
+            target='libaudioopenal_sl',
+            use='libobj libaudiobase_sl'
+        )
+
+        bld.objects(
+            source=bld.path.ant_glob('src/audio/*.c'),
+            includes=spaceleaperPlatformIncludes,
+            target='libaudiobase_bean',
+            use='libobj'
+        )
+
+        bld.objects(
+            source=bld.path.ant_glob('src/platform/mac/audio/*.c'),
+            includes=spaceleaperPlatformIncludes,
+            target='libaudioopenal_bean',
+            use='libobj libaudiobase_bean'
         )
 
         bld.program(
@@ -333,7 +376,19 @@ def build(bld):
             framework=[ 'Cocoa', 'OpenGL', 'OpenAL' ],
             libpath=os.path.abspath('vendor/freealut/src'),
             lib='alut',
-            use='libobj libinput libsys libaudiobase libaudioopenal ' +
+            use='libobj libinput libsys libaudiobase_sl libaudioopenal_sl ' +
+                'SDL SDL_gfx SDL_image'
+        )
+
+        bld.program(
+            source=beanSource,
+            includes=beanPlatformIncludes,
+            target='bean',
+            defines=[ 'AUDIO_OPENAL' ],
+            framework=[ 'Cocoa', 'OpenGL', 'OpenAL' ],
+            libpath=os.path.abspath('vendor/freealut/src'),
+            lib='alut',
+            use='libobj libinput libsys libaudiobase_bean libaudioopenal_bean ' +
                 'SDL SDL_gfx SDL_image'
         )
 

@@ -23,12 +23,26 @@ module.exports = function(grunt) {
             'src/platform/web/spaceleap.ui.js'
           ]
         }
+      },
+
+      bean: {
+        options: {
+          alias: [
+            'build/emcc/bean.jst.js:jst'
+          ]
+        },
+
+        files: {
+          'build/emcc/bean.ui.js': [
+            'src/platform/web/bean.ui.js'
+          ]
+        }
       }
     },
 
     command: {
       dedataurisourcemap: {
-        cmd: 'bin/dedataurisourcemap.py --file build/emcc/spaceleap.ui.js'
+        cmd: 'bin/dedataurisourcemap.py --file build/emcc/spaceleap.ui.js build/emcc/bean.ui.js'
       },
 
       postuglifyfix: {
@@ -37,10 +51,11 @@ module.exports = function(grunt) {
     },
 
     concat_sourcemap: {
+      options: {
+        sourcesContent: true
+      },
+
       spaceleap: {
-        options: {
-          sourcesContent: true
-        },
         files: {
           'build/emcc/spaceleap.js': [
             'src/platform/web/spaceleap.module.js',
@@ -55,6 +70,25 @@ module.exports = function(grunt) {
             'src/platform/web/spaceleap.shim.missing.js',
             'src/platform/web/spaceleap.shim.emscripten.js',
             'build/emcc/spaceleap.ui.js'
+          ]
+        }
+      },
+
+      bean: {
+        files: {
+          'build/emcc/bean.js': [
+            'src/platform/web/spaceleap.module.js',
+            'src/platform/web/when_shim.js',
+            'vendor/diskettejs/node_modules/when/when.js',
+            'vendor/diskettejs/diskette.js',
+            'src/platform/web/audiocontext.js',
+            'build/emcc/_bean.js',
+            'vendor/jquery-1.7.1.min.js',
+            'node_modules/grunt-contrib-handlebars/node_modules/handlebars/dist/handlebars.runtime.js',
+            'build/emcc/bean.jst.js',
+            'src/platform/web/spaceleap.shim.missing.js',
+            'src/platform/web/spaceleap.shim.emscripten.js',
+            'build/emcc/bean.ui.js'
           ]
         }
       },
@@ -84,9 +118,18 @@ module.exports = function(grunt) {
           return filepath.substring( filepath.lastIndexOf( '/' ) + 1 );
         }
       },
+
       spaceleap: {
         files: {
           'build/emcc/spaceleap.jst.js': [
+            'src/ui/*.hbs'
+          ]
+        }
+      },
+
+      bean: {
+        files: {
+          'build/emcc/bean.jst.js': [
             'src/ui/*.hbs'
           ]
         }
@@ -94,7 +137,8 @@ module.exports = function(grunt) {
     },
 
     jshint: {
-      spaceleap: [ 'src/platform/web/*.js' ]
+      web: [ 'src/platform/web/*.js' ],
+      ui: [ 'src/ui/*.js' ]
     },
 
     stylus: {
@@ -112,6 +156,20 @@ module.exports = function(grunt) {
         files: {
           'build/emcc/index.css': [
             'src/ui/index.css'
+          ]
+        }
+      },
+
+      bean: {
+        options: {
+          define: {
+            bgColor: '#0a161f'
+          }
+        },
+
+        files: {
+          'build/emcc/bean.css': [
+            'src/ui/bean.css'
           ]
         }
       },

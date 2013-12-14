@@ -9,6 +9,7 @@
 typedef struct AQRenderer {
   AQObj object;
 
+  struct glcolor clearColor;
   AQCamera *camera;
   AQList *views;
 } AQRenderer;
@@ -16,6 +17,7 @@ typedef struct AQRenderer {
 AQRenderer *_renderer;
 
 AQRenderer * AQRenderer_init( AQRenderer *self ) {
+  self->clearColor = clearColor;
   self->camera = aqinit( aqalloc( &AQCameraType ));
   self->views = aqinit( aqalloc( &AQListType ));
   return self;
@@ -43,6 +45,10 @@ AQCamera * AQRenderer_camera() {
   return _renderer->camera;
 }
 
+void AQRenderer_setClearColor( int r, int g, int b ) {
+  _renderer->clearColor = (struct glcolor) { r, g, b, 255 };
+}
+
 void AQRenderer_addView( void *object ) {
   AQView_addToList( _renderer->views, object );
 }
@@ -53,9 +59,9 @@ void AQRenderer_removeView( void *object ) {
 
 void AQRenderer_draw() {
   glClearColor(
-    clearColor.r / 255.0,
-    clearColor.g / 255.0,
-    clearColor.b / 255.0,
+    _renderer->clearColor.r / 255.0,
+    _renderer->clearColor.g / 255.0,
+    _renderer->clearColor.b / 255.0,
     1
   );
   glClear(GL_COLOR_BUFFER_BIT);

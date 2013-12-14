@@ -8,6 +8,7 @@ void AQRenderer_boot();
 
 AQCamera * AQRenderer_camera();
 
+void AQRenderer_setClearColor( int, int, int );
 void AQRenderer_addView( void * );
 void AQRenderer_removeView( void * );
 

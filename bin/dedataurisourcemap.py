@@ -1,21 +1,21 @@
 #!/usr/bin/env python
 
 import re
-import optparse
+import argparse
 import base64
 
-parser = optparse.OptionParser()
-parser.add_option("-f", "--file")
-(options, args) = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument("--file", type=str, nargs="+")
+options = parser.parse_args()
 
 if options.file == None:
     print("No file(s) listed to fix.\n\n")
     parser.print_help()
     sys.exit(1)
 
-for x in (options.file and isinstance(options.file, list) or [options.file]):
+for x in (options.file if isinstance(options.file, list) else [options.file]):
     # read file
-    print("Fixing {0}\n".format(x))
+    print("Fixing {0}".format(x))
     f = open(x)
     s = f.read()
     f.close()
@@ -24,12 +24,12 @@ for x in (options.file and isinstance(options.file, list) or [options.file]):
     if match:
         datauri = match.group(1)
         datauri = base64.b64decode(datauri)
-        outputPath = options.file + '.map'
+        outputPath = x + '.map'
         f = open(outputPath, 'w')
         f.write(datauri)
         f.close()
 
-        options.file[options.file.rfind('/') + 1:] + '.map'
+        # x[x.rfind('/') + 1:] + '.map'
         s = s[:match.start()] + '//# sourceMappingURL=' + outputPath[outputPath.rfind('/')+1:]
 
         # write file
