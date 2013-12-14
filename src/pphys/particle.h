@@ -48,7 +48,7 @@ typedef struct AQParticle {
   // int collisionCount;
   // AQDOUBLE lastAverageCollisionDepth;
 
-  // AQParticleMask collisionType;
+  AQParticleMask collisionType;
   // AQParticleMask collideAgainst;
 
   AQParticleCollisionCallback oncollision;

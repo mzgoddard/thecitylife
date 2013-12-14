@@ -50,6 +50,12 @@ typedef int _aqiaabb __attribute__((ext_vector_type(4)));
 #endif
 
 static aqvec2 aqvec2_make(AQDOUBLE x, AQDOUBLE y) { return (aqvec2){ x, y }; }
+static aqvec2 aqvec2_makeAngle(AQDOUBLE theta) {
+  return (aqvec2){
+    cos( theta ),
+    sin( theta )
+  };
+}
 static aqvec2 aqvec2_zero() { return (aqvec2){ 0, 0 }; }
 static aqmat22 aqmat22_make(AQDOUBLE aa, AQDOUBLE ab, AQDOUBLE ba, AQDOUBLE bb) {
   return (aqmat22){ aa, ab, ba, bb };

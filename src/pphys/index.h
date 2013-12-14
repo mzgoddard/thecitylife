@@ -9,6 +9,7 @@
 #include "./constraint.h"
 #include "./world.h"
 #include "./stick.h"
+#include "./ray.h"
 
 void aqpphysindex_init();
 
