@@ -1,0 +1,1 @@
+var JST = require( 'jst' );

@@ -4,84 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Space Leap</title>
-    <style>
-      body { margin: 0; background: transparent; width: 100%; height: 100%; overflow: hidden; }
-      textarea { position: absolute; z-index: 10; }
-      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
-      div.emscripten { text-align: center; }
-      div.emscripten_border { border: 1px solid black; }
-      div.vertical-center { position: absolute; width: 100%; height: 100%; transform: translateY(50%); -webkit-transform: translateY(50%); }
-      div.vertical-center > * { transform: translateY(-50%); -webkit-transform: translateY(-50%); }
-      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
-      canvas.emscripten { border: 0px none; width: 100%; }
-      .title {
-        position: fixed;
-        top: 0px;
-        width: 100%;
-        color: white;
-        text-align: center;
-        font-size: 3em;
-        height: 80px;
-      }
-      .story-start {
-        position: fixed;
-        top: 100px;
-        width: 100%;
-        text-align: center;
-        pointer-events: none;
-      }
-      .story-start > div {
-        display: inline-block;
-        width: 450px;
-        color: white;
-        text-align: left;
-        background: rgba(16,8,4,0.9);
-        padding: 10px;
-      }
-      .story-end {
-        display: none;
-        position: fixed;
-        top: 100px;
-        width: 100%;
-        text-align: center;
-        pointer-events: none;
-      }
-      .story-end > div {
-        display: inline-block;
-        width: 450px;
-        color: white;
-        text-align: left;
-        background: rgba(16,8,4,0.9);
-        padding: 10px;
-      }
-      .live-score {
-        display: none;
-        position: fixed;
-        bottom: 10px;
-        width: 100%;
-        text-align: center;
-        pointer-events: none;
-      }
-      .live-score > div {
-        display: inline-block;
-        width: 450px;
-        color: white;
-        text-align: left;
-        background: rgba(16,8,4,0.9);
-        padding: 10px;
-      }
-      .score > div {
-        float: right;
-        display: inline-block;
-      }
-      .click-to-dismiss {
-        text-align: center;
-      }
-      a {
-        pointer-events: initial;
-        color: white;
-      }
-    </style>
+    <link rel="stylesheet" href="index.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <script type="text/javascript">
 
       var _gaq = _gaq || [];
@@ -106,57 +29,12 @@
       <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     </div>
     <textarea id="output" style="display:none"></textarea>
-    <div class="story-start"><div>
-      <p>Space Anomaly 3122D - Report 5</p>
-
-      <p>The hole in space we found was not what we expected. We had sent probes through to here and thoroughly analyzed the data that came back. It was confusing though. The strange thing was, the only observable matter visibly was that that the probe was at that time touching.</p>
-
-      <p>Eventually each probe returned to us, but I have not been able to discover any exit. My oxygen supply is running short and it is growing tough to find resources to power the oxygen scrubber that I have left at the location I entered this exotic space at. I fear I will die here.</p>
-
-      <p>However I am not letting this get me down. This is an amazing place I never would have imagined that I would get to explore. I will continue to collect data and strive to return so that I may give my report in person instead of these datams I leave for whoever may ... well, best not jinx myself.</p>
-
-      <p>- Theresa<br>
-      -- END OF ENTRY --</p>
-
-      <div class="click-to-dismiss">Click To Dismiss</div>
-    </div></div>
+    <div class="story-start"></div>
     <div class="title">
       Space Leap
     </div>
-    <div class="story-end"><div>
-      <div>
-        <a class="story-end-hide" href="#" onclick="$('.story-end-1, .story-end-hide').hide(); $('.story-end-show').show(); return false;">hide</a>
-        <a style="display:none" class="story-end-show" href="#" onclick="$('.story-end-1, .story-end-hide').show(); $('.story-end-show').hide(); return false;">show</a>
-      </div>
-
-      <div class="story-end-1">
-      <p>Space Anomaly 3122D - Report 6</p>
-
-      <p>Time is short ...</p>
-
-      <p>I hope you find this capsule. The data I have found should be useful.</p>
-
-      <p>Goodbye.</p>
-
-      <!-- <p>It feels like I can taste the vacuum outside, but I know my brain is just playing tricks on me.</p> -->
-
-      <p>- Theresa<br>
-      -- END OF ENTRY --</p>
-      </div>
-
-      <div class="final-score">
-        <div class="score visited">Visited <div>0</div></div>
-        <div class="score resource">Resource Total <div>0</div></div>
-        <div class="score survived-for">Survived For <div>0:00.00</div></div>
-      </div>
-
-      <div class="click-to-dismiss"><a href="#" onclick="location.reload();return false;">Click to Play Again</a></div>
-    </div></div>
-    <div class="live-score"><div>
-      <div class="score visited">Visited <div>0</div></div>
-      <div class="score resource">Resource Total <div>0</div></div>
-      <div class="score survived-for">Since last report <div>0:00.00</div></div>
-    </div></div>
+    <div class="story-end"></div>
+    <div class="live-score"></div>
     <script src="spaceleap.js"></script>
   </body>
 </html>

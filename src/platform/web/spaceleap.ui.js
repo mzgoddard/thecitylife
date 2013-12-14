@@ -1,3 +1,5 @@
+var Dialog = require( 'src/ui/dialog' );
+
 var alive = true;
 var lastFrame = 0;
 var survivedFor = 0;
@@ -12,6 +14,10 @@ function padNubmer( n ) {
   }
   return n;
 }
+
+$( '.story-start' ).replaceWith( JST[ 'storystart.hbs' ]() );
+$( '.story-end' ).replaceWith( JST[ 'storyend.hbs' ]() );
+$( '.live-score' ).replaceWith( JST[ 'livescore.hbs' ]() );
 
 $('body').click(function hideStart() {
   $('.story-start, .title').animate({'opacity':0},1000);
