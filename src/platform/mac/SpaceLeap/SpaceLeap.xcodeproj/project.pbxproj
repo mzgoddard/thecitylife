@@ -17,6 +17,8 @@
 		AD11FF8F17641E5A004686B3 /* particle.c in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF7E17641E5A004686B3 /* particle.c */; };
 		AD11FF9017641E5A004686B3 /* world.c in Sources */ = {isa = PBXBuildFile; fileRef = AD11FF8017641E5A004686B3 /* world.c */; };
 		AD11FF99176437FA004686B3 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD11FF98176437FA004686B3 /* OpenGL.framework */; };
+		AD40DB9918558E5E00297AFD /* spaceleap.js in Sources */ = {isa = PBXBuildFile; fileRef = AD40DB9818558E5E00297AFD /* spaceleap.js */; };
+		AD40DB9B18558EB100297AFD /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = AD40DB9A18558EB100297AFD /* index.html */; };
 		AD5C0BCC18394596005DBC65 /* constraint.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0BC818394596005DBC65 /* constraint.c */; };
 		AD5C0BCD18394596005DBC65 /* stick.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0BCA18394596005DBC65 /* stick.c */; };
 		AD5C0BD3183945BD005DBC65 /* interfaceptr.c in Sources */ = {isa = PBXBuildFile; fileRef = AD5C0BCE183945BD005DBC65 /* interfaceptr.c */; };
@@ -87,11 +89,8 @@
 		AD60B815184C499900A993FD /* star_pulse.wav in Resources */ = {isa = PBXBuildFile; fileRef = AD60B810184C498800A993FD /* star_pulse.wav */; };
 		AD60B818184C4A6600A993FD /* libalut.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AD60B817184C4A6600A993FD /* libalut.0.dylib */; };
 		AD93BE3B1839CD9700911046 /* AQWebInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = AD93BE3A1839CD9700911046 /* AQWebInterface.m */; };
-		AD93BE3E1839D0E600911046 /* baseline.html in Resources */ = {isa = PBXBuildFile; fileRef = AD93BE3C1839D0E600911046 /* baseline.html */; };
-		AD93BE3F1839D0E600911046 /* spaceleap.ui.js in Sources */ = {isa = PBXBuildFile; fileRef = AD93BE3D1839D0E600911046 /* spaceleap.ui.js */; };
 		AD93BE411839D0EC00911046 /* jquery-1.7.1.min.js in Sources */ = {isa = PBXBuildFile; fileRef = AD93BE401839D0EC00911046 /* jquery-1.7.1.min.js */; };
 		AD93BE421839D74900911046 /* jquery-1.7.1.min.js in Resources */ = {isa = PBXBuildFile; fileRef = AD93BE401839D0EC00911046 /* jquery-1.7.1.min.js */; };
-		AD93BE431839D74900911046 /* spaceleap.ui.js in Resources */ = {isa = PBXBuildFile; fileRef = AD93BE3D1839D0E600911046 /* spaceleap.ui.js */; };
 		AD93BE451839E03700911046 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD93BE441839E03700911046 /* JavaScriptCore.framework */; };
 		ADAFDC0A183F174B00ECB54C /* ambientparticle.c in Sources */ = {isa = PBXBuildFile; fileRef = ADAFDC06183F174B00ECB54C /* ambientparticle.c */; };
 		ADAFDC0B183F174B00ECB54C /* particleview.c in Sources */ = {isa = PBXBuildFile; fileRef = ADAFDC08183F174B00ECB54C /* particleview.c */; };
@@ -141,6 +140,8 @@
 		AD11FF8117641E5A004686B3 /* world.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = world.h; sourceTree = "<group>"; };
 		AD11FF93176429A6004686B3 /* watertest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = watertest.h; sourceTree = "<group>"; };
 		AD11FF98176437FA004686B3 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		AD40DB9818558E5E00297AFD /* spaceleap.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = spaceleap.js; path = ../build/native/spaceleap.js; sourceTree = "<group>"; };
+		AD40DB9A18558EB100297AFD /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = ui/index.html; sourceTree = "<group>"; };
 		AD4E941D176D924D001DBB4A /* flowline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = flowline.c; sourceTree = "<group>"; };
 		AD4E941E176D924D001DBB4A /* flowline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = flowline.h; sourceTree = "<group>"; };
 		AD5C0BC818394596005DBC65 /* constraint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = constraint.c; sourceTree = "<group>"; };
@@ -257,8 +258,6 @@
 		AD60B817184C4A6600A993FD /* libalut.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libalut.0.dylib; path = ../../../../vendor/freealut/src/libalut.0.dylib; sourceTree = "<group>"; };
 		AD93BE391839CD9700911046 /* AQWebInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AQWebInterface.h; sourceTree = "<group>"; };
 		AD93BE3A1839CD9700911046 /* AQWebInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AQWebInterface.m; sourceTree = "<group>"; };
-		AD93BE3C1839D0E600911046 /* baseline.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = baseline.html; path = web/baseline.html; sourceTree = "<group>"; };
-		AD93BE3D1839D0E600911046 /* spaceleap.ui.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = spaceleap.ui.js; path = web/spaceleap.ui.js; sourceTree = "<group>"; };
 		AD93BE401839D0EC00911046 /* jquery-1.7.1.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "jquery-1.7.1.min.js"; path = "../vendor/jquery-1.7.1.min.js"; sourceTree = "<group>"; };
 		AD93BE441839E03700911046 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ADAFDC06183F174B00ECB54C /* ambientparticle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ambientparticle.c; sourceTree = "<group>"; };
@@ -350,9 +349,9 @@
 			isa = PBXGroup;
 			children = (
 				AD93BE401839D0EC00911046 /* jquery-1.7.1.min.js */,
+				AD40DB9A18558EB100297AFD /* index.html */,
+				AD40DB9818558E5E00297AFD /* spaceleap.js */,
 				AD60B7ED184C466000A993FD /* audio */,
-				AD93BE3D1839D0E600911046 /* spaceleap.ui.js */,
-				AD93BE3C1839D0E600911046 /* baseline.html */,
 				AD60B7FC184C486A00A993FD /* platform */,
 				ADC3968D176DCCA0003EE938 /* input */,
 				AD11FF91176429A6004686B3 /* game */,
@@ -691,14 +690,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD93BE421839D74900911046 /* jquery-1.7.1.min.js in Resources */,
-				AD93BE431839D74900911046 /* spaceleap.ui.js in Resources */,
 				AD5C0BE9183946E6005DBC65 /* Credits.rtf in Resources */,
 				AD60B815184C499900A993FD /* star_pulse.wav in Resources */,
 				AD60B811184C499400A993FD /* asteroidhit.wav in Resources */,
 				AD60B812184C499400A993FD /* jump.wav in Resources */,
+				AD40DB9B18558EB100297AFD /* index.html in Resources */,
 				AD60B813184C499400A993FD /* oxygengain.wav in Resources */,
 				AD60B814184C499400A993FD /* resourcegain.wav in Resources */,
-				AD93BE3E1839D0E600911046 /* baseline.html in Resources */,
 				AD5C0BEA183946E6005DBC65 /* InfoPlist.strings in Resources */,
 				AD5C0BEB183946E6005DBC65 /* MainMenu.xib in Resources */,
 			);
@@ -759,7 +757,6 @@
 				AD11FF8217641E5A004686B3 /* list.c in Sources */,
 				AD11FF8317641E5A004686B3 /* obj.c in Sources */,
 				AD5C0C7C18399B1A005DBC65 /* AQWebView.m in Sources */,
-				AD93BE3F1839D0E600911046 /* spaceleap.ui.js in Sources */,
 				AD93BE411839D0EC00911046 /* jquery-1.7.1.min.js in Sources */,
 				ADAFDC0A183F174B00ECB54C /* ambientparticle.c in Sources */,
 				AD5C0BD4183945BD005DBC65 /* number.c in Sources */,
@@ -769,6 +766,7 @@
 				AD60B7F4184C466000A993FD /* audio.c in Sources */,
 				AD5C0BD3183945BD005DBC65 /* interfaceptr.c in Sources */,
 				AD5C0BE8183946E6005DBC65 /* AQOpenGLView.m in Sources */,
+				AD40DB9918558E5E00297AFD /* spaceleap.js in Sources */,
 				AD5C0BEC183946E6005DBC65 /* main.m in Sources */,
 				AD11FF8E17641E5A004686B3 /* ddvt.c in Sources */,
 				AD5C0BD8183945C8005DBC65 /* compare.c in Sources */,

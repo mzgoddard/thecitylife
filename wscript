@@ -108,6 +108,15 @@ class grunt(Task.Task):
     # before and after an emcc task, this will need to work another way.
     after='cprogram'
 
+@extension('.hbs')
+def process_hbs(self, node):
+    pass
+
+@extension('.css')
+@extension('.styl')
+def process_css(self, node):
+    pass
+
 # Let Waf know js is a valid extension. Currently don't anything to it.
 @extension('.js')
 def process_js(self, node):
@@ -208,7 +217,7 @@ def build(bld):
             rule='cp ${SRC} .',
             source=bld.path.ant_glob(
                 'src/platform/web/watertest.ui.js ' +
-                'src/platform/web/*.html ' +
+                'src/platform/web/*.html src/ui/index.html ' +
                 'vendor/stats.js/build/stats.min.js'
             )
         )
@@ -262,8 +271,8 @@ def build(bld):
         spaceLeaperEmccSource = spaceLeaperSource
         spaceLeaperEmccSource.extend( bld.path.ant_glob(
             'src/audio/audio.c src/platform/web/audio_webaudio.c ' +
-            'src/platform/web/window.js ' +
-            'src/platform/web/audio_webaudio.js'
+            'src/platform/web/library_window.js ' +
+            'src/platform/web/library_audio_webaudio.js'
         ))
 
         bld.program(
@@ -279,7 +288,8 @@ def build(bld):
         bld(
             features='grunt',
             source=bld.path.ant_glob(
-                'src/platform/web/*.js'
+                'src/platform/web/*.js ' +
+                'src/ui/*.hbs src/ui/*.css src/ui/*.styl'
             ),
             target='spaceleap.js',
             use='spaceleaper.js'

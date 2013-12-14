@@ -1,3 +1,5 @@
+var Dialog = require( 'src/ui/dialog' );
+
 var alive = true;
 var lastFrame = 0;
 var survivedFor = 0;
@@ -13,15 +15,19 @@ function padNubmer( n ) {
   return n;
 }
 
+$( '.story-start' ).replaceWith( JST[ 'storystart.hbs' ]() );
+$( '.story-end' ).replaceWith( JST[ 'storyend.hbs' ]() );
+$( '.live-score' ).replaceWith( JST[ 'livescore.hbs' ]() );
+
 $('body').click(function hideStart() {
   $('.story-start, .title').animate({'opacity':0},1000);
   $('body').off('click', hideStart);
-  Module.ccall('resumeSpaceLeaper','undefined',[],[]);
+  SP.resumeSpaceLeaper();
   $('.live-score').show().css('opacity','0').animate({'opacity':1},1000);
 
-  Module.requestAnimationFrame(function time(){
+  SP.requestAnimationFrame(function time(){
     if ( alive ) {
-      Module.requestAnimationFrame(time);
+      SP.requestAnimationFrame(time);
 
       var now = Date.now();
       if ( now - lastFrame < 1000 ) {
@@ -40,7 +46,7 @@ $('body').click(function hideStart() {
 });
 
 var once = true;
-Module.endCallback = function() {
+var endCallback = function() {
   if ( once ) {
     alive = false;
     $('.story-end, .title')
@@ -58,32 +64,23 @@ Module.endCallback = function() {
   }
   once = false;
 };
-Module.visitedCallback = function( _visits ) {
+var visitedCallback = function( _visits ) {
   visits = _visits;
   $('.visited > div').text( visits );
 };
-Module.resourceCallback = function( _resource ) {
+var resourceCallback = function( _resource ) {
   resource = _resource;
   $('.resource > div').text( resource );
 };
-Module.ccall(
-  'setSpaceLeaperEndCallback',
-  'undefined',
-  ['number'],
-  [Runtime.addFunction(Module.endCallback)]
-);
-Module.ccall(
-  'setSpaceLeaperVisitedCallback',
-  'undefined',
-  ['number'],
-  [Runtime.addFunction(Module.visitedCallback)]
-);
-Module.ccall(
-  'setSpaceLeaperResourceCallback',
-  'undefined',
-  ['number'],
-  [Runtime.addFunction(Module.resourceCallback)]
-);
-Module.ccall('pauseSpaceLeaper','undefined',[],[]);
+
+var endCallbackPtr = Runtime.addFunction( endCallback );
+var visitedCallbackPtr = Runtime.addFunction( visitedCallback );
+var resourceCallbackPtr = Runtime.addFunction( resourceCallback );
+
+SP.setSpaceLeaperEndCallback( endCallbackPtr );
+SP.setSpaceLeaperVisitedCallback( visitedCallbackPtr );
+SP.setSpaceLeaperResourceCallback( resourceCallbackPtr );
+
+SP.pauseSpaceLeaper();
 
 _gaq.push(['_trackEvent','SpaceLeap','Version','1.0']);
