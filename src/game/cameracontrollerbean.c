@@ -68,10 +68,10 @@ void _BBCameraController_update( BBCameraController *self, AQDOUBLE dt ) {
     once = 0;
   }
 
-  // if ( self->actor ) {
-  //   AQActor *actor = self->actor;
-  //   self->center = self->actor->body->position;
-  // }
+  if ( self->actor ) {
+    AQActor *actor = self->actor;
+    self->center = self->actor->body->position;
+  }
 
   if ( self->inputPressed ) {
     self->currentScale = 20;

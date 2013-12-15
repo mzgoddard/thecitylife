@@ -32,8 +32,10 @@
 #include "src/game/loop.h"
 #include "src/game/cameracontrollerbean.h"
 #include "src/game/actor.h"
+#include "src/game/city.h"
+#include "src/game/multiwallview.h"
 
-#define kFrameFraction 1.0 / 20
+#define kFrameFraction 1.0 / 60
 #ifndef kParticleCount
 #define kParticleCount 2048
 #endif
@@ -52,6 +54,8 @@ static aqvec2 gravity;
 static AQList *asteroids;
 static AQActor *player;
 static BBCameraController *cameraController;
+static BBCity *city;
+static BBMultiWallView *wallView;
 
 GLuint buffer;
 
@@ -89,21 +93,30 @@ void initWaterTest() {
   #endif
 
   world = AQLoop_world();
-  AQWorld_setAabb( world, (aqaabb) { space, space, 0, 0 });
+  AQWorld_setAabb( world, (aqaabb) { space, space, -space, -space });
   AQInput_setWorldFrame( space, space, 0, 0 );
 
   // Init game entities.
+  wallView = aqcreate( &BBMultiWallViewType );
+  AQRenderer_addView( wallView );
+
   player = aqinit( aqalloc( &AQActorType ));
   player->discipline = AQPlayerDiscipline;
   player->action = AQPlayerAction;
-  player->size = 4;
+  player->size = 6;
   AQActor_updateData( player );
+  AQActor_setWorld( player, world );
   AQLoop_addUpdater( player );
   AQRenderer_addView( player );
 
   cameraController = aqcreate( &BBCameraControllerType );
   BBCameraController_setPlayer( cameraController, player );
   AQLoop_addUpdater( cameraController );
+
+  city = aqcreate( &BBCityType );
+  BBCity_initBlocks( city, 4 );
+  BBCity_addToWorld( city, world );
+  BBCity_addWallsToView( city, wallView );
 
   // Init input actions.
   AQInputAction *leftAction = AQInputAction_create( aqstr( "left" ));

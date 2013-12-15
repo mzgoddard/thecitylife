@@ -49,6 +49,17 @@ void _AQActorView_draw( void *_self ) {
     (struct glcolor) { 0, 0, 0, 255 }
   );
 
+  vertices = AQDraw_color(
+    vertices,
+    AQDraw_polygon(
+      vertices, colorvertex_next, 16,
+      self->actor->body->position, self->actor->body->radius - 1, 0
+    ),
+    colorvertex_next,
+    colorvertex_getcolor,
+    (struct glcolor) { 255, 255, 255, 255 }
+  );
+
   AQShaders_useProgram( ColorShaderProgram );
   AQShaders_draw(
     self->buffer, self->vertices,

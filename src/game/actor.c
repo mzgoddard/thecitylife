@@ -26,7 +26,7 @@ void _AQActor_move(
 
 AQActor * AQActor_init( AQActor *self ) {
   aqzero( self );
-  self->baseSpeed = 20;
+  self->baseSpeed = 40;
   self->size = 8;
   _AQActor_setCurrentSpeed( self );
 
@@ -74,6 +74,7 @@ void _AQActor_update( void *_self, AQDOUBLE dt ) {
 
   //
   if ( self->action == AQPlayerAction ) {
+    AQWorld_wakeParticle( self->world, self->body );
     _AQActor_move(
       self, dt,
       self->actionData.playerData.movementAngle,
@@ -109,6 +110,12 @@ void _AQActor_move(
 void AQActor_updateData( AQActor *self ) {
   _AQActor_setCurrentSpeed( self );
   _AQActor_setBodyValues( self );
+}
+
+void AQActor_setWorld( AQActor *self, AQWorld *world ) {
+  aqrelease( self->world );
+  self->world = aqretain( world );
+  AQWorld_addParticle( self->world, self->body );
 }
 
 AQTYPE( AQActor );

@@ -79,6 +79,7 @@ typedef struct AQActor {
 
   // Angle actor is rotated.
   AQDOUBLE angle;
+  AQWorld *world;
   AQParticle *body;
   AQParticle *trigger;
   AQList *path;
@@ -89,5 +90,6 @@ typedef struct AQActor {
 } AQActor;
 
 void AQActor_updateData( AQActor * );
+void AQActor_setWorld( AQActor *, AQWorld * );
 
 #endif /* end of include guard: ACTOR_H_R1G5Y81C */

@@ -258,6 +258,8 @@ def build(bld):
         'src/pphys/*.c ' +
         'src/game/camera.c src/game/shaders.c src/game/renderer.c ' +
         'src/game/view.c src/game/draw.c ' +
+        'src/game/city.c src/game/block.c src/game/room.c src/game/wall.c ' +
+        'src/game/multiwallview.c src/game/pathnode.c ' +
         'src/game/cameracontrollerbean.c ' +
         'src/game/updater.c src/game/loop.c ' +
         'src/game/actor.c src/game/actorview.c ' +
