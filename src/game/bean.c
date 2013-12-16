@@ -118,6 +118,8 @@ void initWaterTest() {
   BBCity_addToWorld( city, world );
   BBCity_addWallsToView( city, wallView );
 
+  printf( "particles %d\n", AQList_length( world->particles ));
+
   // Init input actions.
   AQInputAction *leftAction = AQInputAction_create( aqstr( "left" ));
   AQInputAction *rightAction = AQInputAction_create( aqstr( "right" ));

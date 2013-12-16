@@ -306,7 +306,6 @@ void _BBCity_setBlock( BBCity *self, BBBlock *block ) {
   int y = floor( position.y / 60 );
 
   AQList_push( self->blocks, (AQObj *) block );
-  printf( "%d %d\n", self->citySize * y + x, self->citySize * self->citySize );
   self->blockMap[ self->citySize * y + x ] = block;
 }
 
