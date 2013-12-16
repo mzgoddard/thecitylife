@@ -24,6 +24,9 @@ void * aqalloc( AQType *st ) {
     1, // refCount
     NULL // pool
   };
+  if ( ((AQObj *) obj)->type->size != 132 ) {
+    // printf( "%p %s %d\n", obj, ((AQObj*) obj)->type->name, ((AQObj *) obj)->type->size );
+  }
   return obj;
 }
 
@@ -59,6 +62,7 @@ void * aqrelease( void *self ) {
     return NULL;
   }
 
+  // printf( "%p %s %d\n", self, ((AQObj*) self)->type->name, ((AQObj *) self)->type->size );
   ((AQObj *) self )->refCount--;
   if ( ((AQObj *) self )->refCount <= 0 ) {
     aqfree( self );

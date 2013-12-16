@@ -32,6 +32,10 @@ void _BBBlock_clonePathNode( AQObj *self, void *ctx ) {
 BBBlock * BBBlock_clone( BBBlock *original ) {
   BBBlock *clone = aqcreate( &BBBlockType );
 
+  clone->aabb = original->aabb;
+  clone->rotation = original->rotation;
+  memcpy( clone->sides, original->sides, sizeof( clone->sides ));
+
   AQList_iterate( original->rooms, _BBBlock_cloneRoom, clone->rooms );
   // AQList_iterate( original->items, _BBBlock_cloneItem, clone->items );
   AQList_iterate(
@@ -41,8 +45,59 @@ BBBlock * BBBlock_clone( BBBlock *original ) {
   return clone;
 }
 
-BBBlock * BBBlock_rotateTo( BBBlock *self, BBBlockRotation face ) {
+struct rotatedata {
+  aqaabb oldAabb;
+  aqaabb newAabb;
+  int rotations;
+};
+
+void _BBBlock_rotateRoom( AQObj *_room, void *ctx ) {
+  BBRoom *room = (BBRoom *) _room;
+  struct rotatedata *data = (struct rotatedata *) ctx;
+
+  aqaabb newAabb = aqaabb_rotateInAabbToAabb(
+    room->aabb, data->oldAabb, data->newAabb, data->rotations
+  );
+
+  // printf( "%s %s %s\n", aqaabb_cstr( room->aabb ), aqaabb_cstr( newAabb ), aqvec2_cstr( aqvec2_sub(
+  //   aqaabb_tlvec2( newAabb ),
+  //   aqaabb_tlvec2( room->aabb )
+  // )));
+
+  BBRoom_rotate( room, data->rotations );
+  BBRoom_move( room, aqvec2_sub(
+    aqaabb_tlvec2( newAabb ),
+    aqaabb_tlvec2( room->aabb )
+  ));
+}
+
+BBBlock * BBBlock_rotate( BBBlock *self, int rotations ) {
+  if ( rotations == 0 ) {
+    return self;
+  }
+
+  self->rotation = ( self->rotation + rotations ) % 4;
+
+  aqaabb oldAabb = self->aabb;
+  self->aabb = aqaabb_rotateAtTL( self->aabb, rotations );
+
+  struct rotatedata data = {
+    oldAabb,
+    self->aabb,
+    rotations
+  };
+
+  // printf( "%s %s\n", aqaabb_cstr( oldAabb ), aqaabb_cstr( self->aabb ));
+
+  AQList_iterate( self->rooms, _BBBlock_rotateRoom, &data );
+
   return self;
+}
+
+BBBlock * BBBlock_rotateTo( BBBlock *self, BBRotation rotation ) {
+  int rotationDiff = ( 4 + (int) rotation - (int) self->rotation ) % 4;
+
+  return BBBlock_rotate( self, rotationDiff );
 }
 
 void _BBBlock_moveRoom( BBRoom *room, aqvec2 *diff ) {
@@ -53,9 +108,7 @@ void _BBBlock_movePathNode( BBPathNode *pathNode, aqvec2 *diff ) {
   BBPathNode_move( pathNode, *diff );
 }
 
-BBBlock * BBBlock_move( BBBlock *self, aqvec2 tl ) {
-  aqvec2 tlDiff = aqvec2_sub( tl, aqaabb_tlvec2( self->aabb ));
-
+BBBlock * BBBlock_move( BBBlock *self, aqvec2 tlDiff ) {
   self->aabb = aqaabb_translate( self->aabb, tlDiff );
 
   AQList_iterate( self->rooms, (AQList_iterator) _BBBlock_moveRoom, &tlDiff );
@@ -64,6 +117,11 @@ BBBlock * BBBlock_move( BBBlock *self, aqvec2 tl ) {
   );
 
   return self;
+}
+
+BBBlock * BBBlock_moveTo( BBBlock *self, aqvec2 tl ) {
+  aqvec2 tlDiff = aqvec2_sub( tl, aqaabb_tlvec2( self->aabb ));
+  return BBBlock_move( self, tlDiff );
 }
 
 void BBBlock_addToWorld( BBBlock *self, AQWorld *world ) {

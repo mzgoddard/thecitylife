@@ -26,7 +26,7 @@ void _AQActor_move(
 
 AQActor * AQActor_init( AQActor *self ) {
   aqzero( self );
-  self->baseSpeed = 40;
+  self->baseSpeed = 80;
   self->size = 8;
   _AQActor_setCurrentSpeed( self );
 

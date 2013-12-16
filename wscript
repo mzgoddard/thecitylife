@@ -319,8 +319,8 @@ def build(bld):
                 'src/platform/web/*.js ' +
                 'src/ui/*.hbs src/ui/*.css src/ui/*.styl'
             ),
-            target='spaceleap.js',
-            use='spaceleaper.js'
+            target='bean.js',
+            use='_bean.js'
         )
 
     if bld.cmd in [ 'debug', 'release' ]:

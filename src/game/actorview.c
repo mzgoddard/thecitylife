@@ -41,7 +41,7 @@ void _AQActorView_draw( void *_self ) {
   vertices = AQDraw_color(
     self->vertices,
     AQDraw_polygon(
-      self->vertices, colorvertex_next, 16,
+      self->vertices, colorvertex_next, 32,
       self->actor->body->position, self->actor->body->radius, 0
     ),
     colorvertex_next,
@@ -52,7 +52,7 @@ void _AQActorView_draw( void *_self ) {
   vertices = AQDraw_color(
     vertices,
     AQDraw_polygon(
-      vertices, colorvertex_next, 16,
+      vertices, colorvertex_next, 32,
       self->actor->body->position, self->actor->body->radius - 1, 0
     ),
     colorvertex_next,

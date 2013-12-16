@@ -204,6 +204,29 @@ static aqvec2 aqvec2_lerp( aqvec2 a, aqvec2 b, float t ) {
   #endif
 }
 
+static aqvec2 aqvec2_rotateInAabbToAabb(
+  aqvec2 v, aqaabb oldAabb, aqaabb newAabb, int rotations
+) {
+  if ( rotations == 1 ) {
+    return aqvec2_make(
+      newAabb.right - ( oldAabb.top - v.y ),
+      newAabb.top - ( v.x - oldAabb.left )
+    );
+  } else if ( rotations == 2 ) {
+    return aqvec2_make(
+      newAabb.right - ( v.x - oldAabb.left ),
+      newAabb.top - ( v.y - oldAabb.bottom )
+    );
+  } else if ( rotations == 3 ) {
+    return aqvec2_make(
+      newAabb.right - ( v.y - oldAabb.bottom ),
+      newAabb.top - ( oldAabb.right - v.x )
+    );
+  } else {
+    return v;
+  }
+}
+
 static aqvec2 aqmat22_transform(aqmat22 m, aqvec2 v) {
   #if !__SSE__
   return aqvec2_make(m.aa * v.x + m.ab * v.y, m.ba * v.x + m.bb * v.y);
@@ -324,6 +347,44 @@ static aqaabb aqaabb_combine(aqaabb a, aqaabb b) {
 
 static aqaabb aqaabb_translate(aqaabb ab, aqvec2 v) {
   return aqaabb_make(ab.top + v.y, ab.right + v.x, ab.bottom + v.y, ab.left + v.x);
+}
+
+static aqaabb aqaabb_rotateInAabbToAabb(
+  aqaabb aabb, aqaabb oldAabb, aqaabb newAabb, int rotations
+) {
+  if ( rotations == 1 ) {
+    return aqaabb_make(
+      newAabb.top - ( aabb.left - oldAabb.left ),
+      newAabb.right - ( oldAabb.top - aabb.top ),
+      newAabb.bottom + ( oldAabb.right - aabb.right ),
+      newAabb.left + ( aabb.bottom - oldAabb.bottom )
+    );
+  } else if ( rotations == 2 ) {
+    return aqaabb_make(
+      newAabb.top - ( aabb.bottom - oldAabb.bottom ),
+      newAabb.right - ( aabb.left - oldAabb.left ),
+      newAabb.bottom + ( oldAabb.top - aabb.top ),
+      newAabb.left + ( oldAabb.right - aabb.right )
+    );
+  } else if ( rotations == 3 ) {
+    return aqaabb_make(
+      newAabb.top - ( oldAabb.right - aabb.right ),
+      newAabb.right - ( aabb.bottom - oldAabb.bottom ),
+      newAabb.bottom + ( aabb.left - oldAabb.left ),
+      newAabb.left + ( oldAabb.top - aabb.top )
+    );
+  } else {
+    return aabb;
+  }
+}
+
+static aqaabb aqaabb_rotateAtTL( aqaabb aabb, int rotations ) {
+  if ( rotations == 1 || rotations == 3 ) {
+    aqvec2 size = aqaabb_size( aabb );
+    aabb.right = aabb.left + size.y;
+    aabb.bottom = aabb.top - size.x;
+  }
+  return aabb;
 }
 
 #endif /* end of include guard: VEC2_H_KF1Q5ETP */

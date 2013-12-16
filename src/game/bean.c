@@ -113,7 +113,7 @@ void initWaterTest() {
   BBCameraController_setPlayer( cameraController, player );
   AQLoop_addUpdater( cameraController );
 
-  city = aqcreate( &BBCityType );
+  city = aqretain( aqcreate( &BBCityType ));
   BBCity_initBlocks( city, 4 );
   BBCity_addToWorld( city, world );
   BBCity_addWallsToView( city, wallView );
@@ -123,6 +123,7 @@ void initWaterTest() {
   AQInputAction *rightAction = AQInputAction_create( aqstr( "right" ));
   AQInputAction *upAction = AQInputAction_create( aqstr( "up" ));
   AQInputAction *downAction = AQInputAction_create( aqstr( "down" ));
+  AQInputAction *runAction = AQInputAction_create( aqstr( "run" ));
   AQInputAction *stealAction = AQInputAction_create( aqstr( "steal" ));
   AQInputAction *zoomAction = AQInputAction_create( aqstr( "zoom" ));
 
@@ -130,7 +131,10 @@ void initWaterTest() {
   AQInput_setActionToKeys( rightAction, SDLK_d, SDLK_l, SDLK_RIGHT, 0 );
   AQInput_setActionToKeys( upAction, SDLK_w, SDLK_i, SDLK_UP, 0 );
   AQInput_setActionToKeys( downAction, SDLK_s, SDLK_k, SDLK_DOWN, 0 );
-  AQInput_setActionToKeys( stealAction, SDLK_q, SDLK_e, SDLK_u, SDLK_o, 0 );
+  AQInput_setActionToKeys( runAction,
+    SDLK_q, SDLK_o, SDLK_LSHIFT, SDLK_RSHIFT, 0
+  );
+  AQInput_setActionToKeys( stealAction, SDLK_e, SDLK_u, 0 );
   AQInput_setActionToKeys( zoomAction, SDLK_z, SDLK_PERIOD, 0 );
 
   glGenBuffers(1, &buffer);
@@ -272,7 +276,7 @@ void stepInputWaterTest() {
   AQInputAction *action = AQInput_findAction( aqstr( "left" ));
   if ( action->active ) {
     movementDir.x += -1;
-    movementPower = 1;
+    movementPower = 0.3;
     // float radians = AQRenderer_camera()->radians;
     // SLLeaper_applyDirection( leaper, radians );
   }
@@ -280,7 +284,7 @@ void stepInputWaterTest() {
   action = AQInput_findAction( aqstr( "right" ));
   if ( action->active ) {
     movementDir.x += 1;
-    movementPower = 1;
+    movementPower = 0.3;
     // float radians = AQRenderer_camera()->radians + M_PI;
     // SLLeaper_applyDirection( leaper, radians );
   }
@@ -288,13 +292,20 @@ void stepInputWaterTest() {
   action = AQInput_findAction( aqstr( "up" ));
   if ( action->active ) {
     movementDir.y += 1;
-    movementPower = 1;
+    movementPower = 0.3;
   }
 
   action = AQInput_findAction( aqstr( "down" ));
   if ( action->active ) {
     movementDir.y += -1;
-    movementPower = 1;
+    movementPower = 0.3;
+  }
+
+  action = AQInput_findAction( aqstr( "run" ));
+  if ( action->active ) {
+    if ( movementPower != 0 ) {
+      movementPower = 1;
+    }
   }
 
   player->actionData.playerData.movementAngle =

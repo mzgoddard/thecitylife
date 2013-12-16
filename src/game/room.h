@@ -16,11 +16,11 @@ typedef enum {
 } BBRoomSize;
 
 typedef enum {
-  BBNorthRoom,
-  BBEastRoom,
-  BBSouthRoom,
-  BBWestRoom
-} BBRoomRotation;
+  BBNorth,
+  BBEast,
+  BBSouth,
+  BBWest
+} BBRotation;
 
 typedef enum {
   BBNorthDoor = 1 << 0,
@@ -36,7 +36,7 @@ typedef struct BBRoom {
 
   int isVacant;
   BBRoomSize size;
-  BBRoomRotation rotation;
+  BBRotation rotation;
   aqaabb aabb;
 
   AQWorld *world;
@@ -52,8 +52,12 @@ BBRoom * BBRoom_create();
 
 BBRoom * BBRoom_clone( BBRoom * );
 
-void BBRoom_rotate( BBRoom *, BBRoomRotation );
-void BBRoom_move( BBRoom *, aqvec2 );
+void BBRoom_buildAabb( BBRoom * );
+void BBRoom_addWall( BBRoom *, aqaabb aabb, BBWallEnum );
+BBRoom * BBRoom_rotate( BBRoom *, int rotations );
+BBRoom * BBRoom_rotateTo( BBRoom *, BBRotation );
+BBRoom * BBRoom_move( BBRoom *, aqvec2 );
+BBRoom * BBRoom_moveTo( BBRoom *, aqvec2 );
 void BBRoom_changeVacancy( BBRoom *, void *newOwner );
 
 void BBRoom_addToWorld( BBRoom *, AQWorld * );

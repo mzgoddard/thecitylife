@@ -1,4 +1,4 @@
-#include <math.h>
+ #include <math.h>
 
 #include "src/game/cameracontrollerbean.h"
 #include "src/game/renderer.h"
@@ -18,7 +18,7 @@ BBCameraController * BBCameraController_init( BBCameraController *self ) {
   self->minScale = 1;
   self->maxScale = 100;
   self->currentScale = 1;
-  self->scaleValue = 60;
+  self->scaleValue = 80;
 
   return self;
 }
@@ -70,11 +70,22 @@ void _BBCameraController_update( BBCameraController *self, AQDOUBLE dt ) {
 
   if ( self->actor ) {
     AQActor *actor = self->actor;
-    self->center = self->actor->body->position;
+    self->center = aqvec2_lerp(
+      self->actor->body->position, self->center, 0.5
+    );
+
+    if ( actor->discipline == AQPlayerDiscipline ) {
+      AQDOUBLE movementPower = actor->actionData.playerData.movementPower;
+      AQDOUBLE movementAngle = actor->actionData.playerData.movementAngle;
+      aqvec2 movingToward = aqvec2_add( aqvec2_scale(
+        aqvec2_makeAngle( movementAngle ), movementPower * actor->currentSpeed * 0.5
+      ), self->center );
+      self->center = aqvec2_lerp( self->center, movingToward, 0.1 );
+    }
   }
 
   if ( self->inputPressed ) {
-    self->currentScale = 20;
+    self->currentScale = 8;
   } else {
     self->currentScale = self->minScale;
   }

@@ -163,7 +163,7 @@ module.exports = function(grunt) {
       bean: {
         options: {
           define: {
-            bgColor: '#0a161f'
+            bgColor: 'white'
           }
         },
 

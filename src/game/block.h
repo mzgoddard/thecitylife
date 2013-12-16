@@ -12,19 +12,13 @@ typedef enum {
   BBBlockAlleySide
 } BBBlockSide;
 
-typedef enum {
-  BBNorthBlock,
-  BBEastBlock,
-  BBSouthBlock,
-  BBWestBlock
-} BBBlockRotation;
-
 extern AQType BBBlockType;
 
 typedef struct BBBlock {
   AQObj object;
 
   aqaabb aabb;
+  BBRotation rotation;
   AQWorld *world;
 
   BBBlockSide sides[4];
@@ -34,8 +28,9 @@ typedef struct BBBlock {
 } BBBlock;
 
 BBBlock * BBBlock_clone( BBBlock * );
-BBBlock * BBBlock_rotateTo( BBBlock *, BBBlockRotation );
-BBBlock * BBBlock_move( BBBlock *, aqvec2 tl );
+BBBlock * BBBlock_rotateTo( BBBlock *, BBRotation );
+BBBlock * BBBlock_move( BBBlock *, aqvec2 diff );
+BBBlock * BBBlock_moveTo( BBBlock *, aqvec2 tl );
 
 void BBBlock_addToWorld( BBBlock *, AQWorld * );
 void BBBlock_removeFromWorld( BBBlock *, AQWorld * );

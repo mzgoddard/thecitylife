@@ -46,6 +46,8 @@ int main(int argc, char *argv[])
   }
 
   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // *new*
+  SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
+  SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, 16 );
 
   #if EMSCRIPTEN
   screen = SDL_SetVideoMode( 640, 480, 16, SDL_OPENGL | SDL_RESIZABLE ); // *changed*
